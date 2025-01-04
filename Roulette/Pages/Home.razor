@@ -8,7 +8,11 @@
 
 <h1>ルーレット</h1>
 
-<p>@_data</p>
+<p>@_config?.Items.Count()</p>
+@if (_config?.Items is [.., { } v])
+{
+    <p>@v.Name</p>
+}
 
 <button class="btn btn-primary" @onclick="OpenControllerAsync">コントローラを開く</button>
 
@@ -16,7 +20,10 @@
     [SupplyParameterFromQuery(Name = "url")]
     private string? Url { get; set; }
 
-    private string? _data;
+    [SupplyParameterFromQuery(Name = "config")]
+    private string? Config { get; set; }
+
+    private RouletteConfig? _config;
 
     protected override void OnInitialized()
     {
@@ -27,6 +34,17 @@
             if (string.IsNullOrEmpty(new Uri(Url).Host)) NavigationManager.NavigateTo(Url, false, true);
             else NavigationManager.NavigateTo(NavigationManager.BaseUri, false, true);
         }
+        else
+        {
+            if (Config is { })
+            {
+                _config = JsonSerializer.Deserialize<RouletteConfig>(Config);
+            }
+            else
+            {
+                On(new RouletteConfig { Items = [] });
+            }
+        }
     }
 
     void IDisposable.Dispose()
@@ -36,12 +54,16 @@
 
     private async Task OpenControllerAsync()
     {
-        await JS.InvokeVoidAsync("openController");
+        await JS.InvokeVoidAsync("openController", Config);
     }
 
-    private void On(string data)
+    private void On(RouletteConfig config)
     {
-        _data = data;
+        _config = config;
+        Config = JsonSerializer.Serialize(_config, new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+        var url = NavigationManager.GetUriWithQueryParameter("config", Config);
+        NavigationManager.NavigateTo(url);
+
         StateHasChanged();
     }
 }

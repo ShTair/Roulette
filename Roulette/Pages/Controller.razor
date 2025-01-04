@@ -19,8 +19,30 @@
 @code {
     private bool _openerIsClosed;
 
+    [SupplyParameterFromQuery(Name = "config")]
+    private string? Config { get; set; }
+
+    private RouletteConfig? _config;
+
+    protected override void OnInitialized()
+    {
+        if (Config is { })
+        {
+            _config = JsonSerializer.Deserialize<RouletteConfig>(Config);
+        }
+        else
+        {
+            _config = new RouletteConfig { Items = [] };
+        }
+    }
+
     private async Task Update()
     {
-        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", DateTime.Now.ToString("HH:mm:ss"));
+        _config!.Items = [.. _config.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
+        Config = JsonSerializer.Serialize(_config, new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+        var url = NavigationManager.GetUriWithQueryParameter("config", Config);
+        NavigationManager.NavigateTo(url);
+
+        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config);
     }
 }

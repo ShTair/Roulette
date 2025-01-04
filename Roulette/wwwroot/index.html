@@ -32,13 +32,13 @@
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script>
-        function openController() {
-            window.open("controller", "controller", "popup,innerWidth=400,innerHeight=300");
+        function openController(query) {
+            window.open("controller?config=" + query, "controller", "popup,innerWidth=400,innerHeight=300");
         }
 
-        function updateConfig(data) {
+        function updateConfig(config) {
             if (opener) {
-                opener.DotNet.invokeMethodAsync("Roulette", "UpdateConfigAsync", data);
+                opener.DotNet.invokeMethodAsync("Roulette", "UpdateConfigAsync", config);
                 return true;
             }
 

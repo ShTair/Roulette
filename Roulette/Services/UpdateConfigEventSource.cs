@@ -6,7 +6,7 @@ public class UpdateConfigEventSource
 {
     private static UpdateConfigEventSource? s_obj;
 
-    public event Action<string>? OnUpdateConfig;
+    public event Action<RouletteConfig>? OnUpdateConfig;
 
     public UpdateConfigEventSource()
     {
@@ -14,9 +14,9 @@ public class UpdateConfigEventSource
     }
 
     [JSInvokable]
-    public static Task UpdateConfigAsync(string data)
+    public static Task UpdateConfigAsync(RouletteConfig config)
     {
-        s_obj?.OnUpdateConfig?.Invoke(data);
+        s_obj?.OnUpdateConfig?.Invoke(config);
         return Task.CompletedTask;
     }
 }
