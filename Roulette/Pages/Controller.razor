@@ -2,22 +2,25 @@
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 
-<PageTitle>コントローラ - ルーレット</PageTitle>
+<PageTitle>設定 - ルーレット</PageTitle>
 
-<button class="btn btn-warning" @onclick="Go">go</button>
+<h1>ルーレットの設定</h1>
+
+@if (_openerIsClosed)
+{
+    <p>
+        ルーレットのウィンドウとのリンクが切れました。<br />
+        ウィンドウを閉じましたか？
+    </p>
+}
+
+<button class="btn btn-warning" @onclick="Update">更新</button>
 
 @code {
-    private async Task Go()
+    private bool _openerIsClosed;
+
+    private async Task Update()
     {
-        var url = await JS.InvokeAsync<string>("getOpenerLocation");
-
-
-
-        var parameters = new Dictionary<string, object?>();
-        parameters["data"] = "hello";
-
-
-        url = NavigationManager.GetUriWithQueryParameters(url, parameters);
-        await JS.InvokeVoidAsync("setOpenerLocation", url);
+        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", DateTime.Now.ToString("HH:mm:ss"));
     }
 }

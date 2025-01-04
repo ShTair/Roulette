@@ -36,12 +36,13 @@
             window.open("controller", "controller", "popup,innerWidth=400,innerHeight=300");
         }
 
-        function getOpenerLocation(href) {
-            return window.opener.location.href;
-        }
+        function updateConfig(data) {
+            if (opener) {
+                opener.DotNet.invokeMethodAsync("Roulette", "UpdateConfigAsync", data);
+                return true;
+            }
 
-        function setOpenerLocation(href) {
-            window.opener.location.href = href;
+            return false;
         }
     </script>
 </body>

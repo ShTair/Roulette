@@ -1,20 +1,47 @@
 ﻿@page "/"
+@implements IDisposable
 @inject IJSRuntime JS
+@inject UpdateConfigEventSource UpdateConfigEventSource
+@inject NavigationManager NavigationManager
 
 <PageTitle>ルーレット</PageTitle>
 
 <h1>ルーレット</h1>
 
-<p>@Data</p>
+<p>@_data</p>
 
 <button class="btn btn-primary" @onclick="OpenControllerAsync">コントローラを開く</button>
 
 @code {
-    [SupplyParameterFromQuery(Name = "data")]
-    private string? Data { get; set; }
+    [SupplyParameterFromQuery(Name = "url")]
+    private string? Url { get; set; }
+
+    private string? _data;
+
+    protected override void OnInitialized()
+    {
+        UpdateConfigEventSource.OnUpdateConfig += On;
+
+        if (Url is { })
+        {
+            if (string.IsNullOrEmpty(new Uri(Url).Host)) NavigationManager.NavigateTo(Url, false, true);
+            else NavigationManager.NavigateTo(NavigationManager.BaseUri, false, true);
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        UpdateConfigEventSource.OnUpdateConfig -= On;
+    }
 
     private async Task OpenControllerAsync()
     {
         await JS.InvokeVoidAsync("openController");
+    }
+
+    private void On(string data)
+    {
+        _data = data;
+        StateHasChanged();
     }
 }
