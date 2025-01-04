@@ -1,0 +1,23 @@
+﻿@page "/controller"
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>コントローラ - ルーレット</PageTitle>
+
+<button class="btn btn-warning" @onclick="Go">go</button>
+
+@code {
+    private async Task Go()
+    {
+        var url = await JS.InvokeAsync<string>("getOpenerLocation");
+
+
+
+        var parameters = new Dictionary<string, object?>();
+        parameters["data"] = "hello";
+
+
+        url = NavigationManager.GetUriWithQueryParameters(url, parameters);
+        await JS.InvokeVoidAsync("setOpenerLocation", url);
+    }
+}

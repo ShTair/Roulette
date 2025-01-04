@@ -1,5 +1,20 @@
 ﻿@page "/"
+@inject IJSRuntime JS
 
 <PageTitle>ルーレット</PageTitle>
 
 <h1>ルーレット</h1>
+
+<p>@Data</p>
+
+<button class="btn btn-primary" @onclick="OpenControllerAsync">コントローラを開く</button>
+
+@code {
+    [SupplyParameterFromQuery(Name = "data")]
+    private string? Data { get; set; }
+
+    private async Task OpenControllerAsync()
+    {
+        await JS.InvokeVoidAsync("openController");
+    }
+}

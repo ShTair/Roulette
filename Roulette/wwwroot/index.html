@@ -31,6 +31,19 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        function openController() {
+            window.open("controller", "controller", "popup,innerWidth=400,innerHeight=300");
+        }
+
+        function getOpenerLocation(href) {
+            return window.opener.location.href;
+        }
+
+        function setOpenerLocation(href) {
+            window.opener.location.href = href;
+        }
+    </script>
 </body>
 
 </html>
