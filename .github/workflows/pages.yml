@@ -1,0 +1,49 @@
+﻿name: Deploy Brazor WebAssembly to Pages
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 8.0.x
+  WORKING_DIRECTORY: Roulette
+  AZURE_WEBAPP_PACKAGE_PATH: Roulette\published
+
+jobs:
+  build_deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Restore
+      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+    - name: Build
+      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Test
+      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+    - name: Publish
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        # Upload entire repository
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}\wwwroot
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
