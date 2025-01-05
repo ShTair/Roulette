@@ -36,9 +36,14 @@
             window.open("controller?data=" + data, "controller", "popup,innerWidth=400,innerHeight=300");
         }
 
-        function updateConfig(config) {
+        function updateConfig(config, closeThis) {
             if (opener) {
                 opener.DotNet.invokeMethodAsync("Roulette", "UpdateConfigAsync", config);
+
+                if (closeThis) {
+                    close();
+                }
+
                 return true;
             }
 

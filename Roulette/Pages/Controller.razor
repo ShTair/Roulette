@@ -15,6 +15,7 @@
 }
 
 <button class="btn btn-warning" @onclick="UpdateAsync">更新</button>
+<button class="btn btn-warning" @onclick="UpdateAndCloseAsync">更新して閉じる</button>
 
 @code {
     private bool _openerIsClosed;
@@ -48,5 +49,12 @@
         _config!.Items = [.. _config!.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
         FlushParameter();
         _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config);
+    }
+
+    private async Task UpdateAndCloseAsync()
+    {
+        _config!.Items = [.. _config!.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
+        FlushParameter();
+        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config, true);
     }
 }
