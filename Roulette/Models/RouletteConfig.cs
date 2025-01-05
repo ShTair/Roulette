@@ -9,5 +9,5 @@ public class RouletteConfig
     public bool IsAdjustable { get; set; }
 
     [Key(1)]
-    public List<RouletteItem> Items { get; set; } = default!;
+    public RouletteItem[] Items { get; set; } = default!;
 }

@@ -45,7 +45,7 @@
 
     private async Task UpdateAsync()
     {
-        _config!.Items.Add(new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") });
+        _config!.Items = [.. _config!.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
         FlushParameter();
         _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config);
     }
