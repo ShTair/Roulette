@@ -1,13 +1,16 @@
-﻿namespace Roulette.Models;
+﻿using MessagePack;
 
+namespace Roulette.Models;
+
+[MessagePackObject]
 public class RouletteItem
 {
-    [JsonPropertyName("n")]
+    [Key(0)]
     public string Name { get; set; } = default!;
 
-    [JsonPropertyName("c")]
+    [Key(1)]
     public string? Color { get; set; }
 
-    [JsonPropertyName("i")]
+    [Key(2)]
     public int Count { get; set; }
 }

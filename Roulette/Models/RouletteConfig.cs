@@ -1,10 +1,13 @@
-﻿namespace Roulette.Models;
+﻿using MessagePack;
 
+namespace Roulette.Models;
+
+[MessagePackObject]
 public class RouletteConfig
 {
-    [JsonPropertyName("a")]
+    [Key(0)]
     public bool IsAdjustable { get; set; }
 
-    [JsonPropertyName("i")]
-    public RouletteItem[] Items { get; set; } = default!;
+    [Key(1)]
+    public List<RouletteItem> Items { get; set; } = default!;
 }

@@ -20,14 +20,14 @@
     [SupplyParameterFromQuery(Name = "url")]
     private string? Url { get; set; }
 
-    [SupplyParameterFromQuery(Name = "config")]
-    private string? Config { get; set; }
+    [SupplyParameterFromQuery(Name = "data")]
+    private string? Data { get; set; }
 
     private RouletteConfig? _config;
 
     protected override void OnInitialized()
     {
-        UpdateConfigEventSource.OnUpdateConfig += On;
+        UpdateConfigEventSource.ConfigUpdated += OnConfigUpdated;
 
         if (Url is { })
         {
@@ -36,34 +36,39 @@
         }
         else
         {
-            if (Config is { })
+            if (Data is { })
             {
-                _config = JsonSerializer.Deserialize<RouletteConfig>(Config);
+                _config = Serializer.Deserialize<RouletteConfig>(Data);
             }
             else
             {
-                On(new RouletteConfig { Items = [] });
+                _config = new RouletteConfig { Items = [] };
+                FlushParameter();
             }
         }
     }
 
     void IDisposable.Dispose()
     {
-        UpdateConfigEventSource.OnUpdateConfig -= On;
+        UpdateConfigEventSource.ConfigUpdated -= OnConfigUpdated;
     }
 
     private async Task OpenControllerAsync()
     {
-        await JS.InvokeVoidAsync("openController", Config);
+        await JS.InvokeVoidAsync("openController", Data);
     }
 
-    private void On(RouletteConfig config)
+    private void FlushParameter()
+    {
+        Data = Serializer.Serialize(_config);
+        var url = NavigationManager.GetUriWithQueryParameter("data", Data);
+        NavigationManager.NavigateTo(url);
+    }
+
+    private void OnConfigUpdated(RouletteConfig config)
     {
         _config = config;
-        Config = JsonSerializer.Serialize(_config, new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
-        var url = NavigationManager.GetUriWithQueryParameter("config", Config);
-        NavigationManager.NavigateTo(url);
-
+        FlushParameter();
         StateHasChanged();
     }
 }
