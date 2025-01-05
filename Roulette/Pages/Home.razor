@@ -8,7 +8,7 @@
 
 <h1>ルーレット</h1>
 
-<p>@_config?.Items.Count()</p>
+<p>@_config?.Items!.Count()</p>
 @if (_config?.Items is [.., { } v])
 {
     <p>@v.Name</p>
