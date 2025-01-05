@@ -19,7 +19,7 @@ public static class Serializer
     public static T Deserialize<T>(string s)
     {
         using var memoryStream = new MemoryStream(UrlBase64.Decode(s));
-        using var deflateStream = new DeflateStream(memoryStream, CompressionLevel.Optimal);
+        using var deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress);
         using var dstMemoryStream = new MemoryStream();
         deflateStream.CopyTo(dstMemoryStream);
 
