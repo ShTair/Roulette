@@ -44,17 +44,20 @@
         NavigationManager.NavigateTo(url);
     }
 
-    private async Task UpdateAsync()
+    private Task UpdateAsync()
     {
-        _config!.Items = [.. _config!.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
-        FlushParameter();
-        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config);
+        return UpdateAsync(false);
     }
 
-    private async Task UpdateAndCloseAsync()
+    private Task UpdateAndCloseAsync()
+    {
+        return UpdateAsync(true);
+    }
+
+    private async Task UpdateAsync(bool closeController)
     {
         _config!.Items = [.. _config!.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
         FlushParameter();
-        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config, true);
+        _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config, closeController);
     }
 }
