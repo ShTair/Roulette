@@ -26,7 +26,7 @@
 
     private RouletteConfig? _config;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         if (Data is { })
         {
@@ -34,7 +34,7 @@
         }
         else
         {
-            _config = new RouletteConfig { Items = [] };
+            FlushParameter(new RouletteConfig { Items = [] });
         }
     }
 
@@ -43,10 +43,10 @@
         await JS.InvokeVoidAsync("openRoulette", Data);
     }
 
-    private void FlushParameter()
+    private void FlushParameter(RouletteConfig config)
     {
-        Data = Serializer.Serialize(_config);
-        var url = NavigationManager.GetUriWithQueryParameter("data", Data);
+        var data = Serializer.Serialize(config);
+        var url = NavigationManager.GetUriWithQueryParameter("data", data);
         NavigationManager.NavigateTo(url);
     }
 
@@ -63,7 +63,7 @@
     private async Task UpdateAsync(bool closeController)
     {
         _config!.Items = [.. _config!.Items, new RouletteItem { Name = DateTime.Now.ToString("HH:mm:ss") }];
-        FlushParameter();
+        FlushParameter(_config);
         _openerIsClosed = !await JS.InvokeAsync<bool>("updateConfig", _config, closeController);
     }
 }

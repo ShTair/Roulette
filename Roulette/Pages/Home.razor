@@ -32,7 +32,15 @@
     protected override void OnInitialized()
     {
         UpdateConfigEventSource.ConfigUpdated += OnConfigUpdated;
+    }
 
+    void IDisposable.Dispose()
+    {
+        UpdateConfigEventSource.ConfigUpdated -= OnConfigUpdated;
+    }
+
+    protected override void OnParametersSet()
+    {
         if (Url is { })
         {
             if (string.IsNullOrEmpty(new Uri(Url).Host)) NavigationManager.NavigateTo(Url, false, true);
@@ -46,15 +54,9 @@
             }
             else
             {
-                _config = new RouletteConfig { Items = [] };
-                FlushParameter();
+                FlushParameter(new RouletteConfig { Items = [] });
             }
         }
-    }
-
-    void IDisposable.Dispose()
-    {
-        UpdateConfigEventSource.ConfigUpdated -= OnConfigUpdated;
     }
 
     private async Task OpenControllerAsync()
@@ -62,17 +64,16 @@
         await JS.InvokeVoidAsync("openController", Data);
     }
 
-    private void FlushParameter()
+    private void FlushParameter(RouletteConfig config)
     {
-        Data = Serializer.Serialize(_config);
-        var url = NavigationManager.GetUriWithQueryParameter("data", Data);
+        var data = Serializer.Serialize(config);
+        var url = NavigationManager.GetUriWithQueryParameter("data", data);
         NavigationManager.NavigateTo(url);
     }
 
     private void OnConfigUpdated(RouletteConfig config)
     {
-        _config = config;
-        FlushParameter();
+        FlushParameter(config);
         StateHasChanged();
     }
 }
