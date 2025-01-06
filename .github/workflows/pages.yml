@@ -17,7 +17,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: Roulette
-  AZURE_WEBAPP_PACKAGE_PATH: Roulette\published
+  AZURE_WEBAPP_PACKAGE_PATH: published
 
 jobs:
   build_deploy:
@@ -27,6 +27,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Create hash file
+      run: "New-Item Roulette\\Program.CI.cs -Force -Value 'partial class Program { public const string CommitHash = \"${{ github.sha }}\"; }'"
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
