@@ -9,8 +9,9 @@
 @if (_openerIsClosed)
 {
     <p>
-        ルーレットのウィンドウとのリンクが切れました。<br />
+        ルーレットのウィンドウが見つかりません。<br />
         ウィンドウを閉じましたか？
+        <button class="btn btn-primary" @onclick="ReopenAsync">開き直す</button>
     </p>
 }
 
@@ -35,6 +36,11 @@
         {
             _config = new RouletteConfig { Items = [] };
         }
+    }
+
+    private async Task ReopenAsync()
+    {
+        await JS.InvokeVoidAsync("openRoulette", Data);
     }
 
     private void FlushParameter()
