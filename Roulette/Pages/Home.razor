@@ -6,18 +6,20 @@
 
 <PageTitle>ルーレット</PageTitle>
 
-<h1>ルーレット</h1>
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1>ルーレット</h1>
 
-<p>@_config?.Items!.Count()</p>
-@if (_config?.Items is [.., { } v])
-{
-    <p>@v.Name</p>
-}
+    <p>@_config?.Items!.Count()</p>
+    @if (_config?.Items is [.., { } v])
+    {
+        <p>@v.Name</p>
+    }
 
-<button class="btn btn-primary" @onclick="OpenControllerAsync">設定</button>
+    <button class="btn btn-primary" @onclick="OpenControllerAsync">設定</button>
 
-<div>
-    hash: <code title="@Program.CommitHash">@(Program.CommitHash.Length > 7 ? Program.CommitHash[..7] : Program.CommitHash)</code>
+    <div>
+        hash: <code title="@Program.CommitHash">@(Program.CommitHash.Length > 7 ? Program.CommitHash[..7] : Program.CommitHash)</code>
+    </div>
 </div>
 
 @code {
