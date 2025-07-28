@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.JSInterop;
 
 namespace Roulette.Models;
 
@@ -53,5 +54,17 @@ public class RouletteConfig
         catch { }
 
         return list;
+    }
+
+    public static async Task<List<RouletteConfig>> LoadAsync(IJSRuntime js)
+    {
+        var json = await js.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
+        return FromJson(json);
+    }
+
+    public static async Task SaveAsync(IJSRuntime js, IEnumerable<RouletteConfig> configs)
+    {
+        var json = JsonSerializer.Serialize(configs);
+        await js.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
     }
 }

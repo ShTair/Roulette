@@ -53,8 +53,7 @@ else
             return;
         }
 
-        var configJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
-        configs = RouletteConfig.FromJson(configJson);
+        configs = await RouletteConfig.LoadAsync(JS);
 
         if (configs.Count == 0)
         {
@@ -82,8 +81,7 @@ else
         var cfg = configs.FirstOrDefault(c => c.Id == id);
         if (cfg is not null && configs.Remove(cfg))
         {
-            var json = JsonSerializer.Serialize(configs);
-            await JS.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
+            await RouletteConfig.SaveAsync(JS, configs);
             StateHasChanged();
         }
     }

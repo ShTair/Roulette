@@ -56,8 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var configsJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
-        configs = RouletteConfig.FromJson(configsJson);
+        configs = await RouletteConfig.LoadAsync(JS);
 
         if (!string.IsNullOrEmpty(Id))
         {
@@ -85,21 +84,16 @@
         }
     }
 
-    private void MoveUp(int index)
+    private void MoveItem(int index, int offset)
     {
-        if (index > 0)
-        {
-            (items[index - 1], items[index]) = (items[index], items[index - 1]);
-        }
+        var newIndex = index + offset;
+        if (newIndex < 0 || newIndex >= items.Count) return;
+        (items[newIndex], items[index]) = (items[index], items[newIndex]);
     }
 
-    private void MoveDown(int index)
-    {
-        if (index < items.Count - 1)
-        {
-            (items[index + 1], items[index]) = (items[index], items[index + 1]);
-        }
-    }
+    private void MoveUp(int index) => MoveItem(index, -1);
+
+    private void MoveDown(int index) => MoveItem(index, 1);
 
     private void ResetAllCounts()
     {
@@ -129,8 +123,7 @@
         currentConfig.Items = arr;
         currentConfig.AutoAdjustSize = autoAdjustSize;
 
-        var json = JsonSerializer.Serialize(configs);
-        await JS.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
+        await RouletteConfig.SaveAsync(JS, configs);
         await JS.InvokeVoidAsync("localStorage.setItem", "rouletteItems", JsonSerializer.Serialize(arr));
         Nav.NavigateTo($"{currentConfig.Id}");
     }
