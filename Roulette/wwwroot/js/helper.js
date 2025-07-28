@@ -105,6 +105,16 @@
         canvas = document.getElementById(id);
         if (!canvas) return;
         ctx = canvas.getContext('2d');
+
+        const dpr = window.devicePixelRatio || 1;
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+        if (canvas.width !== displayWidth * dpr || canvas.height !== displayHeight * dpr) {
+            canvas.width = displayWidth * dpr;
+            canvas.height = displayHeight * dpr;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
         items = Array.isArray(itemsArr) ? itemsArr : Array.from(itemsArr || []);
         dotNetHelper = dotNetRef || null;
         computeAngles();
