@@ -30,9 +30,6 @@
     <button class="btn btn-secondary settings-button" @onclick="OpenSettings">設定</button>
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
 </div>
-<div class="commit-hash">
-    hash: <code title="@Program.CommitHash">@(Program.CommitHash.Length > 7 ? Program.CommitHash[..7] : Program.CommitHash)</code>
-</div>
 @if (showOverlay)
 {
     <div class="overlay" @onclick="HideOverlay">

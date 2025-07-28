@@ -1,3 +1,10 @@
 .list-group-item span:first-child {
     flex: 1;
 }
+
+.commit-hash {
+    position: fixed;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.8rem;
+}

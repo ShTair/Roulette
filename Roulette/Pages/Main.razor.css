@@ -78,13 +78,6 @@ canvas {
     font-weight: bold;
 }
 
-.commit-hash {
-    position: fixed;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    font-size: 0.8rem;
-}
-
 .count-list {
     list-style: none;
     padding: 0;

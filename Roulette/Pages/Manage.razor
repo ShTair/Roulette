@@ -32,6 +32,10 @@ else
     </ul>
 }
 
+<div class="commit-hash">
+    hash: <code title="@Program.CommitHash">@(Program.CommitHash.Length > 7 ? Program.CommitHash[..7] : Program.CommitHash)</code>
+</div>
+
 @code {
     [SupplyParameterFromQuery(Name = "url")]
     private string? Url { get; set; }
