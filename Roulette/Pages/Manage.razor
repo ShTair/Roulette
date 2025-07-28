@@ -9,7 +9,6 @@
 
 <div class="mb-3">
     <button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
-    <button class="btn btn-secondary ms-2" @onclick="Back">トップに戻る</button>
 </div>
 
 @if (configs.Count == 0)
@@ -53,11 +52,6 @@ else
     private void NewConfig()
     {
         Nav.NavigateTo("setting");
-    }
-
-    private void Back()
-    {
-        Nav.NavigateTo("");
     }
 
     private void EditConfig(string id)
