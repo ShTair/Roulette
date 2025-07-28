@@ -5,6 +5,7 @@
     let autoStopTimeout = null;
     let autoStopEnabled = true;
     let dotNetHelper = null;
+    let dpr = 1;
 
     function getWeight(item) {
         const w = Number(item?.weight);
@@ -23,10 +24,10 @@
 
     function draw() {
         if (!ctx) return;
-        const width = canvas.width;
-        const height = canvas.height;
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
         const radius = Math.min(width, height) / 2 - 5;
-        ctx.clearRect(0, 0, width, height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
         ctx.translate(width / 2, height / 2);
         ctx.rotate(angle);
@@ -106,7 +107,7 @@
         if (!canvas) return;
         ctx = canvas.getContext('2d');
 
-        const dpr = window.devicePixelRatio || 1;
+        dpr = window.devicePixelRatio || 1;
         const displayWidth = canvas.clientWidth;
         const displayHeight = canvas.clientHeight;
         if (canvas.width !== displayWidth * dpr || canvas.height !== displayHeight * dpr) {
