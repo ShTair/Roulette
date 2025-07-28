@@ -46,6 +46,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if (Url is { })
+        {
+            if (string.IsNullOrEmpty(new Uri(Url).Host)) Nav.NavigateTo(Url, false, true);
+            else Nav.NavigateTo(Nav.BaseUri, false, true);
+            return;
+        }
+
         var configJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
         configs = RouletteConfig.FromJson(configJson);
 
