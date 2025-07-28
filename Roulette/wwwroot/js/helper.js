@@ -30,6 +30,7 @@
         ctx.save();
         ctx.translate(width / 2, height / 2);
         ctx.rotate(angle);
+        ctx.strokeStyle = 'gray';
         const total = items.reduce((s, it) => s + getWeight(it), 0);
         let current = 0;
         for (let i = 0; i < items.length; i++) {
@@ -55,6 +56,16 @@
             ctx.restore();
             current += slice;
         }
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.fillStyle = 'white';
+        ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+        ctx.stroke();
         ctx.restore();
     }
 
