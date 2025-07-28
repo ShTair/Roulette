@@ -78,8 +78,17 @@ canvas {
     font-weight: bold;
 }
 
-.count-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 0.5rem;
+.count-table {
+    margin: 0 auto 0.5rem auto;
+    max-width: 300px;
+}
+
+.color-box {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
 }
