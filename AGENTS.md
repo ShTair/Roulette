@@ -1,7 +1,7 @@
 # Contribution Guidelines for PhoneGame
 
 ## Development Environment
-- This repository contains a .NET 8 Blazor WebAssembly project located in the `PhoneGame` directory.
+- This repository contains a .NET 8 Blazor WebAssembly project located in the `Roulette` directory.
 - Ensure you have the .NET 8 SDK installed to build and run the project.
 
 ## Continuous Integration
