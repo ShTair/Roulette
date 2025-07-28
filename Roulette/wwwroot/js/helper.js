@@ -1,4 +1,11 @@
 (function () {
+    function tryVibrate(ms) {
+        try {
+            if (navigator?.vibrate) {
+                navigator.vibrate(ms);
+            }
+        } catch { }
+    }
     let canvas, ctx, items = [], angle = 0, angleMap = [];
     let spinning = false;
     let speed = 0;
@@ -78,6 +85,7 @@
             if (speed < 0.001) {
                 speed = 0;
                 draw();
+                tryVibrate(50);
                 if (dotNetHelper) {
                     const result = getCurrentIndex();
                     dotNetHelper.invokeMethodAsync('OnRouletteStopped', result);
@@ -177,6 +185,7 @@
     window.rouletteHelper.toggleSpin = function () {
         if (spinning) {
             spinning = false;
+            tryVibrate(50);
             if (autoStopTimeout) {
                 clearTimeout(autoStopTimeout);
                 autoStopTimeout = null;
@@ -185,6 +194,7 @@
             spinning = true;
             speed = 0.3;
             requestAnimationFrame(tick);
+            tryVibrate(50);
             if (autoStopTimeout) {
                 clearTimeout(autoStopTimeout);
             }
@@ -195,6 +205,7 @@
                             dotNetHelper.invokeMethodAsync('OnAutoStop');
                         }
                         spinning = false;
+                        tryVibrate(50);
                     }
                 }, 2000 + Math.random() * 1000);
             }
