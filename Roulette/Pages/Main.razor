@@ -27,12 +27,26 @@
     </div>
 </div>
 <div class="text-center mt-2">
-    <ul class="count-list">
-        @foreach (var item in items)
-        {
-            <li>@item.Text: @item.Count</li>
-        }
-    </ul>
+    <table class="table table-sm count-table">
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th class="text-end">回数</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>
+                        <span class="color-box" style="background-color:@item.Color"></span>
+                        @item.Text
+                    </td>
+                    <td class="text-end">@item.Count</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 <div class="text-center mt-2">
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
