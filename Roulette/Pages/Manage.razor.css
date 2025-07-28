@@ -1,0 +1,3 @@
+.list-group-item span:first-child {
+    flex: 1;
+}

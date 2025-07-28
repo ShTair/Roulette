@@ -1,8 +1,10 @@
-﻿name: Deploy Brazor WebAssembly to Pages
+name: Deploy Brazor WebAssembly to Pages
 
 on:
   push:
     branches: ["main"]
+
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,7 +13,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   CONFIGURATION: Release
@@ -24,28 +26,21 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Create hash file
-      run: "New-Item Roulette\\Program.CI.cs -Force -Value 'partial class Program { public const string CommitHash = \"${{ github.sha }}\"; }'"
+      run: echo 'partial class Program { public const string CommitHash = "${{ github.sha }}"; }' > ${{ env.WORKING_DIRECTORY }}/Program.CI.cs
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name: Restore
-      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-    - name: Build
-      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Test
-      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
     - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        # Upload entire repository
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}\wwwroot
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/wwwroot
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4

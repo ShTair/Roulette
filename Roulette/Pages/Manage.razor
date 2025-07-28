@@ -1,0 +1,83 @@
+@page "/"
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@using System.Text.Json
+@using System.Collections.Generic
+@using System.Linq
+
+<h3>ルーレット設定一覧</h3>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
+    <button class="btn btn-secondary ms-2" @onclick="Back">トップに戻る</button>
+</div>
+
+@if (configs.Count == 0)
+{
+    <p>設定がありません。</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var cfg in configs)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>@cfg.Name</span>
+                <span>
+                    <button class="btn btn-sm btn-primary me-1" @onclick="() => SelectConfig(cfg.Id)">選択</button>
+                    <button class="btn btn-sm btn-secondary me-1" @onclick="() => EditConfig(cfg.Id)">編集</button>
+                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteConfig(cfg.Id)">削除</button>
+                </span>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [SupplyParameterFromQuery(Name = "url")]
+    private string? Url { get; set; }
+
+    private List<RouletteConfig> configs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var configJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
+        configs = RouletteConfig.FromJson(configJson);
+
+        if (configs.Count == 0)
+        {
+            Nav.NavigateTo("setting");
+        }
+    }
+
+    private void NewConfig()
+    {
+        Nav.NavigateTo("setting");
+    }
+
+    private void Back()
+    {
+        Nav.NavigateTo("");
+    }
+
+    private void EditConfig(string id)
+    {
+        Nav.NavigateTo($"setting/{id}");
+    }
+
+    private void SelectConfig(string id)
+    {
+        Nav.NavigateTo($"{id}");
+    }
+
+    private async Task DeleteConfig(string id)
+    {
+        var cfg = configs.FirstOrDefault(c => c.Id == id);
+        if (cfg is not null && configs.Remove(cfg))
+        {
+            var json = JsonSerializer.Serialize(configs);
+            await JS.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
+            StateHasChanged();
+        }
+    }
+}

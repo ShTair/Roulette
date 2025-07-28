@@ -1,0 +1,231 @@
+@page "/{Id}"
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@using System.Text.Json
+@using Microsoft.JSInterop
+@using System.Globalization
+@using System.Collections.Generic
+@using System.Linq
+@implements IDisposable
+
+<div class="text-center config-header">
+    <h4>@(string.IsNullOrEmpty(selectedConfig) ? "設定なし" : selectedConfig)</h4>
+</div>
+<div class="roulette-container">
+    <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
+    <div class="pointer"></div>
+</div>
+<div class="mt-3 text-center">
+    <button class="btn btn-primary start-stop-button" @onclick="ToggleSpin" disabled="@isStopping">@(isSpinning ? "ストップ" : "スタート")</button>
+</div>
+<div class="text-center mt-2">
+    <ul class="count-list">
+        @foreach (var item in items)
+        {
+            <li>@item.Text: @item.Count</li>
+        }
+    </ul>
+</div>
+<div class="text-center mt-2">
+    <button class="btn btn-secondary settings-button" @onclick="OpenSettings">設定</button>
+    <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
+</div>
+<div class="commit-hash">
+    hash: <code title="@Program.CommitHash">@(Program.CommitHash.Length > 7 ? Program.CommitHash[..7] : Program.CommitHash)</code>
+</div>
+@if (showOverlay)
+{
+    <div class="overlay" @onclick="HideOverlay">
+        <div class="overlay-content" style="background-color:@overlayColor;color:@overlayTextColor;">
+            @overlayText
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private string? currentId;
+    private RouletteItem[] items = new[]
+    {
+        RouletteItem.Create("A"),
+        RouletteItem.Create("B"),
+        RouletteItem.Create("C"),
+        RouletteItem.Create("D")
+    };
+    private bool isSpinning;
+    private bool isStopping;
+    private bool showOverlay;
+    private string overlayText = string.Empty;
+    private string overlayColor = "white";
+    private string overlayTextColor = "black";
+    private DotNetObjectReference<Main>? objRef;
+    private string selectedConfig = string.Empty;
+    private bool autoAdjustSize = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || currentId != Id)
+        {
+            currentId = Id;
+            var configJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
+            var configs = RouletteConfig.FromJson(configJson);
+
+            if (string.IsNullOrEmpty(Id))
+            {
+                Nav.NavigateTo("");
+                return;
+            }
+
+            var cfg = configs.FirstOrDefault(c => c.Id == Id);
+            if (cfg is null)
+            {
+                Nav.NavigateTo("");
+                return;
+            }
+
+            items = cfg.Items.ToArray();
+            selectedConfig = cfg.Name;
+            autoAdjustSize = cfg.AutoAdjustSize;
+
+            if (items.Length == 0 || items.All(i => string.IsNullOrWhiteSpace(i.Text)))
+            {
+                Nav.NavigateTo($"setting/{Id}");
+                return;
+            }
+
+            ApplyWeights();
+
+            objRef ??= DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleSpin()
+    {
+        if (isStopping)
+        {
+            return;
+        }
+
+        if (isSpinning)
+        {
+            isStopping = true;
+        }
+
+        isSpinning = !isSpinning;
+        await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
+    }
+
+    [JSInvokable]
+    public async Task OnRouletteStopped(int index)
+    {
+        isStopping = false;
+        isSpinning = false;
+        if (index >= 0 && index < items.Length)
+        {
+            var item = items[index];
+            overlayText = item.Text;
+            overlayColor = item.Color;
+            overlayTextColor = GetContrastColor(item.Color);
+            showOverlay = true;
+
+            if (!string.IsNullOrWhiteSpace(item.Text))
+            {
+                item.Count++;
+                await SaveCountsAsync();
+                ApplyWeights();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void OnAutoStop()
+    {
+        isStopping = true;
+        isSpinning = false;
+        StateHasChanged();
+    }
+
+    private void ApplyWeights()
+    {
+        if (!autoAdjustSize)
+        {
+            foreach (var item in items)
+            {
+                item.Weight = 1;
+            }
+            return;
+        }
+
+        if (items.Length == 0) return;
+        var min = items.Min(i => i.Count);
+        foreach (var item in items)
+        {
+            var count = item.Count;
+            item.Weight = 1.0 / (count - min + 1);
+        }
+    }
+
+    private async void HideOverlay()
+    {
+        showOverlay = false;
+        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
+    }
+
+    private async Task SaveCountsAsync()
+    {
+        var configJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
+        var configs = RouletteConfig.FromJson(configJson);
+        var cfg = configs.FirstOrDefault(c => c.Id == Id);
+        if (cfg is not null)
+        {
+            cfg.Items = items.ToList();
+            var json = JsonSerializer.Serialize(configs);
+            await JS.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
+        }
+    }
+
+    private static string GetContrastColor(string hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex)) return "black";
+        hex = hex.TrimStart('#');
+        if (hex.Length == 3)
+        {
+            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+        }
+        if (hex.Length != 6) return "black";
+
+        var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+        var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+        var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+
+        var brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128 ? "black" : "white";
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
+    }
+
+    private object[] ItemsForJs()
+    {
+        return items.Select(i => new { text = i.Text, color = i.Color, weight = i.Weight }).ToArray();
+    }
+
+    private void OpenSettings()
+    {
+        Nav.NavigateTo($"setting/{Id}");
+    }
+
+    private void OpenManage()
+    {
+        Nav.NavigateTo("");
+    }
+}

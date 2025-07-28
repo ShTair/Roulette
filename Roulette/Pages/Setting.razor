@@ -1,0 +1,147 @@
+@page "/setting/{Id?}"
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@using System.Text.Json
+@using System.Collections.Generic
+@using System.Linq
+
+<h3>ルーレットの設定</h3>
+
+<div class="mb-3">
+    <label class="form-label">設定名</label>
+    <input class="form-control" @bind="configName" />
+</div>
+
+<div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" />
+    <label class="form-check-label" for="autoSize">大きさ自動調整</label>
+</div>
+
+@for (int i = 0; i < items.Count; i++)
+{
+    var index = i;
+    <div class="input-group mb-2 item-row">
+        <input type="color" class="form-control color-input" @bind="items[index].Color" />
+        <input class="form-control text-input" @bind="items[index].Text" />
+        <input type="number" class="form-control count-input" @bind="items[index].Count" />
+        <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
+        <button class="btn btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
+        <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+    </div>
+}
+<button class="btn btn-secondary mb-3" @onclick="Add">項目追加</button>
+<button class="btn btn-warning mb-3 ms-2" @onclick="ResetAllCounts">当たり回数リセット</button>
+
+<div class="mt-2">
+    <button class="btn btn-primary" @onclick="Save">保存</button>
+    <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private List<RouletteItem> items = new()
+    {
+        RouletteItem.Create("A"),
+        RouletteItem.Create("B"),
+        RouletteItem.Create("C")
+    };
+    private string configName = "新しいルーレット";
+    private List<RouletteConfig> configs = new();
+    private RouletteConfig? currentConfig;
+    private bool autoAdjustSize = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var configsJson = await JS.InvokeAsync<string>("localStorage.getItem", "rouletteConfigs");
+        configs = RouletteConfig.FromJson(configsJson);
+
+        if (!string.IsNullOrEmpty(Id))
+        {
+            currentConfig = configs.FirstOrDefault(c => c.Id == Id);
+            if (currentConfig is not null)
+            {
+                configName = currentConfig.Name;
+                items = currentConfig.Items.ToList();
+                autoAdjustSize = currentConfig.AutoAdjustSize;
+            }
+        }
+        // When creating a new configuration, keep the default A/B/C items
+    }
+
+    private void Add()
+    {
+        items.Add(RouletteItem.Create());
+    }
+
+    private void Remove(int index)
+    {
+        if (index >= 0 && index < items.Count)
+        {
+            items.RemoveAt(index);
+        }
+    }
+
+    private void MoveUp(int index)
+    {
+        if (index > 0)
+        {
+            (items[index - 1], items[index]) = (items[index], items[index - 1]);
+        }
+    }
+
+    private void MoveDown(int index)
+    {
+        if (index < items.Count - 1)
+        {
+            (items[index + 1], items[index]) = (items[index], items[index + 1]);
+        }
+    }
+
+    private void ResetAllCounts()
+    {
+        foreach (var item in items)
+        {
+            item.Count = 0;
+        }
+    }
+
+    private async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(configName))
+        {
+            return;
+        }
+        var arr = items
+            .Where(x => !string.IsNullOrWhiteSpace(x.Text))
+            .ToList();
+
+        if (currentConfig is null)
+        {
+            currentConfig = new RouletteConfig();
+            configs.Add(currentConfig);
+        }
+
+        currentConfig.Name = configName;
+        currentConfig.Items = arr;
+        currentConfig.AutoAdjustSize = autoAdjustSize;
+
+        var json = JsonSerializer.Serialize(configs);
+        await JS.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
+        await JS.InvokeVoidAsync("localStorage.setItem", "rouletteItems", JsonSerializer.Serialize(arr));
+        Nav.NavigateTo($"{currentConfig.Id}");
+    }
+
+    private void Back()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Nav.NavigateTo("");
+        }
+        else
+        {
+            Nav.NavigateTo($"{Id}");
+        }
+    }
+}

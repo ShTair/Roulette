@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
@@ -29,32 +29,9 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <script src="js/helper.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
-    <script>
-        function openController(data) {
-            window.open("controller?data=" + data, "controller", "popup,innerWidth=400,innerHeight=300");
-        }
-
-        function openRoulette(data) {
-            window.open("./?data=" + data);
-            close();
-        }
-
-        function updateConfig(config, closeController) {
-            if (opener) {
-                opener.DotNet.invokeMethodAsync("Roulette", "UpdateConfigAsync", config);
-
-                if (closeController) {
-                    close();
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-    </script>
 </body>
 
 </html>

@@ -1,0 +1,23 @@
+.item-row {
+    display: flex;
+    align-items: center;
+}
+
+    .item-row .text-input {
+        flex: 1;
+        min-width: 0;
+    }
+
+.color-input {
+    width: 2.5rem;
+    height: 38px;
+    padding: 0;
+    flex: unset;
+    cursor: pointer;
+}
+
+.count-input {
+    width: 5rem;
+    margin-left: 4px;
+    flex: unset;
+}

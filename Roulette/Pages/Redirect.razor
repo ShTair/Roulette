@@ -1,0 +1,20 @@
+@page "/redirect"
+@inject NavigationManager NavigationManager
+
+@code {
+    [SupplyParameterFromQuery(Name = "url")]
+    private string? Url { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Url is { })
+        {
+            if (string.IsNullOrEmpty(new Uri(Url).Host)) NavigationManager.NavigateTo(Url, false, true);
+            else NavigationManager.NavigateTo(NavigationManager.BaseUri, false, true);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("", false, true);
+        }
+    }
+}

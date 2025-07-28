@@ -1,4 +1,4 @@
-# EditorConfig is awesome: https://EditorConfig.org
+﻿# EditorConfig is awesome: https://EditorConfig.org
 
 # top-most EditorConfig file
 root = true
@@ -8,7 +8,7 @@ root = true
 end_of_line = crlf
 indent_style = space
 insert_final_newline = true
-charset = utf-8-bom
+charset = utf-8
 # (Please don't specify an indent_size here; that has too many unintended consequences.)
 
 # Code files
@@ -27,8 +27,8 @@ indent_size = 2
 [*.json]
 indent_size = 2
 
-# YML files
-[*.yml]
+# YAML files
+[*.{yml,yaml}]
 indent_size = 2
 
 # Powershell files
@@ -39,7 +39,6 @@ indent_size = 2
 [*.sh]
 end_of_line = lf
 indent_size = 2
-charset = utf-8
 
 # Dotnet code style settings:
 [*.{cs,vb}]
@@ -247,6 +246,7 @@ csharp_preserve_single_line_statements = true
 # https://github.com/dotnet/roslyn/pull/54259 has been published.
 dotnet_style_allow_statement_immediately_after_block_experimental = false
 csharp_style_namespace_declarations = file_scoped:silent
+csharp_style_prefer_primary_constructors = true:silent
 
 [src/CodeStyle/**.{cs,vb}]
 # warning RS0005: Do not use generic CodeAction.Create to create CodeAction
