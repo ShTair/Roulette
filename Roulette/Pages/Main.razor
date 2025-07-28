@@ -8,6 +8,8 @@
 @using System.Linq
 @implements IDisposable
 
+<PageTitle>@selectedConfig - ルーレット</PageTitle>
+
 <div class="text-center config-header">
     <h4>@(string.IsNullOrEmpty(selectedConfig) ? "設定なし" : selectedConfig)</h4>
 </div>
