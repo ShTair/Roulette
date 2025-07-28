@@ -3,6 +3,7 @@
     let spinning = false;
     let speed = 0;
     let autoStopTimeout = null;
+    let autoStopEnabled = true;
     let dotNetHelper = null;
 
     function getWeight(item) {
@@ -107,6 +108,14 @@
         }
     };
 
+    window.rouletteHelper.setAutoStopEnabled = function (value) {
+        autoStopEnabled = !!value;
+        if (!autoStopEnabled && autoStopTimeout) {
+            clearTimeout(autoStopTimeout);
+            autoStopTimeout = null;
+        }
+    };
+
     window.rouletteHelper.toggleSpin = function () {
         if (spinning) {
             spinning = false;
@@ -121,14 +130,16 @@
             if (autoStopTimeout) {
                 clearTimeout(autoStopTimeout);
             }
-            autoStopTimeout = setTimeout(function () {
-                if (spinning) {
-                    if (dotNetHelper) {
-                        dotNetHelper.invokeMethodAsync('OnAutoStop');
+            if (autoStopEnabled) {
+                autoStopTimeout = setTimeout(function () {
+                    if (spinning) {
+                        if (dotNetHelper) {
+                            dotNetHelper.invokeMethodAsync('OnAutoStop');
+                        }
+                        spinning = false;
                     }
-                    spinning = false;
-                }
-            }, 2000 + Math.random() * 1000);
+                }, 2000 + Math.random() * 1000);
+            }
         }
     };
 })();
