@@ -112,6 +112,8 @@
         if (canvas.width !== displayWidth * dpr || canvas.height !== displayHeight * dpr) {
             canvas.width = displayWidth * dpr;
             canvas.height = displayHeight * dpr;
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
