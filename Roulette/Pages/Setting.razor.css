@@ -17,7 +17,8 @@
 }
 
 .count-input {
-    width: 5rem;
+    text-align: right;
+    width: 4rem;
     margin-left: 4px;
     flex: unset;
 }
