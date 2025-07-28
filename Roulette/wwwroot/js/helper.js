@@ -55,6 +55,11 @@
             ctx.restore();
             current += slice;
         }
+        // draw center dot - adjustable size by radius ratio
+        ctx.beginPath();
+        ctx.fillStyle = 'black';
+        ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+        ctx.fill();
         ctx.restore();
     }
 
