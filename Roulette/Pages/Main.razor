@@ -27,26 +27,30 @@
     </div>
 </div>
 <div class="text-center mt-2">
-    <table class="table table-sm count-table">
-        <thead>
-            <tr>
-                <th>項目</th>
-                <th class="text-end">回数</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in items)
-            {
+    <h5 class="count-header" @onclick="ToggleCounts">当たり回数 @(showCounts ? "▲" : "▼")</h5>
+    @if (showCounts)
+    {
+        <table class="table table-sm count-table">
+            <thead>
                 <tr>
-                    <td>
-                        <span class="color-box" style="background-color:@item.Color"></span>
-                        @item.Text
-                    </td>
-                    <td class="text-end">@item.Count</td>
+                    <th>項目</th>
+                    <th class="text-end">回数</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td>
+                            <span class="color-box" style="background-color:@item.Color"></span>
+                            @item.Text
+                        </td>
+                        <td class="text-end">@item.Count</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 <div class="text-center mt-2">
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
@@ -76,6 +80,7 @@
     private bool isSpinning;
     private bool isStopping;
     private bool showOverlay;
+    private bool showCounts;
     private string overlayText = string.Empty;
     private string overlayColor = "white";
     private string overlayTextColor = "black";
@@ -143,6 +148,11 @@
 
         isSpinning = !isSpinning;
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
+    }
+
+    private void ToggleCounts()
+    {
+        showCounts = !showCounts;
     }
 
     [JSInvokable]
