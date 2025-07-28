@@ -6,6 +6,7 @@
     let autoStopEnabled = true;
     let dotNetHelper = null;
     let dpr = 1;
+    let startX = null, startY = null, startId = null, startTime = 0;
 
     function getWeight(item) {
         const w = Number(item?.weight);
@@ -102,7 +103,39 @@
 
     window.rouletteHelper = window.rouletteHelper || {};
 
+    function removeSwipeHandlers() {
+        if (!canvas) return;
+        canvas.removeEventListener('pointerdown', onPointerDown);
+        canvas.removeEventListener('pointerup', onPointerUp);
+    }
+
+    function onPointerDown(e) {
+        startX = e.clientX;
+        startY = e.clientY;
+        startId = e.pointerId;
+        startTime = e.timeStamp;
+    }
+
+    function onPointerUp(e) {
+        if (startId !== e.pointerId) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const distance = Math.hypot(dx, dy);
+        const dt = e.timeStamp - startTime;
+        startId = null;
+        if (distance > 30 && dt < 500) {
+            canvas.dispatchEvent(new Event('click', { bubbles: true }));
+        }
+    }
+
+    function addSwipeHandlers() {
+        if (!canvas) return;
+        canvas.addEventListener('pointerdown', onPointerDown);
+        canvas.addEventListener('pointerup', onPointerUp);
+    }
+
     window.rouletteHelper.initialize = function (id, itemsArr, dotNetRef) {
+        removeSwipeHandlers();
         canvas = document.getElementById(id);
         if (!canvas) return;
         ctx = canvas.getContext('2d');
@@ -122,6 +155,7 @@
         dotNetHelper = dotNetRef || null;
         computeAngles();
         draw();
+        addSwipeHandlers();
     };
 
     window.rouletteHelper.setItems = function (itemsArr) {
