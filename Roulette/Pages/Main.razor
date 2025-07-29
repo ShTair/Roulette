@@ -174,11 +174,11 @@
             overlayText = item.Text;
             overlayColor = item.Color;
             overlayTextColor = GetContrastColor(item.Color);
-            var center = await JS.InvokeAsync<double[]>("rouletteHelper.getContainerCenter", "rouletteContainer");
+            var center = await JS.InvokeAsync<double[]>("rouletteHelper.getContainerCenter", "rouletteCanvas");
             if (center?.Length == 2)
             {
                 overlayLeft = center[0];
-                overlayTop = center[1] + 25 / 2;
+                overlayTop = center[1];
             }
             await Task.Delay(500);
             showOverlay = true;
