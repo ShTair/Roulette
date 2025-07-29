@@ -37,6 +37,7 @@ canvas {
     z-index: 1000;
 }
 
+
 .overlay-content {
     position: absolute;
     transform: translate(-50%, -50%);
@@ -51,11 +52,11 @@ canvas {
 
 @keyframes fadeInScale {
     from {
-        transform: scale(0.8);
+        transform: translate(-50%, -50%) scale(0.8);
         opacity: 0;
     }
     to {
-        transform: scale(1);
+        transform: translate(-50%, -50%) scale(1);
         opacity: 1;
     }
 }
