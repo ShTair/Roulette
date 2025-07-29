@@ -58,11 +58,6 @@ else
         }
 
         configs = await RouletteConfig.LoadAsync(JS);
-
-        if (configs.Count == 0)
-        {
-            Nav.NavigateTo("setting");
-        }
     }
 
     private void NewConfig()
