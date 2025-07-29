@@ -76,7 +76,8 @@ else
         {
             cfg.Name,
             cfg.Items,
-            cfg.AutoAdjustSize
+            cfg.AutoAdjustSize,
+            cfg.ItemMultiplier
         };
         var json = JsonSerializer.Serialize(exportObj, JsonUtil.WebOptions);
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
