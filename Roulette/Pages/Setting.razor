@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using System.Collections.Generic
 @using System.Linq
+@using System
 
 <PageTitle>設定『@configName』 - ルーレット</PageTitle>
 
@@ -138,7 +139,9 @@
             AutoAdjustSize = autoAdjustSize
         };
         var json = JsonSerializer.Serialize(exportObj);
-        var fileName = string.IsNullOrWhiteSpace(configName) ? "config.json" : $"{configName}.json";
+        var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+        var baseName = string.IsNullOrWhiteSpace(configName) ? "config" : configName;
+        var fileName = $"{baseName}_{timestamp}.json";
         await JS.InvokeVoidAsync("downloadFile", fileName, json);
     }
 

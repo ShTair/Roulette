@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using System.Collections.Generic
 @using System.Linq
+@using System
 
 <PageTitle>設定一覧 - ルーレット</PageTitle>
 
@@ -11,6 +12,8 @@
 
 <div class="mb-3">
     <button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
+    <button class="btn btn-secondary ms-2" @onclick="TriggerImport">設定ファイル取り込み</button>
+    <InputFile OnChange="ImportConfig" style="display:none" @ref="importInput" accept="application/json" />
 </div>
 
 @if (configs.Count == 0)
@@ -43,6 +46,7 @@ else
     private string? Url { get; set; }
 
     private List<RouletteConfig> configs = new();
+    private InputFile? importInput;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,5 +88,26 @@ else
             await RouletteConfig.SaveAsync(JS, configs);
             StateHasChanged();
         }
+    }
+
+    private async Task TriggerImport()
+    {
+        if (importInput is not null)
+        {
+            await JS.InvokeVoidAsync("triggerInputFile", importInput.Element);
+        }
+    }
+
+    private async Task ImportConfig(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount == 0) return;
+        var file = e.File;
+        using var stream = file.OpenReadStream(file.Size);
+        var cfg = await JsonSerializer.DeserializeAsync<RouletteConfig>(stream);
+        if (cfg is null) return;
+        if (string.IsNullOrWhiteSpace(cfg.Id)) cfg.Id = Guid.NewGuid().ToString("N");
+        configs.Add(cfg);
+        await RouletteConfig.SaveAsync(JS, configs);
+        StateHasChanged();
     }
 }
