@@ -5,7 +5,6 @@ namespace Roulette.Models;
 
 public class RouletteConfig
 {
-    private static readonly JsonSerializerOptions s_opt = new(JsonSerializerDefaults.Web);
 
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
@@ -27,7 +26,7 @@ public class RouletteConfig
             {
                 foreach (var el in doc.RootElement.EnumerateArray())
                 {
-                    var cfg = el.Deserialize<RouletteConfig>(s_opt) ?? new RouletteConfig();
+                    var cfg = el.Deserialize<RouletteConfig>(JsonUtil.WebOptions) ?? new RouletteConfig();
                     if (!el.TryGetProperty(nameof(AutoAdjustSize), out _))
                     {
                         cfg.AutoAdjustSize = true;
@@ -41,7 +40,7 @@ public class RouletteConfig
 
         try
         {
-            var legacy = JsonSerializer.Deserialize<Dictionary<string, RouletteItem[]>>(json, s_opt);
+            var legacy = JsonSerializer.Deserialize<Dictionary<string, RouletteItem[]>>(json, JsonUtil.WebOptions);
             if (legacy is { })
             {
                 list = [.. legacy.Select(kvp => new RouletteConfig
@@ -66,7 +65,7 @@ public class RouletteConfig
 
     public static async Task SaveAsync(IJSRuntime js, IEnumerable<RouletteConfig> configs)
     {
-        var json = JsonSerializer.Serialize(configs, s_opt);
+        var json = JsonSerializer.Serialize(configs, JsonUtil.WebOptions);
         await js.InvokeVoidAsync("localStorage.setItem", "rouletteConfigs", json);
     }
 }
