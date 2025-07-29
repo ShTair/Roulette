@@ -29,7 +29,6 @@ else
                 <span>@cfg.Name</span>
                 <span>
                     <button class="btn btn-sm btn-primary me-1" @onclick="() => SelectConfig(cfg.Id)">選択</button>
-                    <button class="btn btn-sm btn-secondary me-1" @onclick="() => EditConfig(cfg.Id)">編集</button>
                     <button class="btn btn-sm btn-danger" @onclick="() => DeleteConfig(cfg.Id)">削除</button>
                 </span>
             </li>
@@ -68,11 +67,6 @@ else
     private void NewConfig()
     {
         Nav.NavigateTo("setting");
-    }
-
-    private void EditConfig(string id)
-    {
-        Nav.NavigateTo($"setting/{id}");
     }
 
     private void SelectConfig(string id)

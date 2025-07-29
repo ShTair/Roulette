@@ -138,7 +138,8 @@
             Items = items.ToList(),
             AutoAdjustSize = autoAdjustSize
         };
-        var json = JsonSerializer.Serialize(exportObj);
+        var opt = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        var json = JsonSerializer.Serialize(exportObj, opt);
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var baseName = string.IsNullOrWhiteSpace(configName) ? "config" : configName;
         var fileName = $"{baseName}_{timestamp}.json";
