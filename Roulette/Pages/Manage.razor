@@ -26,12 +26,11 @@ else
     <ul class="list-group">
         @foreach (var cfg in configs)
         {
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center config-item" @onclick="() => SelectConfig(cfg.Id)">
                 <span>@cfg.Name</span>
                 <span>
-                    <button class="btn btn-sm btn-primary me-1" @onclick="() => SelectConfig(cfg.Id)">選択</button>
-                    <button class="btn btn-sm btn-secondary me-1" @onclick="() => ExportConfig(cfg)">書き出し</button>
-                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteConfig(cfg.Id)">削除</button>
+                    <button class="btn btn-sm btn-secondary me-1" @onclick="() => ExportConfig(cfg)" @onclick:stopPropagation="true">書き出し</button>
+                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteConfig(cfg.Id)" @onclick:stopPropagation="true">削除</button>
                 </span>
             </li>
         }

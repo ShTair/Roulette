@@ -2,6 +2,10 @@
     flex: 1;
 }
 
+.config-item {
+    cursor: pointer;
+}
+
 .commit-hash {
     position: fixed;
     bottom: 0.5rem;
