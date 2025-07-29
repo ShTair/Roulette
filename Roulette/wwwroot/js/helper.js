@@ -217,18 +217,15 @@
         }
     };
 
-    window.rouletteHelper.positionOverlay = function (contentId, containerId) {
+    window.rouletteHelper.getContainerCenter = function (id) {
         try {
-            const content = document.getElementById(contentId);
-            const container = document.getElementById(containerId);
-            if (!content || !container) return;
-            const rect = container.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            content.style.left = x + 'px';
-            content.style.top = y + 'px';
-        } catch { }
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const rect = el.getBoundingClientRect();
+            return [rect.left + rect.width / 2, rect.top + rect.height / 2];
+        } catch { return null; }
     };
+
 
     window.downloadFile = function (fileName, content) {
         try {
