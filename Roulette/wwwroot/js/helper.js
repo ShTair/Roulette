@@ -38,7 +38,7 @@
 
         const lineWidth = 3;
         const centerRatio = 0.1;
-        const textMid = (radius - lineWidth / 2) / (1 - centerRatio) / 2;
+        const textMid = (radius - lineWidth / 2) / (1 - 0.18) / 2;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
