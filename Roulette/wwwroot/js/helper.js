@@ -226,4 +226,10 @@
             URL.revokeObjectURL(url);
         } catch { }
     };
+
+    window.triggerInputFile = function (element) {
+        try {
+            element?.click();
+        } catch { }
+    };
 })();
