@@ -16,6 +16,14 @@
 <div class="roulette-container">
     <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
     <div class="pointer"></div>
+    @if (showOverlay)
+    {
+        <div class="overlay" @onclick="HideOverlay">
+            <div class="overlay-content" style="background-color:@overlayColor;color:@overlayTextColor;">
+                @overlayText
+            </div>
+        </div>
+    }
 </div>
 <div class="mt-3 text-center">
     <button class="btn btn-primary start-stop-button" @onclick="ToggleSpin" disabled="@((isStopping) || (isSpinning && autoStop))">@(isSpinning ? "ストップ" : "スタート")</button>
@@ -56,14 +64,6 @@
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
     <button class="btn btn-secondary settings-button" @onclick="OpenSettings">設定</button>
 </div>
-@if (showOverlay)
-{
-    <div class="overlay" @onclick="HideOverlay">
-        <div class="overlay-content" style="background-color:@overlayColor;color:@overlayTextColor;">
-            @overlayText
-        </div>
-    </div>
-}
 
 @code {
     [Parameter]
