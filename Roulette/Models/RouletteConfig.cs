@@ -29,11 +29,13 @@ public class RouletteConfig
                 foreach (var el in doc.RootElement.EnumerateArray())
                 {
                     var cfg = el.Deserialize<RouletteConfig>(JsonUtil.WebOptions) ?? new RouletteConfig();
-                    if (!el.TryGetProperty(nameof(AutoAdjustSize), out _))
+                    if (!el.TryGetProperty("autoAdjustSize", out _) &&
+                        !el.TryGetProperty(nameof(AutoAdjustSize), out _))
                     {
                         cfg.AutoAdjustSize = true;
                     }
-                    if (!el.TryGetProperty(nameof(ItemMultiplier), out _))
+                    if (!el.TryGetProperty("itemMultiplier", out _) &&
+                        !el.TryGetProperty(nameof(ItemMultiplier), out _))
                     {
                         cfg.ItemMultiplier = 1;
                     }
