@@ -108,7 +108,7 @@ else
         if (e.FileCount == 0) return;
         var file = e.File;
         using var stream = file.OpenReadStream(file.Size);
-        var cfg = await JsonSerializer.DeserializeAsync<RouletteConfig>(stream);
+        var cfg = await JsonSerializer.DeserializeAsync<RouletteConfig>(stream, JsonUtil.WebOptions);
         if (cfg is null) return;
         if (string.IsNullOrWhiteSpace(cfg.Id)) cfg.Id = Guid.NewGuid().ToString("N");
         configs.Add(cfg);
