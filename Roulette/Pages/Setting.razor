@@ -131,13 +131,13 @@
 
     private async Task Export()
     {
-        var cfg = new RouletteConfig
+        var exportObj = new
         {
             Name = configName,
             Items = items.ToList(),
             AutoAdjustSize = autoAdjustSize
         };
-        var json = JsonSerializer.Serialize(cfg);
+        var json = JsonSerializer.Serialize(exportObj);
         var fileName = string.IsNullOrWhiteSpace(configName) ? "config.json" : $"{configName}.json";
         await JS.InvokeVoidAsync("downloadFile", fileName, json);
     }
