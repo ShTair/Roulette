@@ -14,6 +14,8 @@ public class RouletteConfig
 
     public bool AutoAdjustSize { get; set; } = true;
 
+    public int ItemMultiplier { get; set; } = 1;
+
     public static List<RouletteConfig> FromJson(string? json)
     {
         var list = new List<RouletteConfig>();
@@ -30,6 +32,10 @@ public class RouletteConfig
                     if (!el.TryGetProperty(nameof(AutoAdjustSize), out _))
                     {
                         cfg.AutoAdjustSize = true;
+                    }
+                    if (!el.TryGetProperty(nameof(ItemMultiplier), out _))
+                    {
+                        cfg.ItemMultiplier = 1;
                     }
                     list.Add(cfg);
                 }
@@ -48,7 +54,8 @@ public class RouletteConfig
                     Id = Guid.NewGuid().ToString("N"),
                     Name = kvp.Key,
                     Items = [.. kvp.Value],
-                    AutoAdjustSize = true
+                    AutoAdjustSize = true,
+                    ItemMultiplier = 1
                 })];
             }
         }

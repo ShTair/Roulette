@@ -21,6 +21,11 @@
     <label class="form-check-label" for="autoSize">大きさ自動調整</label>
 </div>
 
+<div class="mb-3">
+    <label class="form-label">表示倍数</label>
+    <input type="number" class="form-control" @bind="itemMultiplier" min="1" />
+</div>
+
 @for (int i = 0; i < items.Count; i++)
 {
     var index = i;
@@ -55,6 +60,7 @@
     private List<RouletteConfig> configs = new();
     private RouletteConfig? currentConfig;
     private bool autoAdjustSize = true;
+    private int itemMultiplier = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,6 +74,7 @@
                 configName = currentConfig.Name;
                 items = currentConfig.Items.ToList();
                 autoAdjustSize = currentConfig.AutoAdjustSize;
+                itemMultiplier = currentConfig.ItemMultiplier;
             }
         }
         // When creating a new configuration, keep the default A/B/C items
@@ -124,6 +131,7 @@
         currentConfig.Name = configName;
         currentConfig.Items = arr;
         currentConfig.AutoAdjustSize = autoAdjustSize;
+        currentConfig.ItemMultiplier = itemMultiplier;
 
         await RouletteConfig.SaveAsync(JS, configs);
         await JS.InvokeVoidAsync("localStorage.setItem", "rouletteItems", JsonSerializer.Serialize(arr));

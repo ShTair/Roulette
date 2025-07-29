@@ -46,7 +46,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in items)
+                @foreach (var item in items.Distinct())
                 {
                     <tr>
                         <td>
@@ -111,7 +111,13 @@
                 return;
             }
 
-            items = cfg.Items.ToArray();
+            var multiplier = cfg.ItemMultiplier <= 1 ? 1 : cfg.ItemMultiplier;
+            var list = new List<RouletteItem>(cfg.Items.Count * multiplier);
+            for (int i = 0; i < multiplier; i++)
+            {
+                list.AddRange(cfg.Items);
+            }
+            items = list.ToArray();
             selectedConfig = cfg.Name;
             autoAdjustSize = cfg.AutoAdjustSize;
 
@@ -233,7 +239,7 @@
         var cfg = configs.FirstOrDefault(c => c.Id == Id);
         if (cfg is not null)
         {
-            cfg.Items = items.ToList();
+            cfg.Items = items.Distinct().ToList();
             await RouletteConfig.SaveAsync(JS, configs);
         }
     }
