@@ -13,9 +13,17 @@
 <div class="text-center config-header">
     <h4>@(string.IsNullOrEmpty(selectedConfig) ? "設定なし" : selectedConfig)</h4>
 </div>
-<div class="roulette-container">
+<div id="rouletteContainer" class="roulette-container">
     <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
     <div class="pointer"></div>
+    @if (showOverlay)
+    {
+        <div id="resultOverlay" class="overlay" @onclick="HideOverlay">
+            <div id="overlayContent" class="overlay-content" style="@($"background-color:{overlayColor};color:{overlayTextColor};left:{overlayLeft}px;top:{overlayTop}px;")">
+                @overlayText
+            </div>
+        </div>
+    }
 </div>
 <div class="mt-3 text-center">
     <button class="btn btn-primary start-stop-button" @onclick="ToggleSpin" disabled="@((isStopping) || (isSpinning && autoStop))">@(isSpinning ? "ストップ" : "スタート")</button>
@@ -56,14 +64,6 @@
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
     <button class="btn btn-secondary settings-button" @onclick="OpenSettings">設定</button>
 </div>
-@if (showOverlay)
-{
-    <div class="overlay" @onclick="HideOverlay">
-        <div class="overlay-content" style="background-color:@overlayColor;color:@overlayTextColor;">
-            @overlayText
-        </div>
-    </div>
-}
 
 @code {
     [Parameter]
@@ -81,6 +81,8 @@
     private bool isStopping;
     private bool showOverlay;
     private bool showCounts;
+    private double overlayLeft;
+    private double overlayTop;
     private string overlayText = string.Empty;
     private string overlayColor = "white";
     private string overlayTextColor = "black";
@@ -127,6 +129,7 @@
 
             StateHasChanged();
         }
+
     }
 
     private async Task ToggleSpin()
@@ -165,6 +168,12 @@
             overlayText = item.Text;
             overlayColor = item.Color;
             overlayTextColor = GetContrastColor(item.Color);
+            var center = await JS.InvokeAsync<double[]>("rouletteHelper.getContainerCenter", "rouletteContainer");
+            if (center?.Length == 2)
+            {
+                overlayLeft = center[0];
+                overlayTop = center[1];
+            }
             showOverlay = true;
 
             if (!string.IsNullOrWhiteSpace(item.Text))
@@ -176,6 +185,7 @@
 
             StateHasChanged();
         }
+
     }
 
     [JSInvokable]

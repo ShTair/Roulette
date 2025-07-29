@@ -217,6 +217,16 @@
         }
     };
 
+    window.rouletteHelper.getContainerCenter = function (id) {
+        try {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const rect = el.getBoundingClientRect();
+            return [rect.left + rect.width / 2, rect.top + rect.height / 2];
+        } catch { return null; }
+    };
+
+
     window.downloadFile = function (fileName, content) {
         try {
             const blob = new Blob([content], { type: 'text/plain' });
