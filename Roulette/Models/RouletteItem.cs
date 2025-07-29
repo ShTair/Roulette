@@ -4,13 +4,10 @@ namespace Roulette.Models;
 
 public class RouletteItem
 {
-    [JsonPropertyName("text")]
     public string Text { get; set; } = "";
 
-    [JsonPropertyName("color")]
     public string Color { get; set; } = "";
 
-    [JsonPropertyName("count")]
     public int Count { get; set; }
 
     [JsonIgnore]
