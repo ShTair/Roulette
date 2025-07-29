@@ -5,6 +5,7 @@
 @using System.Collections.Generic
 @using System.Linq
 @using System
+@using Roulette.Models
 
 <PageTitle>設定一覧 - ルーレット</PageTitle>
 
@@ -29,6 +30,7 @@ else
                 <span>@cfg.Name</span>
                 <span>
                     <button class="btn btn-sm btn-primary me-1" @onclick="() => SelectConfig(cfg.Id)">選択</button>
+                    <button class="btn btn-sm btn-secondary me-1" @onclick="() => ExportConfig(cfg)">書き出し</button>
                     <button class="btn btn-sm btn-danger" @onclick="() => DeleteConfig(cfg.Id)">削除</button>
                 </span>
             </li>
@@ -72,6 +74,21 @@ else
     private void SelectConfig(string id)
     {
         Nav.NavigateTo($"{id}");
+    }
+
+    private async Task ExportConfig(RouletteConfig cfg)
+    {
+        var exportObj = new
+        {
+            cfg.Name,
+            cfg.Items,
+            cfg.AutoAdjustSize
+        };
+        var json = JsonSerializer.Serialize(exportObj, JsonUtil.WebOptions);
+        var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+        var baseName = string.IsNullOrWhiteSpace(cfg.Name) ? "config" : cfg.Name;
+        var fileName = $"{baseName}_{timestamp}.json";
+        await JS.InvokeVoidAsync("downloadFile", fileName, json);
     }
 
     private async Task DeleteConfig(string id)
