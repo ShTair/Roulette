@@ -30,6 +30,20 @@
         }
     }
 
+    function getContrastColor(hex) {
+        if (!hex) return 'black';
+        hex = String(hex).replace(/^#/, '');
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length !== 6) return 'black';
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128 ? 'black' : 'white';
+    }
+
     function draw() {
         if (!ctx) return;
         const width = canvas.width / dpr;
@@ -63,7 +77,7 @@
             ctx.rotate(mid);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = getContrastColor(color);
             ctx.font = "16px 'BIZ UDPGothic', sans-serif";
             const text = items[i]?.text || items[i];
             ctx.fillText(text, textMid, 0);
