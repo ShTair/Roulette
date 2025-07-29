@@ -35,6 +35,11 @@
         const width = canvas.width / dpr;
         const height = canvas.height / dpr;
         const radius = Math.min(width, height) / 2 - 5;
+
+        const lineWidth = 3;
+        const centerRatio = 0.1;
+        const textMid = (radius - lineWidth / 2) / (1 - centerRatio) / 2;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
         ctx.translate(width / 2, height / 2);
@@ -61,14 +66,14 @@
             ctx.fillStyle = 'black';
             ctx.font = "16px 'BIZ UDPGothic', sans-serif";
             const text = items[i]?.text || items[i];
-            ctx.fillText(text, radius * 0.6, 0);
+            ctx.fillText(text, textMid, 0);
             ctx.restore();
             current += slice;
         }
         ctx.beginPath();
-        ctx.lineWidth = 3;
+        ctx.lineWidth = lineWidth;
         ctx.fillStyle = 'white';
-        ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI);
+        ctx.arc(0, 0, radius * centerRatio, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
 
