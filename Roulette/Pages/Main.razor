@@ -13,13 +13,13 @@
 <div class="text-center config-header">
     <h4>@(string.IsNullOrEmpty(selectedConfig) ? "設定なし" : selectedConfig)</h4>
 </div>
-<div class="roulette-container">
+<div id="rouletteContainer" class="roulette-container">
     <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
     <div class="pointer"></div>
     @if (showOverlay)
     {
-        <div class="overlay" @onclick="HideOverlay">
-            <div class="overlay-content" style="background-color:@overlayColor;color:@overlayTextColor;">
+        <div id="resultOverlay" class="overlay" @onclick="HideOverlay">
+            <div id="overlayContent" class="overlay-content" style="background-color:@overlayColor;color:@overlayTextColor;">
                 @overlayText
             </div>
         </div>
@@ -81,6 +81,7 @@
     private bool isStopping;
     private bool showOverlay;
     private bool showCounts;
+    private bool overlayNeedsPosition;
     private string overlayText = string.Empty;
     private string overlayColor = "white";
     private string overlayTextColor = "black";
@@ -127,6 +128,12 @@
 
             StateHasChanged();
         }
+
+        if (overlayNeedsPosition && showOverlay)
+        {
+            overlayNeedsPosition = false;
+            await JS.InvokeVoidAsync("rouletteHelper.positionOverlay", "overlayContent", "rouletteContainer");
+        }
     }
 
     private async Task ToggleSpin()
@@ -166,6 +173,7 @@
             overlayColor = item.Color;
             overlayTextColor = GetContrastColor(item.Color);
             showOverlay = true;
+            overlayNeedsPosition = true;
 
             if (!string.IsNullOrWhiteSpace(item.Text))
             {
@@ -176,6 +184,7 @@
 
             StateHasChanged();
         }
+
     }
 
     [JSInvokable]
