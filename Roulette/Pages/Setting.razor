@@ -36,6 +36,7 @@
 
 <div class="mt-2">
     <button class="btn btn-primary" @onclick="Save">保存</button>
+    <button class="btn btn-secondary ms-2" @onclick="Export">書き出し</button>
     <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
 </div>
 
@@ -126,6 +127,19 @@
         await RouletteConfig.SaveAsync(JS, configs);
         await JS.InvokeVoidAsync("localStorage.setItem", "rouletteItems", JsonSerializer.Serialize(arr));
         Nav.NavigateTo($"{currentConfig.Id}");
+    }
+
+    private async Task Export()
+    {
+        var cfg = new RouletteConfig
+        {
+            Name = configName,
+            Items = items.ToList(),
+            AutoAdjustSize = autoAdjustSize
+        };
+        var json = JsonSerializer.Serialize(cfg);
+        var fileName = string.IsNullOrWhiteSpace(configName) ? "config.json" : $"{configName}.json";
+        await JS.InvokeVoidAsync("downloadFile", fileName, json);
     }
 
     private void Back()
