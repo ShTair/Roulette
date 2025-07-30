@@ -10,6 +10,8 @@ public class RouletteItem
 
     public int Count { get; set; }
 
+    public double Size { get; set; } = 1;
+
     [JsonIgnore]
     public double Weight { get; set; } = 1;
 
@@ -20,7 +22,8 @@ public class RouletteItem
         return new RouletteItem
         {
             Text = text,
-            Color = RandomColor()
+            Color = RandomColor(),
+            Size = 1
         };
     }
 
