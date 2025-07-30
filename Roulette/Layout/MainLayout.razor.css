@@ -1,7 +1,8 @@
 .page {
     padding: 1rem;
     width: 100%;
-    max-width: 400px;
+    /* Allow large board sizes to remain centered */
+    max-width: none;
     margin-left: auto;
     margin-right: auto;
 }
