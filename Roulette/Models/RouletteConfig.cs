@@ -16,6 +16,7 @@ public class RouletteConfig
 
     public int ItemMultiplier { get; set; } = 1;
 
+
     public static List<RouletteConfig> FromJson(string? json)
     {
         var list = new List<RouletteConfig>();

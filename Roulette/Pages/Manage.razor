@@ -13,6 +13,7 @@
 
 <div class="mb-3 d-flex">
     <button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
+    <button class="btn btn-secondary ms-2" @onclick="OpenPreference">環境設定</button>
     <button class="btn btn-secondary ms-auto" @onclick="TriggerImport">設定ファイル取り込み</button>
     <InputFile OnChange="ImportConfig" style="display:none" @ref="importInput" accept="application/json" />
 </div>
@@ -63,6 +64,11 @@ else
     private void NewConfig()
     {
         Nav.NavigateTo("setting");
+    }
+
+    private void OpenPreference()
+    {
+        Nav.NavigateTo("preference");
     }
 
     private void SelectConfig(string id)

@@ -6,6 +6,7 @@
 @using System.Globalization
 @using System.Collections.Generic
 @using System.Linq
+@using Roulette.Models
 @implements IDisposable
 
 <PageTitle>@selectedConfig - ルーレット</PageTitle>
@@ -13,8 +14,8 @@
 <div class="text-center config-header">
     <h4>@(string.IsNullOrEmpty(selectedConfig) ? "設定なし" : selectedConfig)</h4>
 </div>
-<div id="rouletteContainer" class="roulette-container">
-    <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
+<div id="rouletteContainer" class="roulette-container" style="@($"width:{boardSize}px")">
+    <canvas id="rouletteCanvas" width="@boardSize" height="@boardSize" @onclick="ToggleSpin"></canvas>
     <div class="pointer"></div>
     @if (showOverlay)
     {
@@ -62,6 +63,7 @@
 </div>
 <div class="text-center mt-2">
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
+    <button class="btn btn-secondary ms-2" @onclick="OpenPreference">環境設定</button>
     <button class="btn btn-secondary settings-button" @onclick="OpenSettings">設定</button>
 </div>
 
@@ -90,12 +92,16 @@
     private string selectedConfig = string.Empty;
     private bool autoAdjustSize = true;
     private bool autoStop = true;
+    private int boardSize = 300;
+    private AppSettings settings = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender || currentId != Id)
         {
             currentId = Id;
+            settings = await AppSettings.LoadAsync(JS);
+            boardSize = settings.BoardSize;
             var configs = await RouletteConfig.LoadAsync(JS);
 
             if (string.IsNullOrEmpty(Id))
@@ -281,5 +287,10 @@
     private void OpenManage()
     {
         Nav.NavigateTo("");
+    }
+
+    private void OpenPreference()
+    {
+        Nav.NavigateTo("preference");
     }
 }

@@ -1,0 +1,41 @@
+@page "/preference"
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@using Roulette.Models
+
+<PageTitle>環境設定 - ルーレット</PageTitle>
+
+<h3>環境設定</h3>
+
+<div class="mb-3 d-flex align-items-center">
+    <label class="form-label me-2 mb-0">盤の大きさ(px)</label>
+    <input type="number" class="form-control board-size-input" @bind="boardSize" min="100" />
+</div>
+
+<div class="mb-3 d-flex">
+    <button class="btn btn-primary ms-auto" @onclick="Save">保存</button>
+    <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
+</div>
+
+@code {
+    private int boardSize = 300;
+    private AppSettings settings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await AppSettings.LoadAsync(JS);
+        boardSize = settings.BoardSize;
+    }
+
+    private async Task Save()
+    {
+        settings.BoardSize = boardSize;
+        await AppSettings.SaveAsync(JS, settings);
+        Nav.NavigateTo("");
+    }
+
+    private void Back()
+    {
+        Nav.NavigateTo("");
+    }
+}
