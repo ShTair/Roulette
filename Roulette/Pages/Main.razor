@@ -95,13 +95,17 @@
     private int boardSize = 300;
     private AppSettings settings = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await AppSettings.LoadAsync(JS);
+        boardSize = settings.BoardSize;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender || currentId != Id)
         {
             currentId = Id;
-            settings = await AppSettings.LoadAsync(JS);
-            boardSize = settings.BoardSize;
             var configs = await RouletteConfig.LoadAsync(JS);
 
             if (string.IsNullOrEmpty(Id))
