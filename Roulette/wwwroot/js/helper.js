@@ -12,6 +12,12 @@
     let lastTime = null; // timestamp of previous frame for consistent timing
     let autoStopTimeout = null;
     let autoStopEnabled = true;
+    let startSpeedSetting = 18;
+    let slowStartMs = 2500;
+    let stopDurationMs = 2000;
+    let borderColor = 'gray';
+    let stopStartTime = null;
+    let stopInitialSpeed = 0;
     let dotNetHelper = null;
     let dpr = 1;
     let startX = null, startY = null, startId = null, startTime = 0;
@@ -71,10 +77,12 @@
         ctx.fillStyle = 'white';
         ctx.arc(0, 0, radius * ratio, 0, 2 * Math.PI);
         ctx.fill();
+        ctx.strokeStyle = borderColor;
         ctx.stroke();
 
         ctx.beginPath();
         ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = borderColor;
         ctx.stroke();
     }
 
@@ -93,7 +101,7 @@
         ctx.save();
         ctx.translate(width / 2, height / 2);
         ctx.rotate(angle);
-        ctx.strokeStyle = 'gray';
+        ctx.strokeStyle = borderColor;
 
         const total = items.reduce((s, it) => s + getWeight(it), 0);
         let current = 0;
@@ -114,8 +122,12 @@
 
         angle += speed * delta;
         if (!spinning) {
-            speed *= Math.pow(0.97, delta * 60);
-            if (speed < 0.001) {
+            if (stopStartTime === null) {
+                stopStartTime = timestamp;
+                stopInitialSpeed = speed;
+            }
+            const progress = (timestamp - stopStartTime) / stopDurationMs;
+            if (progress >= 1) {
                 speed = 0;
                 draw();
                 tryVibrate(50);
@@ -124,7 +136,10 @@
                     dotNetHelper.invokeMethodAsync('OnRouletteStopped', result);
                 }
                 lastTime = null;
+                stopStartTime = null;
                 return;
+            } else {
+                speed = stopInitialSpeed * (1 - progress);
             }
         }
         draw();
@@ -216,6 +231,15 @@
         }
     };
 
+    window.rouletteHelper.applySettings = function (settings) {
+        if (!settings) return;
+        if (typeof settings.startSpeed === 'number') startSpeedSetting = settings.startSpeed;
+        if (typeof settings.slowStartSeconds === 'number') slowStartMs = settings.slowStartSeconds * 1000;
+        if (typeof settings.stopDurationSeconds === 'number') stopDurationMs = settings.stopDurationSeconds * 1000;
+        if (typeof settings.borderColor === 'string') borderColor = settings.borderColor;
+        if (!spinning) draw();
+    };
+
     window.rouletteHelper.toggleSpin = function () {
         if (spinning) {
             spinning = false;
@@ -226,7 +250,8 @@
             }
         } else {
             spinning = true;
-            speed = 18; // start speed in radians per second (equivalent to 0.3 rad/frame at 60fps)
+            speed = startSpeedSetting;
+            stopStartTime = null;
             lastTime = null;
             requestAnimationFrame(tick);
             tryVibrate(50);
@@ -242,7 +267,7 @@
                         spinning = false;
                         tryVibrate(50);
                     }
-                }, 2000 + Math.random() * 1000);
+                }, slowStartMs);
             }
         }
     };

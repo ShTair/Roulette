@@ -131,6 +131,8 @@
 
             objRef ??= DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
+            var appSettings = await AppSettings.LoadAsync(JS);
+            await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
             await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
 
             StateHasChanged();
@@ -230,6 +232,8 @@
     {
         showOverlay = false;
         await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
+        var appSettings = await AppSettings.LoadAsync(JS);
+        await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
     }
 
     private async Task OnAutoStopChanged()
