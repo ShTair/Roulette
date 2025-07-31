@@ -125,6 +125,11 @@
             return;
         }
 
+        foreach (var item in items)
+        {
+            item.Text = item.Text.Trim();
+        }
+
         var arr = items
             .Where(x => !string.IsNullOrWhiteSpace(x.Text))
             .ToList();
