@@ -13,7 +13,8 @@
     let autoStopTimeout = null;
     let autoStopEnabled = true;
     let startSpeedSetting = 18;
-    let slowStartMs = 2500;
+    let autoStopMinMs = 2000;
+    let autoStopMaxMs = 3000;
     let stopDurationMs = 2000;
     let borderColor = 'gray';
     let stopStartTime = null;
@@ -234,7 +235,9 @@
     window.rouletteHelper.applySettings = function (settings) {
         if (!settings) return;
         if (typeof settings.startSpeed === 'number') startSpeedSetting = settings.startSpeed;
-        if (typeof settings.slowStartSeconds === 'number') slowStartMs = settings.slowStartSeconds * 1000;
+        if (typeof settings.autoStopDelayMinSeconds === 'number') autoStopMinMs = settings.autoStopDelayMinSeconds * 1000;
+        if (typeof settings.autoStopDelayMaxSeconds === 'number') autoStopMaxMs = settings.autoStopDelayMaxSeconds * 1000;
+        if (autoStopMaxMs < autoStopMinMs) autoStopMaxMs = autoStopMinMs;
         if (typeof settings.stopDurationSeconds === 'number') stopDurationMs = settings.stopDurationSeconds * 1000;
         if (typeof settings.borderColor === 'string') borderColor = settings.borderColor;
         if (!spinning) draw();
@@ -259,6 +262,7 @@
                 clearTimeout(autoStopTimeout);
             }
             if (autoStopEnabled) {
+                const delay = autoStopMinMs + Math.random() * (autoStopMaxMs - autoStopMinMs);
                 autoStopTimeout = setTimeout(function () {
                     if (spinning) {
                         if (dotNetHelper) {
@@ -267,7 +271,7 @@
                         spinning = false;
                         tryVibrate(50);
                     }
-                }, slowStartMs);
+                }, delay);
             }
         }
     };

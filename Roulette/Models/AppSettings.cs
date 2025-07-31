@@ -5,7 +5,8 @@ namespace Roulette.Models;
 
 public class AppSettings
 {
-    public double SlowStartSeconds { get; set; } = 2.5;
+    public double AutoStopDelayMinSeconds { get; set; } = 2.0;
+    public double AutoStopDelayMaxSeconds { get; set; } = 3.0;
     public double StopDurationSeconds { get; set; } = 2.0;
     public double StartSpeed { get; set; } = 18.0;
     public string BorderColor { get; set; } = "gray";
