@@ -16,7 +16,7 @@
     let autoStopMinMs = 2000;
     let autoStopMaxMs = 3000;
     let stopDurationMs = 2000;
-    let borderColor = 'gray';
+    let borderColor = '#808080';
     let stopStartTime = null;
     let stopInitialSpeed = 0;
     let dotNetHelper = null;
