@@ -1,12 +1,20 @@
-canvas {
-    display: block;
+.wheel-shadow {
+    width: 300px;
+    height: 300px;
     margin: 0 auto;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.wheel-shadow canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
     touch-action: none;
     cursor: pointer;
     /* Limit pointer events to the circle so the cursor only changes on the wheel */
     clip-path: circle(50% at 50% 50%);
     border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     background: radial-gradient(circle at center, #fff 0%, #eee 100%);
 }
 

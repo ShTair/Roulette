@@ -14,7 +14,9 @@
     <h4>@(string.IsNullOrEmpty(selectedConfig) ? "設定なし" : selectedConfig)</h4>
 </div>
 <div id="rouletteContainer" class="roulette-container">
-    <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
+    <div class="wheel-shadow">
+        <canvas id="rouletteCanvas" width="300" height="300" @onclick="ToggleSpin"></canvas>
+    </div>
     <div class="pointer"></div>
     @if (showOverlay)
     {
