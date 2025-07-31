@@ -29,7 +29,8 @@
 @for (int i = 0; i < items.Count; i++)
 {
     var index = i;
-    <div class="input-group mb-2 item-row">
+    <div class="input-group mb-2 item-row" @ondragover:preventDefault="true" @ondrop="(e) => OnDrop(index, e)">
+        <span class="input-group-text drag-handle" draggable="true" @ondragstart="(e) => OnDragStart(index, e)">☰</span>
         <input type="color" class="form-control color-input" @bind="items[index].Color" />
         <input class="form-control text-input" @bind="items[index].Text" />
         <input type="number" class="form-control count-input" @bind="items[index].Count" />
@@ -37,8 +38,6 @@
         {
             <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" />
         }
-        <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
-        <button class="btn btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
         <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
     </div>
 }
@@ -65,6 +64,7 @@
     private RouletteConfig? currentConfig;
     private bool autoAdjustSize = true;
     private int itemMultiplier = 1;
+    private int? dragIndex;
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,6 +107,22 @@
     private void MoveUp(int index) => MoveItem(index, -1);
 
     private void MoveDown(int index) => MoveItem(index, 1);
+
+    private void OnDragStart(int index, DragEventArgs e)
+    {
+        dragIndex = index;
+    }
+
+    private void OnDrop(int index, DragEventArgs e)
+    {
+        if (dragIndex is null || dragIndex == index) return;
+        var item = items[dragIndex.Value];
+        items.RemoveAt(dragIndex.Value);
+        if (dragIndex.Value < index) index--;
+        items.Insert(index, item);
+        dragIndex = null;
+    }
+
 
     private void ResetAllCounts()
     {

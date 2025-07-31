@@ -34,3 +34,8 @@
     text-align: right;
     width: 6rem;
 }
+
+.drag-handle {
+    cursor: move;
+    user-select: none;
+}
