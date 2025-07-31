@@ -140,7 +140,8 @@
                 stopStartTime = null;
                 return;
             } else {
-                speed = stopInitialSpeed * (1 - progress);
+                const eased = Math.pow(1 - progress, 2);
+                speed = stopInitialSpeed * eased;
             }
         }
         draw();
