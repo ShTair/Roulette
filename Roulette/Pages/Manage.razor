@@ -5,6 +5,7 @@
 @using System.Collections.Generic
 @using System.Linq
 @using System
+@using System.Globalization
 @using Roulette.Models
 
 <PageTitle>設定一覧 - ルーレット</PageTitle>
@@ -38,10 +39,20 @@ else
 }
 
 <div class="release-date">
-    更新日: <code>@Program.ReleaseDate</code>
+    更新日: <code>@LocalReleaseDate</code>
 </div>
 
 @code {
+    private static readonly string LocalReleaseDate =
+        DateTime.TryParseExact(
+            Program.ReleaseDate,
+            "yyyy/MM/dd HH:mm",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal,
+            out var utc)
+        ? utc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+        : Program.ReleaseDate;
+
     [SupplyParameterFromQuery(Name = "url")]
     private string? Url { get; set; }
 
