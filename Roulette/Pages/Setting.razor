@@ -118,13 +118,22 @@
 
     private async Task Save()
     {
+        configName = configName.Trim();
         if (string.IsNullOrWhiteSpace(configName))
         {
+            await JS.InvokeVoidAsync("alert", "設定名を入力してください。");
             return;
         }
+
         var arr = items
             .Where(x => !string.IsNullOrWhiteSpace(x.Text))
             .ToList();
+
+        if (arr.Count == 0 || arr.Count != items.Count)
+        {
+            await JS.InvokeVoidAsync("alert", "項目を1つ以上設定し、すべての項目名を入力してください。");
+            return;
+        }
 
         if (currentConfig is null)
         {
