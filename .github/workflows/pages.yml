@@ -29,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Create hash file
-      run: echo 'partial class Program { public const string CommitHash = "${{ github.sha }}"; }' > ${{ env.WORKING_DIRECTORY }}/Program.CI.cs
+    - name: Create release date file
+      run: echo "partial class Program { public const string ReleaseDate = \"$(date -u '+%Y/%m/%d %H:%M')\"; }" > ${{ env.WORKING_DIRECTORY }}/Program.CI.cs
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:

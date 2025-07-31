@@ -6,7 +6,7 @@
     cursor: pointer;
 }
 
-.commit-hash {
+.release-date {
     position: fixed;
     bottom: 0.5rem;
     right: 0.5rem;
