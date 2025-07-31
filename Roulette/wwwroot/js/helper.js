@@ -261,4 +261,18 @@
             element?.click();
         } catch { }
     };
+
+    window.dragHelper = {
+        setDragData: function (e, index) {
+            try {
+                e.dataTransfer.setData('text/plain', index);
+                e.dataTransfer.effectAllowed = 'move';
+            } catch { }
+        },
+        getDragData: function (e) {
+            try {
+                return e.dataTransfer.getData('text/plain');
+            } catch { return null; }
+        }
+    };
 })();
