@@ -23,6 +23,13 @@
     flex: unset;
 }
 
+.size-input {
+    text-align: right;
+    width: 4rem;
+    margin-left: 4px;
+    flex: unset;
+}
+
 .multiplier-input {
     text-align: right;
     width: 6rem;

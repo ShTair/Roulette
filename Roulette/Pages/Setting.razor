@@ -33,6 +33,10 @@
         <input type="color" class="form-control color-input" @bind="items[index].Color" />
         <input class="form-control text-input" @bind="items[index].Text" />
         <input type="number" class="form-control count-input" @bind="items[index].Count" />
+        @if (!autoAdjustSize)
+        {
+            <input type="number" step="0.1" class="form-control size-input" @bind="items[index].Size" />
+        }
         <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
         <button class="btn btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
         <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>

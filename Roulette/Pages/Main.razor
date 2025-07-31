@@ -205,21 +205,24 @@
 
     private void ApplyWeights()
     {
-        if (!autoAdjustSize)
+        if (items.Length == 0) return;
+
+        if (autoAdjustSize)
+        {
+            var min = items.Min(i => i.Count);
+            foreach (var item in items)
+            {
+                var count = item.Count;
+                item.Size = 1.0 / (count - min + 1);
+                item.Weight = item.Size;
+            }
+        }
+        else
         {
             foreach (var item in items)
             {
-                item.Weight = 1;
+                item.Weight = item.Size > 0 ? item.Size : 1;
             }
-            return;
-        }
-
-        if (items.Length == 0) return;
-        var min = items.Min(i => i.Count);
-        foreach (var item in items)
-        {
-            var count = item.Count;
-            item.Weight = 1.0 / (count - min + 1);
         }
     }
 
