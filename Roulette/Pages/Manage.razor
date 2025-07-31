@@ -39,7 +39,7 @@ else
 }
 
 <div class="release-date">
-    更新日: <code>@LocalReleaseDate</code>
+    release: <code>@LocalReleaseDate</code>
 </div>
 
 @code {
@@ -50,7 +50,7 @@ else
             CultureInfo.InvariantCulture,
             DateTimeStyles.AssumeUniversal,
             out var utc)
-        ? utc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+        ? utc.ToLocalTime().ToString("yyyy/M/d H:m")
         : Program.ReleaseDate;
 
     [SupplyParameterFromQuery(Name = "url")]
