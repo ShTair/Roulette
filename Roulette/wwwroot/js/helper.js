@@ -44,8 +44,42 @@
         return brightness > 128 ? 'black' : 'white';
     }
 
+    function drawSlice(start, end, item, index, radius, textMid) {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, start, end);
+        const color = item?.color || (index % 2 === 0 ? '#f8a' : '#8af');
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.rotate((start + end) / 2);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = getContrastColor(color);
+        ctx.font = "16px 'BIZ UDPGothic', sans-serif";
+        const text = item?.text || item;
+        ctx.fillText(text, textMid, 0);
+        ctx.restore();
+    }
+
+    function drawCenter(radius, lineWidth, ratio) {
+        ctx.beginPath();
+        ctx.lineWidth = lineWidth;
+        ctx.fillStyle = 'white';
+        ctx.arc(0, 0, radius * ratio, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+
     function draw() {
         if (!ctx) return;
+
         const width = canvas.width / dpr;
         const height = canvas.height / dpr;
         const radius = Math.min(width, height) / 2 - 5;
@@ -59,41 +93,16 @@
         ctx.translate(width / 2, height / 2);
         ctx.rotate(angle);
         ctx.strokeStyle = 'gray';
+
         const total = items.reduce((s, it) => s + getWeight(it), 0);
         let current = 0;
         for (let i = 0; i < items.length; i++) {
             const slice = getWeight(items[i]) / total * 2 * Math.PI;
-            const start = current;
-            const end = current + slice;
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.arc(0, 0, radius, start, end);
-            const color = items[i]?.color || (i % 2 === 0 ? '#f8a' : '#8af');
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.stroke();
-            ctx.save();
-            const mid = (start + end) / 2;
-            ctx.rotate(mid);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = getContrastColor(color);
-            ctx.font = "16px 'BIZ UDPGothic', sans-serif";
-            const text = items[i]?.text || items[i];
-            ctx.fillText(text, textMid, 0);
-            ctx.restore();
+            drawSlice(current, current + slice, items[i], i, radius, textMid);
             current += slice;
         }
-        ctx.beginPath();
-        ctx.lineWidth = lineWidth;
-        ctx.fillStyle = 'white';
-        ctx.arc(0, 0, radius * centerRatio, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
 
-        ctx.beginPath();
-        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-        ctx.stroke();
+        drawCenter(radius, lineWidth, centerRatio);
         ctx.restore();
     }
 
