@@ -46,7 +46,7 @@
 <div class="mb-3 d-flex">
     <button class="btn btn-secondary" @onclick="Add">追加</button>
     <button class="btn btn-warning ms-2" @onclick="ResetAllCounts">当たり回数リセット</button>
-    <button class="btn btn-primary ms-auto" @onclick="Save">保存</button>
+    <button class="btn btn-primary ms-auto" @onclick="Save" disabled="@(!CanSave)">保存</button>
     <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
 </div>
 
@@ -65,6 +65,10 @@
     private RouletteConfig? currentConfig;
     private bool autoAdjustSize = true;
     private int itemMultiplier = 1;
+    private bool CanSave =>
+        !string.IsNullOrWhiteSpace(configName) &&
+        items.Count > 0 &&
+        items.All(x => !string.IsNullOrWhiteSpace(x.Text));
 
     protected override async Task OnInitializedAsync()
     {
