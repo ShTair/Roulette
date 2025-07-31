@@ -30,15 +30,22 @@
 {
     var index = i;
     <div class="input-group mb-2 item-row" @ondragover:preventDefault="true" @ondrop="(e) => OnDrop(index, e)">
-        <span class="input-group-text drag-handle" draggable="true" @ondragstart="(e) => OnDragStart(index, e)">☰</span>
-        <input type="color" class="form-control color-input" @bind="items[index].Color" />
-        <input class="form-control text-input" @bind="items[index].Text" />
-        <input type="number" class="form-control count-input" @bind="items[index].Count" />
+        <span class="input-group-text drag-handle" draggable="true"
+              @ondragstart="(e) => OnDragStart(index, e)"
+              @ondrop="(e) => OnDrop(index, e)" @ondragover:preventDefault="true">☰</span>
+        <input type="color" class="form-control color-input" @bind="items[index].Color"
+               @ondrop="(e) => OnDrop(index, e)" @ondragover:preventDefault="true" />
+        <input class="form-control text-input" @bind="items[index].Text"
+               @ondrop="(e) => OnDrop(index, e)" @ondragover:preventDefault="true" />
+        <input type="number" class="form-control count-input" @bind="items[index].Count"
+               @ondrop="(e) => OnDrop(index, e)" @ondragover:preventDefault="true" />
         @if (!autoAdjustSize)
         {
-            <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" />
+            <input type="number" step="1" class="form-control size-input" @bind="items[index].Size"
+                   @ondrop="(e) => OnDrop(index, e)" @ondragover:preventDefault="true" />
         }
-        <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+        <button class="btn btn-outline-danger" @onclick="() => Remove(index)"
+                @ondrop="(e) => OnDrop(index, e)" @ondragover:preventDefault="true">削除</button>
     </div>
 }
 
