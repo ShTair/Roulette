@@ -115,7 +115,7 @@
 
     private void MoveDown(int index) => MoveItem(index, 1);
 
-    private async Task OnDragStart(int index, DragEventArgs e)
+    private void OnDragStart(int index, DragEventArgs e)
     {
         dragIndex = index;
         if (e.DataTransfer is not null)
@@ -123,17 +123,11 @@
             e.DataTransfer.DropEffect = "move";
             e.DataTransfer.EffectAllowed = "move";
         }
-        await JS.InvokeVoidAsync("dragHelper.setDragData", e, index);
     }
 
-    private async Task OnDrop(int index, DragEventArgs e)
+    private void OnDrop(int index, DragEventArgs e)
     {
         int sourceIndex = dragIndex ?? -1;
-        if (await JS.InvokeAsync<string>("dragHelper.getDragData", e) is string s && int.TryParse(s, out var dtIndex))
-        {
-            sourceIndex = dtIndex;
-        }
-
         if (sourceIndex == -1 || sourceIndex == index) return;
 
         var item = items[sourceIndex];
