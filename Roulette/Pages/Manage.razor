@@ -38,6 +38,10 @@ else
     </ul>
 }
 
+<div class="mt-3 d-flex">
+    <button class="btn btn-secondary" @onclick="OpenEnv">環境設定</button>
+</div>
+
 <div class="release-date">
     release: <code>@LocalReleaseDate</code>
 </div>
@@ -126,5 +130,9 @@ else
         configs.Add(cfg);
         await RouletteConfig.SaveAsync(JS, configs);
         StateHasChanged();
+    }
+    private void OpenEnv()
+    {
+        Nav.NavigateTo("env");
     }
 }
