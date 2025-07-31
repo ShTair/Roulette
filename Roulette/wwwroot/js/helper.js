@@ -8,7 +8,8 @@
     }
     let canvas, ctx, items = [], angle = 0, angleMap = [];
     let spinning = false;
-    let speed = 0;
+    let speed = 0; // angular velocity in radians per second
+    let lastTime = null; // timestamp of previous frame for consistent timing
     let autoStopTimeout = null;
     let autoStopEnabled = true;
     let dotNetHelper = null;
@@ -106,10 +107,14 @@
         ctx.restore();
     }
 
-    function tick() {
-        angle += speed;
+    function tick(timestamp) {
+        if (lastTime === null) lastTime = timestamp;
+        const delta = (timestamp - lastTime) / 1000; // seconds since last frame
+        lastTime = timestamp;
+
+        angle += speed * delta;
         if (!spinning) {
-            speed *= 0.97;
+            speed *= Math.pow(0.97, delta * 60);
             if (speed < 0.001) {
                 speed = 0;
                 draw();
@@ -118,6 +123,7 @@
                     const result = getCurrentIndex();
                     dotNetHelper.invokeMethodAsync('OnRouletteStopped', result);
                 }
+                lastTime = null;
                 return;
             }
         }
@@ -220,7 +226,8 @@
             }
         } else {
             spinning = true;
-            speed = 0.3;
+            speed = 18; // start speed in radians per second (equivalent to 0.3 rad/frame at 60fps)
+            lastTime = null;
             requestAnimationFrame(tick);
             tryVibrate(50);
             if (autoStopTimeout) {
