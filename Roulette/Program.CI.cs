@@ -1,1 +1,4 @@
-﻿partial class Program { public const string CommitHash = "Debug"; }
+partial class Program
+{
+    public const string ReleaseDate = "Debug";
+}
