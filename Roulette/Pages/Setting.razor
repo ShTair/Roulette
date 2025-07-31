@@ -118,6 +118,7 @@
 
     private async Task Save()
     {
+        configName = configName.Trim();
         if (string.IsNullOrWhiteSpace(configName))
         {
             await JS.InvokeVoidAsync("alert", "設定名を入力してください。");
