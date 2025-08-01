@@ -1,14 +1,15 @@
-# Contribution Guidelines for PhoneGame
+# PhoneGame 貢献ガイドライン
 
-## Development Environment
-- This repository contains a .NET 8 Blazor WebAssembly project located in the `Roulette` directory.
-- Ensure you have the .NET 8 SDK installed to build and run the project.
+## 開発環境
+- `Roulette` ディレクトリに .NET 8 Blazor WebAssembly プロジェクトが含まれています。
+- プロジェクトをビルド・実行するには .NET 8 SDK をインストールしてください。
 
-## Continuous Integration
-- `Program.CI.cs` is regenerated during the GitHub Pages build. The workflow
-  overwrites this file with the current commit hash before publishing, so local
-  contents are replaced on each CI run.
+## 継続的インテグレーション
+- `Program.CI.cs` は GitHub Pages のビルド時に再生成されます。ワークフローでは公開前に現在のコミットハッシュでこのファイルを上書きするため、ローカルの内容は各 CI 実行時に置き換えられます。
 
-## Hosting Considerations
-- This app is hosted on GitHub Pages. To allow opening from any sub-path, the routing logic uses `wwwroot/404.html` together with `Home.razor`.
-- When navigating between pages, specify relative paths from the app root (e.g., `setting` instead of `/setting`).
+## ホスティング上の注意
+- このアプリは GitHub Pages でホストされています。任意のサブパスから開けるよう、ルーティングは `wwwroot/404.html` と `Home.razor` を組み合わせて使用しています。
+- ページ間を移動する際はアプリのルートからの相対パスを指定してください（例: `/setting` ではなく `setting`）。
+
+## Git への貢献
+- コミットメッセージやプルリクエストの本文は日本語で記載してください。
