@@ -48,7 +48,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in items.Distinct())
+                @foreach (var item in allItems)
                 {
                     <tr>
                         <td>
@@ -72,13 +72,9 @@
     public string? Id { get; set; }
 
     private string? currentId;
-    private RouletteItem[] items = new[]
-    {
-        RouletteItem.Create("A"),
-        RouletteItem.Create("B"),
-        RouletteItem.Create("C"),
-        RouletteItem.Create("D")
-    };
+    private RouletteItem[] items = Array.Empty<RouletteItem>(); // active items
+    private RouletteItem[] allItems = Array.Empty<RouletteItem>();
+    private int itemMultiplier = 1;
     private bool isSpinning;
     private bool isStopping;
     private bool showOverlay;
@@ -113,23 +109,18 @@
                 return;
             }
 
-            var multiplier = cfg.ItemMultiplier <= 1 ? 1 : cfg.ItemMultiplier;
-            var list = new List<RouletteItem>(cfg.Items.Count * multiplier);
-            for (int i = 0; i < multiplier; i++)
-            {
-                list.AddRange(cfg.Items);
-            }
-            items = list.ToArray();
+            allItems = cfg.Items.ToArray();
+            itemMultiplier = cfg.ItemMultiplier;
             selectedConfig = cfg.Name;
             autoAdjustSize = cfg.AutoAdjustSize;
 
-            if (items.Length == 0 || items.All(i => string.IsNullOrWhiteSpace(i.Text)))
+            RebuildItems();
+
+            if (items.Length == 0 || allItems.All(i => string.IsNullOrWhiteSpace(i.Text)))
             {
                 Nav.NavigateTo($"setting/{Id}");
                 return;
             }
-
-            ApplyWeights();
 
             objRef ??= DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
@@ -190,8 +181,16 @@
             if (!string.IsNullOrWhiteSpace(item.Text))
             {
                 item.Count++;
+                if (item.State == RouletteItemState.Enabled)
+                {
+                    item.State = RouletteItemState.Disabled;
+                    RebuildItems();
+                }
+                else
+                {
+                    ApplyWeights();
+                }
                 await SaveCountsAsync();
-                ApplyWeights();
             }
 
             StateHasChanged();
@@ -205,6 +204,19 @@
         isStopping = true;
         isSpinning = false;
         StateHasChanged();
+    }
+
+    private void RebuildItems()
+    {
+        var multiplier = itemMultiplier <= 1 ? 1 : itemMultiplier;
+        var active = allItems.Where(i => i.State != RouletteItemState.Disabled).ToList();
+        var list = new List<RouletteItem>(active.Count * multiplier);
+        for (int i = 0; i < multiplier; i++)
+        {
+            list.AddRange(active);
+        }
+        items = list.ToArray();
+        ApplyWeights();
     }
 
     private void ApplyWeights()
@@ -249,7 +261,7 @@
         var cfg = configs.FirstOrDefault(c => c.Id == Id);
         if (cfg is not null)
         {
-            cfg.Items = items.Distinct().ToList();
+            cfg.Items = allItems.ToList();
             await RouletteConfig.SaveAsync(JS, configs);
         }
     }
