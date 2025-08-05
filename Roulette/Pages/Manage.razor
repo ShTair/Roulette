@@ -54,7 +54,7 @@ else
             CultureInfo.InvariantCulture,
             DateTimeStyles.AssumeUniversal,
             out var utc)
-        ? utc.ToLocalTime().ToString("yyyy/M/d H:m")
+        ? utc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
         : Program.ReleaseDate;
 
     [SupplyParameterFromQuery(Name = "url")]
