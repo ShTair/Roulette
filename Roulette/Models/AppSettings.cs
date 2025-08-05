@@ -11,7 +11,7 @@ public class AppSettings
     public double StartSpeed { get; set; } = 18.0;
     public string BorderColor { get; set; } = "#808080";
 
-    private const string StorageKey = "appSettings";
+    private const string StorageKey = "rouletteSettings";
 
     public static async Task<AppSettings> LoadAsync(IJSRuntime js)
     {
