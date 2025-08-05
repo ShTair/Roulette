@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.JSInterop;
 
 namespace Roulette.Models;
@@ -15,6 +16,22 @@ public class RouletteConfig
     public bool AutoAdjustSize { get; set; } = true;
 
     public int ItemMultiplier { get; set; } = 1;
+
+    private static readonly Regex s_colorRegex = new("^#[0-9A-Fa-f]{6}$");
+
+    private static void EnsureItemColors(IEnumerable<RouletteConfig> configs)
+    {
+        foreach (var cfg in configs)
+        {
+            foreach (var item in cfg.Items)
+            {
+                if (string.IsNullOrWhiteSpace(item.Color) || !s_colorRegex.IsMatch(item.Color))
+                {
+                    item.Color = RouletteItem.RandomColor();
+                }
+            }
+        }
+    }
 
     public static List<RouletteConfig> FromJson(string? json)
     {
@@ -41,6 +58,7 @@ public class RouletteConfig
                     }
                     list.Add(cfg);
                 }
+                EnsureItemColors(list);
                 return list;
             }
         }
@@ -59,6 +77,7 @@ public class RouletteConfig
                     AutoAdjustSize = true,
                     ItemMultiplier = 1
                 })];
+                EnsureItemColors(list);
             }
         }
         catch { }
