@@ -27,20 +27,22 @@
 </div>
 
 @for (int i = 0; i < items.Count; i++)
-{ 
+{
     var index = i;
-    <div class="input-group mb-2 item-row">
-        <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
+    <div class="mb-2 item-row">
         <input type="color" class="form-control color-input" @bind="items[index].Color" />
         <input class="form-control text-input" @bind="items[index].Text" />
-        <input type="number" class="form-control count-input" @bind="items[index].Count" />
-        @if (!autoAdjustSize)
-        {
-            <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" />
-        }
-        <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
-        <button class="btn btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
-        <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+        <button class="btn btn-outline-secondary move-up-button" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
+        <div class="control-row">
+            <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
+            <input type="number" class="form-control count-input" @bind="items[index].Count" />
+            @if (!autoAdjustSize)
+            {
+                <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" />
+            }
+            <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+        </div>
+        <button class="btn btn-outline-secondary move-down-button" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
     </div>
 }
 
