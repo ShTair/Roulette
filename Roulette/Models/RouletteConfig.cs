@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 
 namespace Roulette.Models;
 
-public class RouletteConfig
+public partial class RouletteConfig
 {
 
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
@@ -17,7 +17,8 @@ public class RouletteConfig
 
     public int ItemMultiplier { get; set; } = 1;
 
-    private static readonly Regex s_colorRegex = new("^#[0-9A-Fa-f]{6}$");
+    [GeneratedRegex("^#[0-9A-Fa-f]{6}$")]
+    private static partial Regex ColorRegex();
 
     private static void EnsureItemColors(IEnumerable<RouletteConfig> configs)
     {
@@ -25,7 +26,7 @@ public class RouletteConfig
         {
             foreach (var item in cfg.Items)
             {
-                if (string.IsNullOrWhiteSpace(item.Color) || !s_colorRegex.IsMatch(item.Color))
+                if (string.IsNullOrWhiteSpace(item.Color) || !ColorRegex().IsMatch(item.Color))
                 {
                     item.Color = RouletteItem.RandomColor();
                 }
