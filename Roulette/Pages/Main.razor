@@ -40,8 +40,7 @@
 @if (DisabledItemCount > 0)
 {
     <div class="text-center mt-2">
-        <span>非表示数: @DisabledItemCount</span><br />
-        <button class="btn btn-secondary ms-2" @onclick="EnableAllDisabled">全て表示</button>
+        <button class="btn btn-danger ms-2" @onclick="EnableAllDisabled">非表示の <strong>@DisabledItemCount</strong> 項目を表示</button>
     </div>
 }
 
