@@ -62,6 +62,7 @@
                         <td>
                             <span class="color-box" style="background-color:@item.Color"></span>
                             @item.Text
+                            <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
                         </td>
                         <td class="text-end">@item.Count</td>
                     </tr>
@@ -293,6 +294,22 @@
             await RouletteConfig.SaveAsync(JS, configs);
         }
     }
+
+    private static string GetStateIcon(RouletteItemState state) => state switch
+    {
+        RouletteItemState.Locked => "🔒",
+        RouletteItemState.Enabled => "✅",
+        RouletteItemState.Disabled => "🚫",
+        _ => string.Empty
+    };
+
+    private static string GetStateTitle(RouletteItemState state) => state switch
+    {
+        RouletteItemState.Locked => "🔒表示",
+        RouletteItemState.Enabled => "表示",
+        RouletteItemState.Disabled => "非表示",
+        _ => string.Empty
+    };
 
     private static string GetContrastColor(string hex)
     {
