@@ -51,6 +51,7 @@
         <table class="table table-sm count-table">
             <thead>
                 <tr>
+                    <th class="text-start"></th>
                     <th>項目</th>
                     <th class="text-end">回数</th>
                 </tr>
@@ -59,10 +60,12 @@
                 @foreach (var item in allItems)
                 {
                     <tr>
-                        <td>
-                            <span class="color-box" style="background-color:@item.Color"></span>
-                            @item.Text
+                        <td class="text-start">
                             <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
+                            <span class="color-box" style="background-color:@item.Color"></span>
+                        </td>
+                        <td>
+                            @item.Text
                         </td>
                         <td class="text-end">@item.Count</td>
                     </tr>
