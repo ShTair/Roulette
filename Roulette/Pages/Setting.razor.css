@@ -1,33 +1,52 @@
 .item-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0;
     align-items: center;
 }
 
-    .item-row .text-input {
-        flex: 1;
-        min-width: 0;
-    }
-
-.color-input {
+.item-row .color-input {
+    grid-row: span 2;
     width: 2.5rem;
-    height: 38px;
+    height: 100%;
     padding: 0;
-    flex: unset;
     cursor: pointer;
+    align-self: stretch;
+}
+
+.item-row .text-input {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+}
+
+.item-row .move-up-button {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.item-row .move-down-button {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.item-row .control-row {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
 }
 
 .count-input {
     text-align: right;
     width: 4rem;
-    margin-left: 4px;
-    flex: unset;
 }
 
 .size-input {
     text-align: right;
     width: 4rem;
-    margin-left: 4px;
-    flex: unset;
 }
 
 .multiplier-input {

@@ -12,6 +12,8 @@ public class RouletteItem
 
     public double Size { get; set; } = 1;
 
+    public RouletteItemState State { get; set; } = RouletteItemState.Locked;
+
     [JsonIgnore]
     public double Weight { get; set; } = 1;
 
@@ -23,7 +25,8 @@ public class RouletteItem
         {
             Text = text,
             Color = RandomColor(),
-            Size = 1
+            Size = 1,
+            State = RouletteItemState.Locked
         };
     }
 
@@ -53,4 +56,11 @@ public class RouletteItem
         int b = (int)Math.Round((b1 + m) * 255);
         return $"#{r:X2}{g:X2}{b:X2}";
     }
+}
+
+public enum RouletteItemState
+{
+    Enabled,
+    Locked,
+    Disabled
 }
