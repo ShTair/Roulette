@@ -63,6 +63,13 @@
     }
 </div>
 <div class="text-center mt-2">
+    <span>無効項目数: @DisabledItemCount</span>
+    @if (DisabledItemCount > 0)
+    {
+        <button class="btn btn-secondary ms-2" @onclick="EnableAllDisabled">全て有効に戻す</button>
+    }
+</div>
+<div class="text-center mt-2">
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
     <button class="btn btn-secondary settings-button" @onclick="OpenSettings">設定</button>
 </div>
@@ -88,6 +95,7 @@
     private string selectedConfig = string.Empty;
     private bool autoAdjustSize = true;
     private bool autoStop = true;
+    private int DisabledItemCount => allItems.Count(i => i.State == RouletteItemState.Disabled);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -156,6 +164,24 @@
     private void ToggleCounts()
     {
         showCounts = !showCounts;
+    }
+
+    private async Task EnableAllDisabled()
+    {
+        foreach (var item in allItems)
+        {
+            if (item.State == RouletteItemState.Disabled)
+            {
+                item.State = RouletteItemState.Enabled;
+            }
+        }
+        RebuildItems();
+        await SaveCountsAsync();
+        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
+        var appSettings = await AppSettings.LoadAsync(JS);
+        await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
+        await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
+        StateHasChanged();
     }
 
     [JSInvokable]
