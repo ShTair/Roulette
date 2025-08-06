@@ -90,9 +90,9 @@
 
     private static string GetStateTitle(RouletteItemState state) => state switch
     {
-        RouletteItemState.Locked => "有効（ロック）",
-        RouletteItemState.Enabled => "有効",
-        RouletteItemState.Disabled => "無効",
+        RouletteItemState.Locked => "🔒表示",
+        RouletteItemState.Enabled => "表示",
+        RouletteItemState.Disabled => "非表示",
         _ => string.Empty
     };
 
