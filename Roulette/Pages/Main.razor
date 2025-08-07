@@ -48,7 +48,7 @@
     <h5 class="count-header" @onclick="ToggleCounts">当たり回数リスト @(showCounts ? "▲" : "▼")</h5>
     @if (showCounts)
     {
-        <table class="table table-sm count-table" style="border-color:@borderColor;">
+        <table class="table table-sm count-table" style="--border-color:@borderColor;">
             <thead>
                 <tr>
                     <th>表示</th>
@@ -69,7 +69,7 @@
                 }
             </tbody>
         </table>
-    }
+        }
 </div>
 
 <div class="text-center mt-2">
