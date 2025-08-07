@@ -51,16 +51,16 @@
         <table class="table table-sm count-table" style="border-color:@borderColor;">
             <thead>
                 <tr>
-                    <th class="text-start"></th>
+                    <th>表示</th>
                     <th>項目</th>
-                    <th class="text-end">回数</th>
+                    <th>回数</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in allItems)
                 {
                     <tr style="background-color:@item.Color;color:@GetContrastColor(item.Color)">
-                        <td class="text-start">
+                        <td>
                             <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
                         </td>
                         <td>@item.Text</td>
