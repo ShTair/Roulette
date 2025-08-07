@@ -92,7 +92,13 @@
 .count-table {
     margin: 0 auto 0.5rem auto;
     max-width: 300px;
-    border: solid 3px;
+    border: solid 3px var(--border-color);
+    border-collapse: collapse;
+}
+
+.count-table th,
+.count-table td {
+    border: solid 1px var(--border-color);
 }
 
 .count-header {
