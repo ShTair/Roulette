@@ -101,6 +101,10 @@
     border: solid 1px var(--border-color);
 }
 
+.count-table>:not(:last-child)>:last-child>* {
+    border-bottom-color: var(--border-color);
+}
+
 .count-header {
     cursor: pointer;
     user-select: none;
