@@ -1,4 +1,4 @@
 partial class Program
 {
-    public const string ReleaseDate = "Debug";
+    public static readonly DateTime ReleaseDate = DateTime.Now;
 }

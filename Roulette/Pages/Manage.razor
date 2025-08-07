@@ -43,20 +43,10 @@ else
 </div>
 
 <div class="release-date">
-    release: <code>@LocalReleaseDate</code>
+    release: <code>@Program.ReleaseDate.ToString("yyyy/MM/dd HH:mm")</code>
 </div>
 
 @code {
-    private static readonly string LocalReleaseDate =
-        DateTime.TryParseExact(
-            Program.ReleaseDate,
-            "yyyy/MM/dd HH:mm",
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.AssumeUniversal,
-            out var utc)
-        ? utc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
-        : Program.ReleaseDate;
-
     [SupplyParameterFromQuery(Name = "url")]
     private string? Url { get; set; }
 

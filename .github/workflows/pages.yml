@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Create release date file
-      run: echo "partial class Program { public const string ReleaseDate = \"$(date -u '+%Y/%m/%d %H:%M')\"; }" > ${{ env.WORKING_DIRECTORY }}/Program.CI.cs
+      run: echo "partial class Program{public static readonly DateTime ReleaseDate=DateTime.Parse(\"$(date -u --iso-8601=seconds)\");}" > ${{ env.WORKING_DIRECTORY }}/Program.CI.cs
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
