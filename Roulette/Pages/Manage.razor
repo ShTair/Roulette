@@ -82,7 +82,8 @@ else
             cfg.Name,
             cfg.Items,
             cfg.AutoAdjustSize,
-            cfg.ItemMultiplier
+            cfg.ItemMultiplier,
+            cfg.ShowCountList
         };
         var json = JsonSerializer.Serialize(exportObj, JsonUtil.WebOptions);
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
