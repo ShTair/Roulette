@@ -59,14 +59,11 @@
             <tbody>
                 @foreach (var item in allItems)
                 {
-                    <tr>
+                    <tr style="background-color:@item.Color;color:@GetContrastColor(item.Color)">
                         <td class="text-start">
                             <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
-                            <span class="color-box" style="background-color:@item.Color"></span>
                         </td>
-                        <td>
-                            @item.Text
-                        </td>
+                        <td>@item.Text</td>
                         <td class="text-end">@item.Count</td>
                     </tr>
                 }
