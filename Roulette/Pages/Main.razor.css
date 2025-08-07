@@ -92,7 +92,7 @@
 .count-table {
     margin: 0 auto 0.5rem auto;
     max-width: 300px;
-    border: solid 3px #ccc;
+    border: solid 3px;
 }
 
 .count-header {
