@@ -124,6 +124,7 @@
             itemMultiplier = cfg.ItemMultiplier;
             selectedConfig = cfg.Name;
             autoAdjustSize = cfg.AutoAdjustSize;
+            showCounts = cfg.ShowCountList;
 
             RebuildItems();
 
@@ -164,9 +165,10 @@
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
     }
 
-    private void ToggleCounts()
+    private async Task ToggleCounts()
     {
         showCounts = !showCounts;
+        await SaveCountsAsync();
     }
 
     private async Task EnableAllDisabled()
@@ -291,6 +293,7 @@
         if (cfg is not null)
         {
             cfg.Items = allItems.ToList();
+            cfg.ShowCountList = showCounts;
             await RouletteConfig.SaveAsync(JS, configs);
         }
     }

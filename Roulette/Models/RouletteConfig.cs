@@ -17,6 +17,8 @@ public partial class RouletteConfig
 
     public int ItemMultiplier { get; set; } = 1;
 
+    public bool ShowCountList { get; set; } = false;
+
     [GeneratedRegex("^#[0-9A-Fa-f]{6}$")]
     private static partial Regex ColorRegex();
 
@@ -56,6 +58,11 @@ public partial class RouletteConfig
                         !el.TryGetProperty(nameof(ItemMultiplier), out _))
                     {
                         cfg.ItemMultiplier = 1;
+                    }
+                    if (!el.TryGetProperty("showCountList", out _) &&
+                        !el.TryGetProperty(nameof(ShowCountList), out _))
+                    {
+                        cfg.ShowCountList = false;
                     }
                     list.Add(cfg);
                 }
