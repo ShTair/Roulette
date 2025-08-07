@@ -6,38 +6,38 @@
     align-items: center;
 }
 
-.item-row .color-input {
-    grid-row: span 2;
-    width: 2.5rem;
-    height: 100%;
-    padding: 0;
-    cursor: pointer;
-    align-self: stretch;
-}
+    .item-row .color-input {
+        grid-row: span 2;
+        width: 2.5rem;
+        height: 100%;
+        padding: 0;
+        cursor: pointer;
+        align-self: stretch;
+    }
 
-.item-row .text-input {
-    grid-column: 2;
-    grid-row: 1;
-    width: 100%;
-    min-width: 0;
-}
+    .item-row .text-input {
+        grid-column: 2;
+        grid-row: 1;
+        width: 100%;
+        min-width: 0;
+    }
 
-.item-row .move-up-button {
-    grid-column: 3;
-    grid-row: 1;
-}
+    .item-row .move-up-button {
+        grid-column: 3;
+        grid-row: 1;
+    }
 
-.item-row .move-down-button {
-    grid-column: 3;
-    grid-row: 2;
-}
+    .item-row .move-down-button {
+        grid-column: 3;
+        grid-row: 2;
+    }
 
-.item-row .control-row {
-    grid-column: 2;
-    grid-row: 2;
-    display: flex;
-    align-items: center;
-}
+    .item-row .control-row {
+        grid-column: 2;
+        grid-row: 2;
+        display: flex;
+        align-items: center;
+    }
 
 .count-input {
     text-align: right;
@@ -46,7 +46,7 @@
 
 .size-input {
     text-align: right;
-    width: 4rem;
+    width: 6rem;
 }
 
 .multiplier-input {
