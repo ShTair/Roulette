@@ -40,6 +40,7 @@ else
 
 <div class="mt-3 d-flex">
     <button class="btn btn-secondary" @onclick="OpenEnv">環境設定</button>
+    <button class="btn btn-info ms-2" @onclick="OpenUsage">使い方</button>
 </div>
 
 <div class="release-date">
@@ -122,6 +123,11 @@ else
         await RouletteConfig.SaveAsync(JS, configs);
         StateHasChanged();
     }
+    private void OpenUsage()
+    {
+        Nav.NavigateTo("usage");
+    }
+
     private void OpenEnv()
     {
         Nav.NavigateTo("env");
