@@ -136,9 +136,9 @@
             }
 
             objRef ??= DotNetObjectReference.Create(this);
-            await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
             var appSettings = await AppSettings.LoadAsync(JS);
             borderColor = appSettings.BorderColor;
+            await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef, appSettings.IdleSpin);
             await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
             await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
 
@@ -184,8 +184,8 @@
         }
         RebuildItems();
         await SaveCountsAsync();
-        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
         var appSettings = await AppSettings.LoadAsync(JS);
+        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef, appSettings.IdleSpin);
         await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
         await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
         StateHasChanged();
@@ -278,8 +278,8 @@
     private async void HideOverlay()
     {
         showOverlay = false;
-        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef);
         var appSettings = await AppSettings.LoadAsync(JS);
+        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef, appSettings.IdleSpin);
         await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
     }
 

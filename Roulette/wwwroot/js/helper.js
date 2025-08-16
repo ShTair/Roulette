@@ -8,7 +8,10 @@
     }
     let canvas, ctx, items = [], angle = 0, angleMap = [];
     let spinning = false;
+    let idle = false;
+    const idleSpeed = 0.12; // slow rotation when idle
     let speed = 0; // angular velocity in radians per second
+    let animationId = null; // requestAnimationFrame id
     let lastTime = null; // timestamp of previous frame for consistent timing
     let autoStopTimeout = null;
     let autoStopEnabled = true;
@@ -121,8 +124,10 @@
         const delta = (timestamp - lastTime) / 1000; // seconds since last frame
         lastTime = timestamp;
 
-        angle += speed * delta;
-        if (!spinning) {
+        if (spinning) {
+            angle += speed * delta;
+        } else if (speed > 0) {
+            angle += speed * delta;
             if (stopStartTime === null) {
                 stopStartTime = timestamp;
                 stopInitialSpeed = speed;
@@ -138,14 +143,21 @@
                 }
                 lastTime = null;
                 stopStartTime = null;
+                animationId = null;
                 return;
             } else {
                 const eased = Math.pow(1 - progress, 2);
                 speed = stopInitialSpeed * eased;
             }
+        } else if (idle) {
+            angle += idleSpeed * delta;
+        } else {
+            draw();
+            animationId = null;
+            return;
         }
         draw();
-        requestAnimationFrame(tick);
+        animationId = requestAnimationFrame(tick);
     }
 
     function getCurrentIndex() {
@@ -161,6 +173,13 @@
     }
 
     window.rouletteHelper = window.rouletteHelper || {};
+
+    function ensureTick() {
+        if (animationId === null) {
+            lastTime = null;
+            animationId = requestAnimationFrame(tick);
+        }
+    }
 
     function removeSwipeHandlers() {
         if (!canvas) return;
@@ -193,7 +212,7 @@
         canvas.addEventListener('pointerup', onPointerUp);
     }
 
-    window.rouletteHelper.initialize = function (id, itemsArr, dotNetRef) {
+    window.rouletteHelper.initialize = function (id, itemsArr, dotNetRef, idleSpin = true) {
         removeSwipeHandlers();
         canvas = document.getElementById(id);
         if (!canvas) return;
@@ -215,6 +234,8 @@
         computeAngles();
         draw();
         addSwipeHandlers();
+        idle = !!idleSpin;
+        if (idle) ensureTick();
     };
 
     window.rouletteHelper.setItems = function (itemsArr) {
@@ -223,6 +244,7 @@
         if (!spinning) {
             draw();
         }
+        if (idle) ensureTick();
     };
 
     window.rouletteHelper.setAutoStopEnabled = function (value) {
@@ -241,12 +263,15 @@
         if (autoStopMaxMs < autoStopMinMs) autoStopMaxMs = autoStopMinMs;
         if (typeof settings.stopDurationSeconds === 'number') stopDurationMs = settings.stopDurationSeconds * 1000;
         if (typeof settings.borderColor === 'string') borderColor = settings.borderColor;
+        if (typeof settings.idleSpin === 'boolean') idle = settings.idleSpin;
         if (!spinning) draw();
+        if (idle) ensureTick();
     };
 
     window.rouletteHelper.toggleSpin = function () {
         if (spinning) {
             spinning = false;
+            idle = false;
             tryVibrate(50);
             if (autoStopTimeout) {
                 clearTimeout(autoStopTimeout);
@@ -254,10 +279,11 @@
             }
         } else {
             spinning = true;
+            idle = false;
             speed = startSpeedSetting;
             stopStartTime = null;
             lastTime = null;
-            requestAnimationFrame(tick);
+            ensureTick();
             tryVibrate(50);
             if (autoStopTimeout) {
                 clearTimeout(autoStopTimeout);
@@ -270,6 +296,7 @@
                             dotNetHelper.invokeMethodAsync('OnAutoStop');
                         }
                         spinning = false;
+                        idle = false;
                         tryVibrate(50);
                     }
                 }, delay);
