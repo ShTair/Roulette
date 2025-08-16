@@ -212,7 +212,7 @@
         canvas.addEventListener('pointerup', onPointerUp);
     }
 
-    window.rouletteHelper.initialize = function (id, itemsArr, dotNetRef) {
+    window.rouletteHelper.initialize = function (id, itemsArr, dotNetRef, idleSpin = true) {
         removeSwipeHandlers();
         canvas = document.getElementById(id);
         if (!canvas) return;
@@ -234,8 +234,8 @@
         computeAngles();
         draw();
         addSwipeHandlers();
-        idle = true;
-        ensureTick();
+        idle = !!idleSpin;
+        if (idle) ensureTick();
     };
 
     window.rouletteHelper.setItems = function (itemsArr) {
@@ -263,6 +263,7 @@
         if (autoStopMaxMs < autoStopMinMs) autoStopMaxMs = autoStopMinMs;
         if (typeof settings.stopDurationSeconds === 'number') stopDurationMs = settings.stopDurationSeconds * 1000;
         if (typeof settings.borderColor === 'string') borderColor = settings.borderColor;
+        if (typeof settings.idleSpin === 'boolean') idle = settings.idleSpin;
         if (!spinning) draw();
         if (idle) ensureTick();
     };
