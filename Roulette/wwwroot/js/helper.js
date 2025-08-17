@@ -68,8 +68,17 @@
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = getContrastColor(color);
-        ctx.font = "16px 'BIZ UDPGothic', sans-serif";
         const text = item?.text || item;
+        const baseSize = 16;
+        const angle = end - start;
+        const maxWidth = 2 * textMid * Math.sin(angle / 2) * 0.9;
+        ctx.font = `${baseSize}px 'BIZ UDPGothic', sans-serif`;
+        const metrics = ctx.measureText(text);
+        let fontSize = baseSize;
+        if (metrics.width > maxWidth) {
+            fontSize = Math.max(6, Math.floor(baseSize * maxWidth / metrics.width));
+            ctx.font = `${fontSize}px 'BIZ UDPGothic', sans-serif`;
+        }
         ctx.fillText(text, textMid, 0);
         ctx.restore();
     }
