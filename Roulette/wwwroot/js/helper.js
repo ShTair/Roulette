@@ -9,7 +9,7 @@
     let canvas, ctx, items = [], angle = 0, angleMap = [];
     let spinning = false;
     let idle = false;
-    const idleSpeed = 0.12; // slow rotation when idle
+    const idleSpeed = 0.2; // slow rotation when idle
     let speed = 0; // angular velocity in radians per second
     let animationId = null; // requestAnimationFrame id
     let lastTime = null; // timestamp of previous frame for consistent timing
