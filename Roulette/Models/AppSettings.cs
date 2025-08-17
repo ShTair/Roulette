@@ -10,6 +10,7 @@ public class AppSettings
     public double StartSpeed { get; set; } = 18.0;
     public string BorderColor { get; set; } = "#808080";
     public bool IdleSpin { get; set; } = true;
+    public bool AutoFontSize { get; set; } = true;
 
     private const string StorageKey = "rouletteSettings";
 

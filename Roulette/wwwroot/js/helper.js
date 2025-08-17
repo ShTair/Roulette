@@ -19,6 +19,7 @@
     let autoStopMinMs = 2000;
     let stopDurationMs = 2000;
     let borderColor = '#808080';
+    let autoFontSize = true;
     let stopStartTime = null;
     let stopInitialSpeed = 0;
     let dotNetHelper = null;
@@ -71,12 +72,14 @@
         const text = item?.text || item;
         const baseSize = 16;
         const maxWidth = 2 * textMid * 0.7;
-        ctx.font = `${baseSize}px 'BIZ UDPGothic', sans-serif`;
-        const metrics = ctx.measureText(text);
         let fontSize = baseSize;
-        if (metrics.width > maxWidth) {
-            fontSize = Math.max(6, Math.floor(baseSize * maxWidth / metrics.width));
-            ctx.font = `${fontSize}px 'BIZ UDPGothic', sans-serif`;
+        ctx.font = `${fontSize}px 'BIZ UDPGothic', sans-serif`;
+        if (autoFontSize) {
+            const metrics = ctx.measureText(text);
+            if (metrics.width > maxWidth) {
+                fontSize = Math.max(6, Math.floor(baseSize * maxWidth / metrics.width));
+                ctx.font = `${fontSize}px 'BIZ UDPGothic', sans-serif`;
+            }
         }
         ctx.fillText(text, textMid, 0);
         ctx.restore();
@@ -269,6 +272,7 @@
         if (typeof settings.stopDurationSeconds === 'number') stopDurationMs = settings.stopDurationSeconds * 1000;
         if (typeof settings.borderColor === 'string') borderColor = settings.borderColor;
         if (typeof settings.idleSpin === 'boolean') idle = settings.idleSpin;
+        if (typeof settings.autoFontSize === 'boolean') autoFontSize = settings.autoFontSize;
         if (!spinning) draw();
         if (idle) ensureTick();
     };
