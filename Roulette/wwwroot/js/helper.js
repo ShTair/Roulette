@@ -17,7 +17,6 @@
     let autoStopEnabled = true;
     let startSpeedSetting = 18;
     let autoStopMinMs = 2000;
-    let autoStopMaxMs = 3000;
     let stopDurationMs = 2000;
     let borderColor = '#808080';
     let stopStartTime = null;
@@ -259,8 +258,6 @@
         if (!settings) return;
         if (typeof settings.startSpeed === 'number') startSpeedSetting = settings.startSpeed;
         if (typeof settings.autoStopDelayMinSeconds === 'number') autoStopMinMs = settings.autoStopDelayMinSeconds * 1000;
-        if (typeof settings.autoStopDelayMaxSeconds === 'number') autoStopMaxMs = settings.autoStopDelayMaxSeconds * 1000;
-        if (autoStopMaxMs < autoStopMinMs) autoStopMaxMs = autoStopMinMs;
         if (typeof settings.stopDurationSeconds === 'number') stopDurationMs = settings.stopDurationSeconds * 1000;
         if (typeof settings.borderColor === 'string') borderColor = settings.borderColor;
         if (typeof settings.idleSpin === 'boolean') idle = settings.idleSpin;
@@ -289,7 +286,8 @@
                 clearTimeout(autoStopTimeout);
             }
             if (autoStopEnabled) {
-                const delay = autoStopMinMs + Math.random() * (autoStopMaxMs - autoStopMinMs);
+                const rotationMs = startSpeedSetting > 0 ? 2 * Math.PI / startSpeedSetting * 1000 : 0;
+                const delay = autoStopMinMs + Math.random() * rotationMs;
                 autoStopTimeout = setTimeout(function () {
                     if (spinning) {
                         if (dotNetHelper) {
