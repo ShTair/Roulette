@@ -336,6 +336,7 @@
 
     public void Dispose()
     {
+        _ = JS.InvokeVoidAsync("rouletteHelper.dispose");
         objRef?.Dispose();
     }
 

@@ -304,6 +304,24 @@
         }
     };
 
+    window.rouletteHelper.dispose = function () {
+        spinning = false;
+        idle = false;
+        if (animationId !== null) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+        if (autoStopTimeout) {
+            clearTimeout(autoStopTimeout);
+            autoStopTimeout = null;
+        }
+        removeSwipeHandlers();
+        canvas = null;
+        ctx = null;
+        items = [];
+        dotNetHelper = null;
+    };
+
     window.rouletteHelper.getContainerCenter = function (id) {
         try {
             const el = document.getElementById(id);
