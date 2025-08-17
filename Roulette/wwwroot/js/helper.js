@@ -70,8 +70,7 @@
         ctx.fillStyle = getContrastColor(color);
         const text = item?.text || item;
         const baseSize = 16;
-        const angle = end - start;
-        const maxWidth = 2 * textMid * Math.sin(angle / 2) * 0.9;
+        const maxWidth = 2 * textMid * 0.9;
         ctx.font = `${baseSize}px 'BIZ UDPGothic', sans-serif`;
         const metrics = ctx.measureText(text);
         let fontSize = baseSize;
