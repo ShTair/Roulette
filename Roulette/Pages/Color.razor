@@ -10,14 +10,21 @@
 
 <h3>項目の色自動割り当て</h3>
 
-<div class="mb-3 d-flex align-items-center">
-    <label class="form-label me-2 mb-0">明度</label>
-    <input type="number" class="form-control w-auto" @bind="lightness" min="0" max="1" step="0.01" />
+<div class="mb-3">
+    <label class="form-label">明度: @lightness.ToString("0.00")</label>
+    <input type="range" class="form-range" min="0" max="1" step="0.01" @bind="lightness" @bind:event="oninput" />
 </div>
 
-<div class="mb-3 d-flex align-items-center">
-    <label class="form-label me-2 mb-0">彩度</label>
-    <input type="number" class="form-control w-auto" @bind="chroma" min="0" max="0.4" step="0.01" />
+<div class="mb-3">
+    <label class="form-label">彩度: @chroma.ToString("0.00")</label>
+    <input type="range" class="form-range" min="0" max="0.4" step="0.01" @bind="chroma" @bind:event="oninput" />
+</div>
+
+<div class="d-flex mb-3">
+    @foreach (var color in previewColors)
+    {
+        <div class="preview-box me-2" style="background-color:@color"></div>
+    }
 </div>
 
 <div class="mb-3 d-flex">
@@ -34,9 +41,30 @@
     private List<RouletteConfig> configs = new();
     private RouletteConfig? currentConfig;
 
-    private double lightness = 0.8;
-    private double chroma = 0.1;
+    private double _lightness = 0.8;
+    private double lightness
+    {
+        get => _lightness;
+        set
+        {
+            _lightness = value;
+            UpdatePreview();
+        }
+    }
+
+    private double _chroma = 0.1;
+    private double chroma
+    {
+        get => _chroma;
+        set
+        {
+            _chroma = value;
+            UpdatePreview();
+        }
+    }
+
     private readonly Random rand = new();
+    private readonly string[] previewColors = new string[3];
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,6 +86,8 @@
                 items = JsonSerializer.Deserialize<List<RouletteItem>>(json, JsonUtil.WebOptions) ?? new();
             }
         }
+
+        UpdatePreview();
     }
 
     private async Task AssignEven()
@@ -75,13 +105,33 @@
     private async Task AssignRandom()
     {
         if (items.Count == 0) return;
-        foreach (var item in items)
+
+        var hues = Enumerable.Range(0, items.Count)
+            .Select(i => 360.0 * i / items.Count)
+            .ToList();
+
+        for (int i = hues.Count - 1; i > 0; i--)
         {
-            var hue = rand.NextDouble() * 360.0;
-            item.Color = OklchToHex(lightness, chroma, hue);
+            int j = rand.Next(i + 1);
+            (hues[i], hues[j]) = (hues[j], hues[i]);
         }
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[i].Color = OklchToHex(lightness, chroma, hues[i]);
+        }
+
         await SaveAsync();
         Back();
+    }
+
+    private void UpdatePreview()
+    {
+        for (int i = 0; i < previewColors.Length; i++)
+        {
+            var hue = 360.0 * i / previewColors.Length;
+            previewColors[i] = OklchToHex(lightness, chroma, hue);
+        }
     }
 
     private async Task SaveAsync()
