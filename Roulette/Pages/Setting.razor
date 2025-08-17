@@ -119,7 +119,14 @@
 
     private void Add()
     {
-        items.Add(RouletteItem.Create());
+        var item = RouletteItem.Create();
+
+        if (items.Count > 0)
+        {
+            item.State = items[items.Count - 1].State;
+        }
+
+        items.Add(item);
     }
 
     private void Remove(int index)
