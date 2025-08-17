@@ -70,7 +70,7 @@
         ctx.fillStyle = getContrastColor(color);
         const text = item?.text || item;
         const baseSize = 16;
-        const maxWidth = 2 * textMid * 0.9;
+        const maxWidth = 2 * textMid * 0.7;
         ctx.font = `${baseSize}px 'BIZ UDPGothic', sans-serif`;
         const metrics = ctx.measureText(text);
         let fontSize = baseSize;
@@ -106,7 +106,7 @@
 
         const lineWidth = 3;
         const centerRatio = 0.1;
-        const textMid = (radius - lineWidth / 2) / (1 - 0.18) / 2;
+        const textMid = (radius - lineWidth / 2) / (1 - 0.12) / 2;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
