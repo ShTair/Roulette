@@ -33,7 +33,7 @@ public class RouletteItem
     public static string RandomColor(string? baseColor = null)
     {
         double l = 0.95;
-        double c = 0.02;
+        double c = 0.05;
         if (!string.IsNullOrWhiteSpace(baseColor))
         {
             var (l0, c0, _) = ColorUtil.HexToOklch(baseColor);
