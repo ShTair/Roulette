@@ -78,8 +78,7 @@
     transition: background-color 0.2s ease;
 }
 
-.start-stop-button:hover,
-.settings-button:hover {
+.start-stop-button:hover {
     background-color: #0d6efd;
     color: #fff;
 }
