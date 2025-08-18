@@ -7,9 +7,11 @@
 @using System
 @using Roulette.Models
 
-<PageTitle>色自動割り当て - ルーレット</PageTitle>
+<PageTitle>色設定ツール - ルーレット</PageTitle>
 
-<h3>項目の色自動割り当て</h3>
+<h3>色一括設定ツール</h3>
+
+<p>項目の色を一括で設定します。指定した明度と彩度を元に、色味を調整して色を生成します。</p>
 
 <div class="mb-3">
     <label class="form-label">明度: @lightness.ToString("0.00")</label>
@@ -22,6 +24,7 @@
 </div>
 
 <div class="d-flex mb-3">
+    <span>色見本:</span>
     @foreach (var color in previewColors)
     {
         <div class="preview-box me-2" style="background-color:@color"></div>
@@ -29,8 +32,8 @@
 </div>
 
 <div class="mb-3 d-flex">
-    <button class="btn btn-primary" @onclick="AssignEven">均等に割り当て</button>
-    <button class="btn btn-secondary ms-2" @onclick="AssignRandom">ランダムに割り当て</button>
+    <button class="btn btn-primary" @onclick="AssignEven">均等</button>
+    <button class="btn btn-secondary ms-2" @onclick="AssignRandom">ランダム</button>
     <button class="btn btn-outline-secondary ms-auto" @onclick="Back">戻る</button>
 </div>
 
