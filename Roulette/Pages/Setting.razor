@@ -56,6 +56,10 @@
     <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
 </div>
 
+<div class="mb-3">
+    <button class="btn btn-secondary" @onclick="OpenColorAuto">色一括設定ツール</button>
+</div>
+
 @code {
     [Parameter]
     public string? Id { get; set; }
@@ -153,6 +157,18 @@
         foreach (var item in items)
         {
             item.Count = 0;
+        }
+    }
+
+    private void OpenColorAuto()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Nav.NavigateTo("color");
+        }
+        else
+        {
+            Nav.NavigateTo($"color/{Id}");
         }
     }
 
