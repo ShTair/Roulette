@@ -26,12 +26,14 @@ public partial class RouletteConfig
     {
         foreach (var cfg in configs)
         {
+            string? prevColor = null;
             foreach (var item in cfg.Items)
             {
                 if (string.IsNullOrWhiteSpace(item.Color) || !ColorRegex().IsMatch(item.Color))
                 {
-                    item.Color = RouletteItem.RandomColor();
+                    item.Color = RouletteItem.RandomColor(prevColor);
                 }
+                prevColor = item.Color;
             }
         }
     }
