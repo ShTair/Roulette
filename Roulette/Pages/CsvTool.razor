@@ -1,7 +1,6 @@
-@page "/csv/{Id?}"
+@page "/csv/{Id}"
 @inject IJSRuntime JS
 @inject NavigationManager Nav
-@using System.Text.Json
 @using System.Collections.Generic
 @using System.Linq
 @using System
@@ -32,22 +31,18 @@
     protected override async Task OnInitializedAsync()
     {
         configs = await RouletteConfig.LoadAsync(JS);
-        if (!string.IsNullOrEmpty(Id))
+        if (string.IsNullOrEmpty(Id))
         {
-            currentConfig = configs.FirstOrDefault(c => c.Id == Id);
-            if (currentConfig is not null)
-            {
-                items = currentConfig.Items.ToList();
-            }
+            Nav.NavigateTo("setting");
+            return;
         }
-        else
+        currentConfig = configs.FirstOrDefault(c => c.Id == Id);
+        if (currentConfig is null)
         {
-            var json = await JS.InvokeAsync<string?>("localStorage.getItem", "rouletteItems");
-            if (!string.IsNullOrEmpty(json))
-            {
-                items = JsonSerializer.Deserialize<List<RouletteItem>>(json, JsonUtil.WebOptions) ?? new();
-            }
+            Nav.NavigateTo("setting");
+            return;
         }
+        items = currentConfig.Items.ToList();
     }
 
     private string GenerateCsv()
@@ -147,22 +142,10 @@
             currentConfig.Items = items;
             await RouletteConfig.SaveAsync(JS, configs);
         }
-        else
-        {
-            var json = JsonSerializer.Serialize(items, JsonUtil.WebOptions);
-            await JS.InvokeVoidAsync("localStorage.setItem", "rouletteItems", json);
-        }
     }
 
     private void Back()
     {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Nav.NavigateTo("setting");
-        }
-        else
-        {
-            Nav.NavigateTo($"setting/{Id}");
-        }
+        Nav.NavigateTo($"setting/{Id}");
     }
 }

@@ -12,33 +12,33 @@
 
 <div class="mb-3">
     <label class="form-label">設定名</label>
-    <input class="form-control" @bind="configName" />
+    <input class="form-control" @bind="configName" @bind:after="MarkDirty" />
 </div>
 
 <div class="form-check mb-3">
-    <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" />
+    <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" @bind:after="MarkDirty" />
     <label class="form-check-label" for="autoSize">大きさ自動調整</label>
 </div>
 
 <div class="mb-3 d-flex align-items-center">
     <label class="form-label me-2 mb-0">表示倍数</label>
-    <input type="number" class="form-control multiplier-input" @bind="itemMultiplier" min="1" />
+    <input type="number" class="form-control multiplier-input" @bind="itemMultiplier" min="1" @bind:after="MarkDirty" />
 </div>
 
 @for (int i = 0; i < items.Count; i++)
 {
     var index = i;
     <div class="mb-2 item-row">
-        <input type="color" class="form-control color-input" @bind="items[index].Color" />
+        <input type="color" class="form-control color-input" @bind="items[index].Color" @bind:after="MarkDirty" />
 
-        <input class="form-control text-input" @bind="items[index].Text" />
+        <input class="form-control text-input" @bind="items[index].Text" @bind:after="MarkDirty" />
 
         <div class="control-row">
             <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
-            <input type="number" class="form-control count-input" @bind="items[index].Count" />
+            <input type="number" class="form-control count-input" @bind="items[index].Count" @bind:after="MarkDirty" />
             @if (!autoAdjustSize)
             {
-                <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" />
+                <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
             }
             <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
         </div>
@@ -56,8 +56,8 @@
 </div>
 
 <div class="mb-3">
-    <button class="btn btn-secondary" @onclick="OpenColorAuto">色一括設定ツール</button>
-    <button class="btn btn-secondary ms-2" @onclick="OpenCsvTool">CSVツール</button>
+    <button class="btn btn-secondary" @onclick="OpenColorAuto" disabled="@isDirty">色一括設定ツール</button>
+    <button class="btn btn-secondary ms-2" @onclick="OpenCsvTool" disabled="@isDirty">CSVツール</button>
 </div>
 
 @code {
@@ -75,6 +75,9 @@
     private RouletteConfig? currentConfig;
     private bool autoAdjustSize = true;
     private int itemMultiplier = 1;
+    private bool isDirty = true;
+
+    private void MarkDirty() => isDirty = true;
 
     private void ToggleState(int index)
     {
@@ -85,6 +88,7 @@
             RouletteItemState.Enabled => RouletteItemState.Disabled,
             _ => RouletteItemState.Locked
         };
+        MarkDirty();
     }
 
     private static string GetStateIcon(RouletteItemState state) => state switch
@@ -118,6 +122,7 @@
                 itemMultiplier = currentConfig.ItemMultiplier;
             }
         }
+        isDirty = string.IsNullOrEmpty(Id);
         // When creating a new configuration, keep the default A/B/C items
     }
 
@@ -132,6 +137,7 @@
         }
 
         items.Add(item);
+        MarkDirty();
     }
 
     private void Remove(int index)
@@ -140,6 +146,7 @@
         {
             items.RemoveAt(index);
         }
+        MarkDirty();
     }
 
     private void MoveItem(int index, int offset)
@@ -147,6 +154,7 @@
         var newIndex = index + offset;
         if (newIndex < 0 || newIndex >= items.Count) return;
         (items[newIndex], items[index]) = (items[index], items[newIndex]);
+        MarkDirty();
     }
 
     private void MoveUp(int index) => MoveItem(index, -1);
@@ -159,15 +167,12 @@
         {
             item.Count = 0;
         }
+        MarkDirty();
     }
 
     private void OpenColorAuto()
     {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Nav.NavigateTo("color");
-        }
-        else
+        if (!string.IsNullOrEmpty(Id))
         {
             Nav.NavigateTo($"color/{Id}");
         }
@@ -175,11 +180,7 @@
 
     private void OpenCsvTool()
     {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Nav.NavigateTo("csv");
-        }
-        else
+        if (!string.IsNullOrEmpty(Id))
         {
             Nav.NavigateTo($"csv/{Id}");
         }
