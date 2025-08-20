@@ -1,0 +1,168 @@
+@page "/csv/{Id?}"
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+@using System.Text.Json
+@using System.Collections.Generic
+@using System.Linq
+@using System
+@using System.IO
+@using Roulette.Models
+@using nietras.SeparatedValues
+
+<PageTitle>CSVツール - ルーレット</PageTitle>
+
+<h3>CSVツール</h3>
+
+<div class="mb-3 d-flex">
+    <button class="btn btn-secondary" @onclick="ExportCsv">CSV書き出し</button>
+    <button class="btn btn-secondary ms-2" @onclick="TriggerCsvImport">CSV読み込み</button>
+    <button class="btn btn-secondary ms-auto" @onclick="Back">戻る</button>
+    <InputFile OnChange="ImportCsv" style="display:none" @ref="csvInput" accept=".csv,text/csv" />
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private List<RouletteItem> items = new();
+    private List<RouletteConfig> configs = new();
+    private RouletteConfig? currentConfig;
+    private InputFile? csvInput;
+
+    protected override async Task OnInitializedAsync()
+    {
+        configs = await RouletteConfig.LoadAsync(JS);
+        if (!string.IsNullOrEmpty(Id))
+        {
+            currentConfig = configs.FirstOrDefault(c => c.Id == Id);
+            if (currentConfig is not null)
+            {
+                items = currentConfig.Items.ToList();
+            }
+        }
+        else
+        {
+            var json = await JS.InvokeAsync<string?>("localStorage.getItem", "rouletteItems");
+            if (!string.IsNullOrEmpty(json))
+            {
+                items = JsonSerializer.Deserialize<List<RouletteItem>>(json, JsonUtil.WebOptions) ?? new();
+            }
+        }
+    }
+
+    private string GenerateCsv()
+    {
+        using var writer = Sep.Writer(o => o with { Sep = new Sep(',') }).ToText();
+        foreach (var item in items)
+        {
+            using var row = writer.NewRow();
+            row["Text"].Set(item.Text);
+            row["Color"].Set(item.Color);
+            row["Count"].Format(item.Count);
+            row["Size"].Format(item.Size);
+            row["State"].Set(item.State.ToString());
+        }
+        return writer.ToString();
+    }
+
+    private async Task ExportCsv()
+    {
+        var csv = GenerateCsv();
+        var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+        var baseName = currentConfig?.Name;
+        if (string.IsNullOrWhiteSpace(baseName)) baseName = "items";
+        var fileName = $"{baseName}_{timestamp}.csv";
+        await JS.InvokeVoidAsync("downloadFile", fileName, csv);
+    }
+
+    private async Task TriggerCsvImport()
+    {
+        if (csvInput is not null)
+        {
+            await JS.InvokeVoidAsync("triggerInputFile", csvInput.Element);
+        }
+    }
+
+    private void ApplyCsv(string text)
+    {
+        using var reader = Sep.Reader(o => o with { Sep = new Sep(',') }).FromText(text);
+
+        var header = reader.Header;
+        if (!header.TryIndexOf("Text", out var textIdx)) return;
+        header.TryIndexOf("Color", out var colorIdx);
+        header.TryIndexOf("Count", out var countIdx);
+        header.TryIndexOf("Size", out var sizeIdx);
+        header.TryIndexOf("State", out var stateIdx);
+
+        foreach (var row in reader)
+        {
+            var name = row[textIdx].ToString().Trim();
+            if (string.IsNullOrWhiteSpace(name)) continue;
+            var item = items.FirstOrDefault(x => x.Text == name);
+            if (item is null)
+            {
+                string? baseColor = items.Count > 0 ? items[^1].Color : null;
+                item = RouletteItem.Create(name, baseColor);
+                items.Add(item);
+            }
+            if (colorIdx >= 0)
+            {
+                var color = row[colorIdx].ToString();
+                if (!string.IsNullOrWhiteSpace(color)) item.Color = color;
+            }
+            if (countIdx >= 0)
+            {
+                var span = row[countIdx].Span;
+                if (int.TryParse(span, out var cnt)) item.Count = cnt;
+            }
+            if (sizeIdx >= 0)
+            {
+                var span = row[sizeIdx].Span;
+                if (double.TryParse(span, out var sz)) item.Size = sz;
+            }
+            if (stateIdx >= 0)
+            {
+                var stStr = row[stateIdx].ToString();
+                if (Enum.TryParse<RouletteItemState>(stStr, out var st)) item.State = st;
+            }
+        }
+    }
+
+    private async Task ImportCsv(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount == 0) return;
+        var file = e.File;
+        using var stream = file.OpenReadStream(file.Size);
+        using var readerText = new StreamReader(stream);
+        var text = await readerText.ReadToEndAsync();
+        ApplyCsv(text);
+        await SaveAsync();
+        Back();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (currentConfig is not null)
+        {
+            currentConfig.Items = items;
+            await RouletteConfig.SaveAsync(JS, configs);
+        }
+        else
+        {
+            var json = JsonSerializer.Serialize(items, JsonUtil.WebOptions);
+            await JS.InvokeVoidAsync("localStorage.setItem", "rouletteItems", json);
+        }
+    }
+
+    private void Back()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Nav.NavigateTo("setting");
+        }
+        else
+        {
+            Nav.NavigateTo($"setting/{Id}");
+        }
+    }
+}

@@ -4,7 +4,6 @@
 @using System.Text.Json
 @using System.Collections.Generic
 @using System.Linq
-@using System
 @using Roulette.Models
 
 <PageTitle>設定『@configName』 - ルーレット</PageTitle>
@@ -58,6 +57,7 @@
 
 <div class="mb-3">
     <button class="btn btn-secondary" @onclick="OpenColorAuto">色一括設定ツール</button>
+    <button class="btn btn-secondary ms-2" @onclick="OpenCsvTool">CSVツール</button>
 </div>
 
 @code {
@@ -170,6 +170,18 @@
         else
         {
             Nav.NavigateTo($"color/{Id}");
+        }
+    }
+
+    private void OpenCsvTool()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Nav.NavigateTo("csv");
+        }
+        else
+        {
+            Nav.NavigateTo($"csv/{Id}");
         }
     }
 
