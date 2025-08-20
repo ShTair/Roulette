@@ -51,18 +51,18 @@
         foreach (var item in items)
         {
             using var row = writer.NewRow();
-            row["Text"].Set(item.Text);
-            row["Color"].Set(item.Color);
-            row["Count"].Format(item.Count);
-            row["Size"].Format(item.Size);
-            row["State"].Set(item.State.ToString());
+            row["項目名"].Set(item.Text);
+            row["背景色"].Set(item.Color);
+            row["当たり数"].Format(item.Count);
+            row["サイズ"].Format(item.Size);
+            row["表示状態"].Set(item.State.ToString());
         }
         return writer.ToString();
     }
 
     private async Task ExportCsv()
     {
-        var csv = GenerateCsv();
+        var csv = "\uFEFF" + GenerateCsv();
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var baseName = currentConfig?.Name;
         if (string.IsNullOrWhiteSpace(baseName)) baseName = "items";
@@ -83,11 +83,21 @@
         using var reader = Sep.Reader(o => o with { Sep = new Sep(',') }).FromText(text);
 
         var header = reader.Header;
-        if (!header.TryIndexOf("Text", out var textIdx)) return;
-        header.TryIndexOf("Color", out var colorIdx);
-        header.TryIndexOf("Count", out var countIdx);
-        header.TryIndexOf("Size", out var sizeIdx);
-        header.TryIndexOf("State", out var stateIdx);
+        int GetIdx(params string[] names)
+        {
+            foreach (var name in names)
+            {
+                if (header.TryIndexOf(name, out var idx)) return idx;
+            }
+            return -1;
+        }
+
+        var textIdx = GetIdx("項目名", "Text");
+        if (textIdx < 0) return;
+        var colorIdx = GetIdx("背景色", "Color");
+        var countIdx = GetIdx("当たり数", "Count");
+        var sizeIdx = GetIdx("サイズ", "Size");
+        var stateIdx = GetIdx("表示状態", "State");
 
         foreach (var row in reader)
         {
