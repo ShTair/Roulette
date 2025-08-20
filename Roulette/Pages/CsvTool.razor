@@ -106,13 +106,17 @@
             var item = items.FirstOrDefault(x => x.Text == name);
             if (item is null)
             {
-                string? baseColor = items.Count > 0 ? items[^1].Color : null;
-                item = RouletteItem.Create(name, baseColor);
+                var last = items.Count > 0 ? items[^1] : null;
+                item = RouletteItem.Create(name, last?.Color);
+                if (last is not null)
+                {
+                    item.State = last.State;
+                }
                 items.Add(item);
             }
             if (colorIdx >= 0)
             {
-                var color = row[colorIdx].ToString();
+                var color = row[colorIdx].ToString().Trim();
                 if (!string.IsNullOrWhiteSpace(color)) item.Color = color;
             }
             if (countIdx >= 0)
@@ -127,7 +131,7 @@
             }
             if (stateIdx >= 0)
             {
-                var stStr = row[stateIdx].ToString();
+                var stStr = row[stateIdx].ToString().Trim();
                 if (Enum.TryParse<RouletteItemState>(stStr, out var st)) item.State = st;
             }
         }
