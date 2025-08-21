@@ -1,4 +1,4 @@
-<h5 class="toggle-header @HeaderClass" @onclick="Toggle">
+<h5 class="toggle-header @HeaderClass" style="@HeaderStyle" @onclick="Toggle">
     <span class="triangle @(IsOpen ? "open" : string.Empty)">▼</span> @Title
 </h5>
 @if (IsOpen)
@@ -11,6 +11,7 @@
     [Parameter] public bool IsOpen { get; set; }
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
     [Parameter] public string? HeaderClass { get; set; }
+    [Parameter] public string? HeaderStyle { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private void Toggle()

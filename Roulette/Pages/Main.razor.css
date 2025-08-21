@@ -104,12 +104,6 @@
     border-bottom-color: var(--border-color);
 }
 
-.count-header {
-    margin: 0 auto;
-    max-width: 300px;
-    text-align: center;
-}
-
 .item-state {
     margin-left: 4px;
 }

@@ -45,7 +45,9 @@
 }
 
 <div class="mt-2">
-    <ToggleSection Title="当たり回数リスト" HeaderClass="count-header" IsOpen="@showCounts" IsOpenChanged="OnShowCountsChanged">
+    <ToggleSection Title="当たり回数リスト"
+                   HeaderStyle="margin: 0 auto; max-width: 300px; text-align: center;"
+                   IsOpen="@showCounts" IsOpenChanged="OnShowCountsChanged">
         <table class="table table-sm count-table" style="--border-color:@borderColor;">
             <thead>
                 <tr>
