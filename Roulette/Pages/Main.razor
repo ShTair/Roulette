@@ -44,7 +44,7 @@
     </div>
 }
 
-<details class="mt-2" @ontoggle="ToggleCounts" open="@ShowCounts">
+<details class="mt-2" @bind-open="ShowCounts" @bind-open:event="ontoggle">
     <summary class="h5 text-center count-summary">当たり回数リスト</summary>
     <table class="table table-sm count-table" style="--border-color:@borderColor;">
         <thead>
@@ -86,7 +86,6 @@
     private bool isStopping;
     private bool showOverlay;
     private bool showCounts;
-    private bool skipToggleEvent;
     private bool ShowCounts
     {
         get => showCounts;
@@ -134,7 +133,6 @@
             selectedConfig = cfg.Name;
             autoAdjustSize = cfg.AutoAdjustSize;
             showCounts = cfg.ShowCountList;
-            skipToggleEvent = true;
 
             RebuildItems();
 
@@ -174,17 +172,6 @@
 
         isSpinning = !isSpinning;
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
-    }
-
-    private void ToggleCounts()
-    {
-        if (skipToggleEvent)
-        {
-            skipToggleEvent = false;
-            return;
-        }
-        ShowCounts = !ShowCounts;
-        skipToggleEvent = true;
     }
 
 
