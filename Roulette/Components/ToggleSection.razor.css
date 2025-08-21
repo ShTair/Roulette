@@ -6,6 +6,10 @@
 .toggle-header .triangle {
     display: inline-block;
     transform: rotate(-90deg);
+    font-size: 0.85em;
+    vertical-align: middle;
+    position: relative;
+    top: -0.1em;
 }
 
 .toggle-header .triangle.open {
