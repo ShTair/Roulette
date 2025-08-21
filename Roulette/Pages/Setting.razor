@@ -51,17 +51,14 @@
     </div>
 }
 
+
 <div class="mb-3 d-flex">
     <button class="btn btn-secondary" @onclick="Add">追加</button>
     <button class="btn btn-warning ms-2" @onclick="ResetAllCounts">当たり回数リセット</button>
-    <button class="btn btn-primary ms-auto" @onclick="Save">保存</button>
-    <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
 </div>
 
-<div class="mb-3">
-    <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#colorTool" disabled="@isDirty">色一括設定ツール</button>
-</div>
-<div class="collapse" id="colorTool">
+<details class="mb-3">
+    <summary class="h5">色一括設定ツール</summary>
     <div class="mb-3">
         <label class="form-label">明度: @lightness.ToString("0.00")</label>
         <input type="range" class="form-range" min="0" max="1" step="0.01" @bind="lightness" @bind:event="oninput" />
@@ -81,12 +78,10 @@
         <button class="btn btn-primary" @onclick="AssignEven">均等</button>
         <button class="btn btn-primary ms-2" @onclick="AssignRandom">ランダム</button>
     </div>
-</div>
+</details>
 
-<div class="mb-3">
-    <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#csvTool" disabled="@isDirty">CSVツール</button>
-</div>
-<div class="collapse" id="csvTool">
+<details class="mb-3">
+    <summary class="h5">CSVツール</summary>
     <div class="alert alert-warning">
         <p class="mb-1">
             この機能は設定一覧ページの「設定書き出し」とは目的が異なり、現在開いているルーレット項目だけを CSV で編集するためのものです。読み込み時は次のルールで反映されます。
@@ -103,6 +98,11 @@
         <button class="btn btn-secondary ms-2" @onclick="TriggerCsvImport">CSV読み込み</button>
         <InputFile OnChange="ImportCsv" style="display:none" @ref="csvInput" accept=".csv,text/csv" />
     </div>
+</details>
+
+<div class="mb-3 d-flex">
+    <button class="btn btn-primary ms-auto" @onclick="Save">保存</button>
+    <button class="btn btn-secondary ms-2" @onclick="Back">戻る</button>
 </div>
 
 @code {
