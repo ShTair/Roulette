@@ -116,7 +116,6 @@
 
 .count-header .triangle {
     display: inline-block;
-    transition: transform 0.2s;
     transform: rotate(-90deg);
 }
 
