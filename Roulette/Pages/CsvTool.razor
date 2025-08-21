@@ -12,6 +12,18 @@
 
 <h3>CSVツール</h3>
 
+<div class="alert alert-warning">
+    <p class="mb-1">
+        この機能は設定一覧ページの「設定書き出し」とは目的が異なり、現在開いているルーレット項目だけを CSV で編集するためのものです。読み込み時は次のルールで反映されます。
+    </p>
+    <ul class="mb-0">
+        <li>同じ項目名の行は既存の値を CSV の内容で上書きします。項目名が重複しているとどの行が使われるか分からず、正しく更新できません。</li>
+        <li>CSV に存在しない項目名の行は新しい項目として追加されます。</li>
+        <li>セルが空白だったり CSV に列が無い値は、現在の設定値がそのまま維持されます。</li>
+        <li>新しく追加された項目で空白のままの値には、背景色や当たり数などの初期値が自動で設定されます。</li>
+    </ul>
+</div>
+
 <div class="mb-3 d-flex">
     <button class="btn btn-secondary" @onclick="ExportCsv">CSV書き出し</button>
     <button class="btn btn-secondary ms-2" @onclick="TriggerCsvImport">CSV読み込み</button>
