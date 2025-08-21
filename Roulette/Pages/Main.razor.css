@@ -104,15 +104,9 @@
     border-bottom-color: var(--border-color);
 }
 
-.count-header {
+.count-summary {
     cursor: pointer;
     user-select: none;
-}
-
-.count-header .triangle {
-    display: inline-block;
-    font-size: 1.2em;
-    margin-right: 0.25em;
 }
 
 .item-state {
