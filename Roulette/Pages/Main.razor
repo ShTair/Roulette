@@ -44,8 +44,10 @@
     </div>
 }
 
-<div class="text-center mt-2">
-    <h5 class="count-header" @onclick="ToggleCounts">当たり回数リスト @(showCounts ? "▲" : "▼")</h5>
+<div class="mt-2">
+    <h5 class="count-header" @onclick="ToggleCounts">
+        <span class="triangle @(showCounts ? "open" : string.Empty)">▼</span> 当たり回数リスト
+    </h5>
     @if (showCounts)
     {
         <table class="table table-sm count-table" style="--border-color:@borderColor;">
@@ -69,7 +71,7 @@
                 }
             </tbody>
         </table>
-        }
+    }
 </div>
 
 <div class="text-center mt-2">
