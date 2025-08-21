@@ -96,7 +96,13 @@ else
     private async Task DeleteConfig(string id)
     {
         var cfg = configs.FirstOrDefault(c => c.Id == id);
-        if (cfg is not null && configs.Remove(cfg))
+        if (cfg is null) return;
+
+        var name = string.IsNullOrWhiteSpace(cfg.Name) ? "この設定" : $"『{cfg.Name}』";
+        var confirm = await JS.InvokeAsync<bool>("confirm", $"{name}を削除します。よろしいですか？");
+        if (!confirm) return;
+
+        if (configs.Remove(cfg))
         {
             await RouletteConfig.SaveAsync(JS, configs);
             StateHasChanged();
