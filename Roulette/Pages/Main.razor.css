@@ -105,8 +105,6 @@
 }
 
 .count-header {
-    cursor: pointer;
-    user-select: none;
     text-align: center;
 }
 
@@ -114,11 +112,3 @@
     margin-left: 4px;
 }
 
-.count-header .triangle {
-    display: inline-block;
-    transform: rotate(-90deg);
-}
-
-.count-header .triangle.open {
-    transform: rotate(0deg);
-}
