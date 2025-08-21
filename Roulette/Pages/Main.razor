@@ -44,33 +44,30 @@
     </div>
 }
 
-<div class="text-center mt-2">
-    <h5 class="count-header" @onclick="ToggleCounts">当たり回数リスト @(showCounts ? "▲" : "▼")</h5>
-    @if (showCounts)
-    {
-        <table class="table table-sm count-table" style="--border-color:@borderColor;">
-            <thead>
-                <tr>
-                    <th>表示</th>
-                    <th>項目</th>
-                    <th>回数</th>
+<details class="mt-2" @onToggle="ToggleCounts" open="@showCounts">
+    <summary class="h5 text-center count-summary">当たり回数リスト</summary>
+    <table class="table table-sm count-table" style="--border-color:@borderColor;">
+        <thead>
+            <tr>
+                <th>表示</th>
+                <th>項目</th>
+                <th>回数</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in allItems)
+            {
+                <tr style="background-color:@item.Color;color:@GetContrastColor(item.Color)">
+                    <td>
+                        <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
+                    </td>
+                    <td>@item.Text</td>
+                    <td class="text-end">@item.Count</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in allItems)
-                {
-                    <tr style="background-color:@item.Color;color:@GetContrastColor(item.Color)">
-                        <td>
-                            <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
-                        </td>
-                        <td>@item.Text</td>
-                        <td class="text-end">@item.Count</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        }
-</div>
+            }
+        </tbody>
+    </table>
+</details>
 
 <div class="text-center mt-2">
     <button class="btn btn-secondary ms-2" @onclick="OpenManage">一覧</button>
