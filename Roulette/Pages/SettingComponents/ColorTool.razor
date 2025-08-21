@@ -2,32 +2,41 @@
 @using System.Linq
 @using Roulette.Models
 
-<details class="mb-3">
-    <summary class="h5">色一括設定ツール</summary>
-    <div class="mb-3">
-        <label class="form-label">明度: @lightness.ToString("0.00")</label>
-        <input type="range" class="form-range" min="0" max="1" step="0.01" @bind="lightness" @bind:event="oninput" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">彩度: @chroma.ToString("0.00")</label>
-        <input type="range" class="form-range" min="0" max="0.4" step="0.01" @bind="chroma" @bind:event="oninput" />
-    </div>
-    <div class="d-flex mb-3">
-        <span>色見本:</span>
-        @foreach (var color in previewColors)
-        {
-            <div class="preview-box me-2" style="background-color:@color"></div>
-        }
-    </div>
-    <div class="mb-3 d-flex">
-        <button class="btn btn-primary" @onclick="AssignEven">均等</button>
-        <button class="btn btn-primary ms-2" @onclick="AssignRandom">ランダム</button>
-    </div>
-</details>
+<div class="mb-3">
+    <h5 class="tool-header" @onclick="ToggleOpen">
+        <span class="triangle @(open ? "open" : string.Empty)">▼</span> 色一括設定ツール
+    </h5>
+    @if (open)
+    {
+        <div class="mb-3">
+            <label class="form-label">明度: @lightness.ToString("0.00")</label>
+            <input type="range" class="form-range" min="0" max="1" step="0.01" @bind="lightness" @bind:event="oninput" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">彩度: @chroma.ToString("0.00")</label>
+            <input type="range" class="form-range" min="0" max="0.4" step="0.01" @bind="chroma" @bind:event="oninput" />
+        </div>
+        <div class="d-flex mb-3">
+            <span>色見本:</span>
+            @foreach (var color in previewColors)
+            {
+                <div class="preview-box me-2" style="background-color:@color"></div>
+            }
+        </div>
+        <div class="mb-3 d-flex">
+            <button class="btn btn-primary" @onclick="AssignEven">均等</button>
+            <button class="btn btn-primary ms-2" @onclick="AssignRandom">ランダム</button>
+        </div>
+    }
+</div>
 
 @code {
     [Parameter] public List<RouletteItem> Items { get; set; } = new();
     [Parameter] public EventCallback OnChanged { get; set; }
+
+    private bool open;
+
+    private void ToggleOpen() => open = !open;
 
     private double _lightness = 0.8;
     private double lightness
