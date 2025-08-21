@@ -105,3 +105,8 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+summary::marker,
+summary::-webkit-details-marker {
+    font-size: 1.2em;
+}
