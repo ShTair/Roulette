@@ -1,13 +1,13 @@
-.tool-header {
+.toggle-header {
     cursor: pointer;
     user-select: none;
 }
 
-.tool-header .triangle {
+.toggle-header .triangle {
     display: inline-block;
     transform: rotate(-90deg);
 }
 
-.tool-header .triangle.open {
+.toggle-header .triangle.open {
     transform: rotate(0deg);
 }

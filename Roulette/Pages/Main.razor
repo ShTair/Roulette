@@ -45,11 +45,9 @@
 }
 
 <div class="mt-2">
-    <h5 class="count-header" @onclick="ToggleCounts">
-        <span class="triangle @(showCounts ? "open" : string.Empty)">▼</span> 当たり回数リスト
-    </h5>
-    @if (showCounts)
-    {
+    <ToggleSection Title="当たり回数リスト"
+                   HeaderStyle="margin: 0 auto; max-width: 300px; text-align: center;"
+                   IsOpen="@showCounts" IsOpenChanged="OnShowCountsChanged">
         <table class="table table-sm count-table" style="--border-color:@borderColor;">
             <thead>
                 <tr>
@@ -71,7 +69,7 @@
                 }
             </tbody>
         </table>
-    }
+    </ToggleSection>
 </div>
 
 <div class="text-center mt-2">
@@ -167,12 +165,6 @@
 
         isSpinning = !isSpinning;
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
-    }
-
-    private async Task ToggleCounts()
-    {
-        showCounts = !showCounts;
-        await SaveCountsAsync();
     }
 
     private async Task EnableAllDisabled()
@@ -288,6 +280,12 @@
     private async Task OnAutoStopChanged()
     {
         await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
+    }
+
+    private async Task OnShowCountsChanged(bool value)
+    {
+        showCounts = value;
+        await SaveCountsAsync();
     }
 
     private async Task SaveCountsAsync()

@@ -6,11 +6,7 @@
 @using nietras.SeparatedValues
 
 <div class="mb-3">
-    <h5 class="tool-header" @onclick="ToggleOpen">
-        <span class="triangle @(open ? "open" : string.Empty)">▼</span> CSVツール
-    </h5>
-    @if (open)
-    {
+    <ToggleSection Title="CSVツール" @bind-IsOpen="open">
         <div class="alert alert-warning">
             <p class="mb-1">
                 <strong>設定一覧ページの「設定書き出し」とは、書き出されるファイルが異なる</strong>ことに注意してください。<br />
@@ -36,7 +32,7 @@
             <button class="btn btn-secondary ms-2" @onclick="TriggerCsvImport">CSV読み込み</button>
             <InputFile OnChange="ImportCsv" style="display:none" @ref="csvInput" accept=".csv,text/csv" />
         </div>
-    }
+    </ToggleSection>
 </div>
 
 @code {
@@ -45,8 +41,6 @@
     [Parameter] public EventCallback OnChanged { get; set; }
 
     private bool open;
-
-    private void ToggleOpen() => open = !open;
 
     private InputFile? csvInput;
 
