@@ -49,7 +49,7 @@
                    HeaderStyle="margin: 0 auto; max-width: 300px; text-align: center;"
                    IsOpen="@showCounts" IsOpenChanged="OnShowCountsChanged">
         <table class="table table-sm count-table" style="--border-color:@borderColor;">
-            <thead>
+            <thead class="text-center">
                 <tr>
                     <th>表示</th>
                     <th>項目</th>
@@ -60,7 +60,7 @@
                 @foreach (var item in allItems)
                 {
                     <tr style="background-color:@item.Color;color:@GetContrastColor(item.Color)">
-                        <td>
+                        <td class="text-center">
                             <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
                         </td>
                         <td>@item.Text</td>
