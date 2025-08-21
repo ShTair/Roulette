@@ -34,4 +34,9 @@ public class AppSettings
         var json = JsonSerializer.Serialize(settings, JsonUtil.WebOptions);
         await js.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
     }
+
+    public static async Task ResetAsync(IJSRuntime js)
+    {
+        await js.InvokeVoidAsync("localStorage.removeItem", StorageKey);
+    }
 }
