@@ -44,10 +44,9 @@
     </div>
 }
 
-<div class="text-center mt-2">
-    <h5 class="count-header" @onclick="ToggleCounts">当たり回数リスト @(showCounts ? "▲" : "▼")</h5>
-    @if (showCounts)
-    {
+<div class="mt-2">
+    <details open="@showCounts" @ontoggle="OnCountToggle">
+        <summary class="h5 count-header">当たり回数リスト</summary>
         <table class="table table-sm count-table" style="--border-color:@borderColor;">
             <thead>
                 <tr>
@@ -69,7 +68,7 @@
                 }
             </tbody>
         </table>
-        }
+    </details>
 </div>
 
 <div class="text-center mt-2">
@@ -167,7 +166,7 @@
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
     }
 
-    private async Task ToggleCounts()
+    private async Task OnCountToggle()
     {
         showCounts = !showCounts;
         await SaveCountsAsync();
