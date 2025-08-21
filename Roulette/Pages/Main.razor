@@ -86,7 +86,6 @@
     private bool isStopping;
     private bool showOverlay;
     private bool showCounts;
-    private bool skipToggleEvent = true;
     private bool ShowCounts
     {
         get => showCounts;
@@ -176,12 +175,6 @@
 
     private void ToggleCounts()
     {
-        if (skipToggleEvent)
-        {
-            skipToggleEvent = false;
-            return;
-        }
-
         ShowCounts = !ShowCounts;
     }
 
