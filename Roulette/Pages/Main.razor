@@ -59,7 +59,7 @@
             <tbody>
                 @foreach (var item in allItems)
                 {
-                    <tr style="background-color:@item.Color;color:@item.ForegroundColor">
+                    <tr style="background-color:@item.BackgroundColor;color:@item.ForegroundColor">
                         <td class="text-center">
                             <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
                         </td>
@@ -194,7 +194,7 @@
         {
             var item = items[index];
             overlayText = item.Text;
-            overlayColor = item.Color;
+            overlayColor = item.BackgroundColor;
             overlayTextColor = item.ForegroundColor;
             var center = await JS.InvokeAsync<double[]>("rouletteHelper.getContainerCenter", "rouletteCanvas");
             if (center?.Length == 2)
@@ -324,7 +324,7 @@
 
     private object[] ItemsForJs()
     {
-        return items.Select(i => new { text = i.Text, color = i.Color, weight = i.Weight, textColor = i.ForegroundColor }).ToArray();
+        return items.Select(i => new { text = i.Text, color = i.BackgroundColor, weight = i.Weight, textColor = i.ForegroundColor }).ToArray();
     }
 
     private void OpenSettings()

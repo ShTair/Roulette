@@ -5,14 +5,30 @@ namespace Roulette.Models;
 public class RouletteItem
 {
     public string Text { get; set; } = "";
-    private string _color = "";
+    private string _backgroundColor = "";
+    private string _legacyColor = "";
 
+    [JsonPropertyName("Color")]
     public string Color
     {
-        get => _color;
+        get => _legacyColor;
         set
         {
-            _color = value;
+            _legacyColor = value;
+            if (string.IsNullOrWhiteSpace(_backgroundColor))
+            {
+                ForegroundColor = ColorUtil.GetContrastColor(value);
+            }
+        }
+    }
+
+    public string BackgroundColor
+    {
+        get => string.IsNullOrWhiteSpace(_backgroundColor) ? _legacyColor : _backgroundColor;
+        set
+        {
+            _backgroundColor = value;
+            _legacyColor = value;
             ForegroundColor = ColorUtil.GetContrastColor(value);
         }
     }
@@ -35,7 +51,7 @@ public class RouletteItem
         return new RouletteItem
         {
             Text = text,
-            Color = RandomColor(baseColor),
+            BackgroundColor = RandomColor(baseColor),
             Size = 1,
             State = RouletteItemState.Locked
         };

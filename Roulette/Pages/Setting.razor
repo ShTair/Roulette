@@ -29,9 +29,9 @@
 {
     var index = i;
     <div class="mb-2 item-row">
-        <input type="color" class="form-control color-input" @bind="items[index].Color" @bind:after="MarkDirty" />
+        <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
 
-        <input class="form-control text-input" style="background-color:@items[index].Color;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" />
+        <input class="form-control text-input" style="background-color:@items[index].BackgroundColor;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" />
 
         <div class="control-row">
             <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
@@ -129,7 +129,7 @@
 
     private void Add()
     {
-        string? baseColor = items.Count > 0 ? items[items.Count - 1].Color : null;
+        string? baseColor = items.Count > 0 ? items[items.Count - 1].BackgroundColor : null;
         var item = RouletteItem.Create("", baseColor);
 
         if (items.Count > 0)
