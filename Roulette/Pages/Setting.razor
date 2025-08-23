@@ -5,7 +5,6 @@
 @using System.Collections.Generic
 @using System.Linq
 @using Roulette.Models
-@using System.Globalization
 
 <PageTitle>設定『@configName』 - ルーレット</PageTitle>
 
@@ -32,7 +31,7 @@
     <div class="mb-2 item-row">
         <input type="color" class="form-control color-input" @bind="items[index].Color" @bind:after="MarkDirty" />
 
-        <input class="form-control text-input" style="background-color:@items[index].Color;color:@GetContrastColor(items[index].Color)" @bind="items[index].Text" @bind:after="MarkDirty" />
+        <input class="form-control text-input" style="background-color:@items[index].Color;color:@ColorUtil.GetContrastColor(items[index].Color)" @bind="items[index].Text" @bind:after="MarkDirty" />
 
         <div class="control-row">
             <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
@@ -80,24 +79,6 @@
     private int itemMultiplier = 1;
     private bool isDirty = true;
     private void MarkDirty() => isDirty = true;
-
-    private static string GetContrastColor(string hex)
-    {
-        if (string.IsNullOrWhiteSpace(hex)) return "black";
-        hex = hex.TrimStart('#');
-        if (hex.Length == 3)
-        {
-            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
-        }
-        if (hex.Length != 6) return "black";
-
-        var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
-        var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
-        var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
-
-        var brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness > 128 ? "black" : "white";
-    }
 
     private void ToggleState(int index)
     {
