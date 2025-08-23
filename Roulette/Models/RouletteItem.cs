@@ -5,8 +5,19 @@ namespace Roulette.Models;
 public class RouletteItem
 {
     public string Text { get; set; } = "";
+    private string _color = "";
 
-    public string Color { get; set; } = "";
+    public string Color
+    {
+        get => _color;
+        set
+        {
+            _color = value;
+            ForegroundColor = ColorUtil.GetContrastColor(value);
+        }
+    }
+
+    public string ForegroundColor { get; set; } = "black";
 
     public int Count { get; set; }
 

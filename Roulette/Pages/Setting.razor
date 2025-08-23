@@ -31,7 +31,7 @@
     <div class="mb-2 item-row">
         <input type="color" class="form-control color-input" @bind="items[index].Color" @bind:after="MarkDirty" />
 
-        <input class="form-control text-input" style="background-color:@items[index].Color;color:@ColorUtil.GetContrastColor(items[index].Color)" @bind="items[index].Text" @bind:after="MarkDirty" />
+        <input class="form-control text-input" style="background-color:@items[index].Color;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" />
 
         <div class="control-row">
             <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
