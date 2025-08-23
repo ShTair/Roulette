@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Roulette.Models;
 
@@ -63,6 +64,24 @@ public static class ColorUtil
         if (H < 0) H += 360.0;
 
         return (L, C, H);
+    }
+
+    public static string GetContrastColor(string hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex)) return "black";
+        hex = hex.TrimStart('#');
+        if (hex.Length == 3)
+        {
+            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+        }
+        if (hex.Length != 6) return "black";
+
+        var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+        var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+        var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+
+        var brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128 ? "black" : "white";
     }
 }
 

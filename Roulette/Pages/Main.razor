@@ -3,9 +3,9 @@
 @inject NavigationManager Nav
 @using System.Text.Json
 @using Microsoft.JSInterop
-@using System.Globalization
 @using System.Collections.Generic
 @using System.Linq
+@using Roulette.Models
 @implements IDisposable
 
 <PageTitle>@selectedConfig - ルーレット</PageTitle>
@@ -59,7 +59,7 @@
             <tbody>
                 @foreach (var item in allItems)
                 {
-                    <tr style="background-color:@item.Color;color:@GetContrastColor(item.Color)">
+                    <tr style="background-color:@item.Color;color:@ColorUtil.GetContrastColor(item.Color)">
                         <td class="text-center">
                             <span class="item-state" title="@GetStateTitle(item.State)">@GetStateIcon(item.State)</span>
                         </td>
@@ -195,7 +195,7 @@
             var item = items[index];
             overlayText = item.Text;
             overlayColor = item.Color;
-            overlayTextColor = GetContrastColor(item.Color);
+            overlayTextColor = ColorUtil.GetContrastColor(item.Color);
             var center = await JS.InvokeAsync<double[]>("rouletteHelper.getContainerCenter", "rouletteCanvas");
             if (center?.Length == 2)
             {
@@ -315,24 +315,6 @@
         RouletteItemState.Disabled => "非表示",
         _ => string.Empty
     };
-
-    private static string GetContrastColor(string hex)
-    {
-        if (string.IsNullOrWhiteSpace(hex)) return "black";
-        hex = hex.TrimStart('#');
-        if (hex.Length == 3)
-        {
-            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
-        }
-        if (hex.Length != 6) return "black";
-
-        var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
-        var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
-        var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
-
-        var brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness > 128 ? "black" : "white";
-    }
 
     public void Dispose()
     {
