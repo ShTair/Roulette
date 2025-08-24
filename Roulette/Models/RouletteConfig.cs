@@ -29,11 +29,11 @@ public partial class RouletteConfig
             string? prevColor = null;
             foreach (var item in cfg.Items)
             {
-                if (string.IsNullOrWhiteSpace(item.Color) || !ColorRegex().IsMatch(item.Color))
+                if (string.IsNullOrWhiteSpace(item.BackgroundColor) || !ColorRegex().IsMatch(item.BackgroundColor))
                 {
-                    item.Color = RouletteItem.RandomColor(prevColor);
+                    item.BackgroundColor = RouletteItem.RandomColor(prevColor);
                 }
-                prevColor = item.Color;
+                prevColor = item.BackgroundColor;
             }
         }
     }

@@ -62,7 +62,7 @@
     {
         if (!initialized && Items.Count > 0)
         {
-            var (l, c, _) = ColorUtil.HexToOklch(Items[^1].Color);
+            var (l, c, _) = ColorUtil.HexToOklch(Items[^1].BackgroundColor);
             _lightness = Math.Clamp(l, 0, 1);
             _chroma = Math.Clamp(c, 0, 0.4);
             UpdatePreview();
@@ -76,7 +76,7 @@
         for (int i = 0; i < Items.Count; i++)
         {
             var hue = 360.0 * i / Items.Count;
-            Items[i].Color = ColorUtil.OklchToHex(lightness, chroma, hue);
+            Items[i].BackgroundColor = ColorUtil.OklchToHex(lightness, chroma, hue);
         }
         OnChanged.InvokeAsync();
     }
@@ -97,7 +97,7 @@
 
         for (int i = 0; i < Items.Count; i++)
         {
-            Items[i].Color = ColorUtil.OklchToHex(lightness, chroma, hues[i]);
+            Items[i].BackgroundColor = ColorUtil.OklchToHex(lightness, chroma, hues[i]);
         }
         OnChanged.InvokeAsync();
     }

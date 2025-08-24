@@ -41,20 +41,6 @@
         }
     }
 
-    function getContrastColor(hex) {
-        if (!hex) return 'black';
-        hex = String(hex).replace(/^#/, '');
-        if (hex.length === 3) {
-            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-        }
-        if (hex.length !== 6) return 'black';
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness > 128 ? 'black' : 'white';
-    }
-
     function drawSlice(start, end, item, index, radius, textMid) {
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -68,7 +54,7 @@
         ctx.rotate((start + end) / 2);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = getContrastColor(color);
+        ctx.fillStyle = item?.textColor || 'black';
         const text = item?.text || item;
         const baseSize = 16;
         const maxWidth = 2 * textMid * 0.7;

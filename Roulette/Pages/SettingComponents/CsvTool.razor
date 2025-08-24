@@ -51,7 +51,7 @@
         {
             using var row = writer.NewRow();
             row["項目名"].Set(item.Text);
-            row["背景色"].Set(item.Color);
+            row["背景色"].Set(item.BackgroundColor);
             row["当たり数"].Format(item.Count);
             row["サイズ"].Format(item.Size);
             row["表示状態"].Set(item.State.ToString());
@@ -106,7 +106,7 @@
             if (item is null)
             {
                 var last = Items.Count > 0 ? Items[^1] : null;
-                item = RouletteItem.Create(name, last?.Color);
+                item = RouletteItem.Create(name, last?.BackgroundColor);
                 if (last is not null)
                 {
                     item.State = last.State;
@@ -116,7 +116,7 @@
             if (colorIdx >= 0)
             {
                 var color = row[colorIdx].ToString().Trim();
-                if (!string.IsNullOrWhiteSpace(color)) item.Color = color;
+                if (!string.IsNullOrWhiteSpace(color)) item.BackgroundColor = color;
             }
             if (countIdx >= 0)
             {
