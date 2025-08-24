@@ -8,7 +8,6 @@ public class RouletteItem
     private string _backgroundColor = "";
     private string _legacyColor = "";
 
-    [JsonPropertyName("Color")]
     public string Color
     {
         get => _legacyColor;
