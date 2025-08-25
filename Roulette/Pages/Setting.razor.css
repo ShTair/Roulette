@@ -6,13 +6,9 @@
     align-items: center;
 }
 
-    .item-row .color-input {
-        grid-row: span 2;
-        width: 2.5rem;
-        height: 100%;
-        padding: 0;
-        cursor: pointer;
-        align-self: stretch;
+    .item-row .state-button {
+        grid-column: 1;
+        grid-row: 1;
     }
 
     .item-row .text-input {
@@ -20,6 +16,16 @@
         grid-row: 1;
         width: 100%;
         min-width: 0;
+    }
+
+    .item-row .color-input {
+        grid-column: 1;
+        grid-row: 2;
+        width: 2.5rem;
+        height: 100%;
+        padding: 0;
+        cursor: pointer;
+        align-self: stretch;
     }
 
     .item-row .move-up-button {
