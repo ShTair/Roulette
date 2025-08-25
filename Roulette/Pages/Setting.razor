@@ -73,7 +73,6 @@
 
 <div class="mb-3 d-flex">
     <button class="btn btn-secondary" @onclick="Add">追加</button>
-    <button class="btn btn-warning ms-2" @onclick="ResetAllCounts">当たり回数リセット</button>
 </div>
 
 <ColorTool Items="items" OnChanged="MarkDirty" />
@@ -201,15 +200,6 @@
     private void MoveUp(int index) => MoveItem(index, -1);
 
     private void MoveDown(int index) => MoveItem(index, 1);
-
-    private void ResetAllCounts()
-    {
-        foreach (var item in items)
-        {
-            item.Count = 0;
-        }
-        MarkDirty();
-    }
 
     private async Task Save()
     {

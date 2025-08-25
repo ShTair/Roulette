@@ -69,6 +69,9 @@
                 }
             </tbody>
         </table>
+        <div class="text-center mt-2">
+            <button class="btn btn-warning" @onclick="ResetAllCounts">当たり回数リセット</button>
+        </div>
     </ToggleSection>
 </div>
 
@@ -286,6 +289,21 @@
     {
         showCounts = value;
         await SaveCountsAsync();
+    }
+
+    private async Task ResetAllCounts()
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", "当たり回数をリセットしますか？");
+        if (!ok)
+        {
+            return;
+        }
+        foreach (var item in allItems)
+        {
+            item.Count = 0;
+        }
+        await SaveCountsAsync();
+        StateHasChanged();
     }
 
     private async Task SaveCountsAsync()
