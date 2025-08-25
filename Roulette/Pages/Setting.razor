@@ -169,6 +169,14 @@
         var newIndex = index + offset;
         if (newIndex < 0 || newIndex >= items.Count) return;
         (items[newIndex], items[index]) = (items[index], items[newIndex]);
+        if (activeIndex == index)
+        {
+            activeIndex = newIndex;
+        }
+        else if (activeIndex == newIndex)
+        {
+            activeIndex = index;
+        }
         MarkDirty();
     }
 
