@@ -33,21 +33,31 @@
 
         <input class="form-control text-input" style="background-color:@items[index].BackgroundColor;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" @onfocus="() => activeIndex = index" />
 
+        <div class="move-buttons @(activeIndex == index ? string.Empty : "invisible")">
+            <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
+            <button class="btn btn-outline-secondary ms-1" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
+        </div>
+
         @if (activeIndex == index)
         {
-            <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
-
-            <div class="control-row">
-                <input type="number" class="form-control count-input" @bind="items[index].Count" @bind:after="MarkDirty" />
+            <div class="detail-container">
+                <div class="detail-row">
+                    <label class="form-label me-2 mb-0">背景色</label>
+                    <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
+                </div>
+                <div class="detail-row">
+                    <label class="form-label me-2 mb-0">当たり回数</label>
+                    <input type="number" class="form-control count-input" @bind="items[index].Count" @bind:after="MarkDirty" />
+                </div>
                 @if (!autoAdjustSize)
                 {
-                    <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
+                    <div class="detail-row">
+                        <label class="form-label me-2 mb-0">表示大きさ</label>
+                        <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
+                    </div>
                 }
-                <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+                <button class="btn btn-outline-danger mt-1" @onclick="() => Remove(index)">削除</button>
             </div>
-
-            <button class="btn btn-outline-secondary move-up-button" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
-            <button class="btn btn-outline-secondary move-down-button" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
         }
     </div>
 }
