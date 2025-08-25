@@ -114,6 +114,11 @@
                 if (last is not null)
                 {
                     item.State = last.State;
+                    item.AutoForegroundColor = last.AutoForegroundColor;
+                    if (!item.AutoForegroundColor)
+                    {
+                        item.ForegroundColor = RouletteItem.RandomColor(last.ForegroundColor);
+                    }
                 }
                 Items.Add(item);
             }
