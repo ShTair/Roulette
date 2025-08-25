@@ -74,7 +74,7 @@
         }
     }
 
-    private double _startHue;
+    private double _startHue = 0;
     private double startHue
     {
         get => _startHue;
@@ -94,10 +94,9 @@
     {
         if (!initialized && Items.Count > 0)
         {
-            var (l, c, h) = ColorUtil.HexToOklch(Items[^1].BackgroundColor);
+            var (l, c, _) = ColorUtil.HexToOklch(Items[^1].BackgroundColor);
             _lightness = Math.Clamp(l, 0, 1);
             _chroma = Math.Clamp(c, 0, 0.4);
-            _startHue = h;
             UpdatePreview();
             initialized = true;
         }
