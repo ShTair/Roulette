@@ -7,6 +7,7 @@ public class RouletteItem
     public string Text { get; set; } = "";
     private string _backgroundColor = "";
     private string _legacyColor = "";
+    private bool _autoForegroundColor = true;
 
     public string Color
     {
@@ -14,7 +15,7 @@ public class RouletteItem
         set
         {
             _legacyColor = value;
-            if (string.IsNullOrWhiteSpace(_backgroundColor))
+            if (string.IsNullOrWhiteSpace(_backgroundColor) && _autoForegroundColor)
             {
                 ForegroundColor = ColorUtil.GetContrastColor(value);
             }
@@ -28,11 +29,27 @@ public class RouletteItem
         {
             _backgroundColor = value;
             _legacyColor = value;
-            ForegroundColor = ColorUtil.GetContrastColor(value);
+            if (_autoForegroundColor)
+            {
+                ForegroundColor = ColorUtil.GetContrastColor(value);
+            }
         }
     }
 
     public string ForegroundColor { get; set; } = "black";
+
+    public bool AutoForegroundColor
+    {
+        get => _autoForegroundColor;
+        set
+        {
+            _autoForegroundColor = value;
+            if (_autoForegroundColor)
+            {
+                ForegroundColor = ColorUtil.GetContrastColor(BackgroundColor);
+            }
+        }
+    }
 
     public int Count { get; set; }
 

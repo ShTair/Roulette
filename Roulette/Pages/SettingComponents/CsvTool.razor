@@ -52,6 +52,8 @@
             using var row = writer.NewRow();
             row["項目名"].Set(item.Text);
             row["背景色"].Set(item.BackgroundColor);
+            row["文字色"].Set(item.ForegroundColor);
+            row["文字色自動"].Set(item.AutoForegroundColor ? "true" : "false");
             row["当たり数"].Format(item.Count);
             row["サイズ"].Format(item.Size);
             row["表示状態"].Set(item.State.ToString());
@@ -94,6 +96,8 @@
         var textIdx = GetIdx("項目名", "Text");
         if (textIdx < 0) return;
         var colorIdx = GetIdx("背景色", "Color");
+        var fgColorIdx = GetIdx("文字色", "ForegroundColor");
+        var fgAutoIdx = GetIdx("文字色自動", "AutoForegroundColor");
         var countIdx = GetIdx("当たり数", "Count");
         var sizeIdx = GetIdx("サイズ", "Size");
         var stateIdx = GetIdx("表示状態", "State");
@@ -118,6 +122,15 @@
                 var color = row[colorIdx].ToString().Trim();
                 if (!string.IsNullOrWhiteSpace(color)) item.BackgroundColor = color;
             }
+            if (fgColorIdx >= 0)
+            {
+                var color = row[fgColorIdx].ToString().Trim();
+                if (!string.IsNullOrWhiteSpace(color))
+                {
+                    item.ForegroundColor = color;
+                    item.AutoForegroundColor = false;
+                }
+            }
             if (countIdx >= 0)
             {
                 var span = row[countIdx].Span;
@@ -132,6 +145,11 @@
             {
                 var stStr = row[stateIdx].ToString().Trim();
                 if (Enum.TryParse<RouletteItemState>(stStr, out var st)) item.State = st;
+            }
+            if (fgAutoIdx >= 0)
+            {
+                var span = row[fgAutoIdx].ToString().Trim();
+                if (bool.TryParse(span, out var auto)) item.AutoForegroundColor = auto;
             }
         }
     }
