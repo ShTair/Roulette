@@ -36,9 +36,12 @@
         @if (activeIndex == index)
         {
             <div class="detail-container">
-                <div class="move-buttons">
-                    <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
-                    <button class="btn btn-outline-secondary ms-1" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
+                <div class="action-buttons">
+                    <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+                    <div class="move-buttons btn-group">
+                        <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
+                    </div>
                 </div>
                 <div class="detail-row">
                     <label class="form-label me-2 mb-0">背景色</label>
@@ -55,7 +58,6 @@
                         <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
                     </div>
                 }
-                <button class="btn btn-outline-danger mt-1" @onclick="() => Remove(index)">削除</button>
             </div>
         }
     </div>
