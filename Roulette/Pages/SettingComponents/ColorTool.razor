@@ -5,6 +5,9 @@
 <div class="mb-3">
     <ToggleSection Title="色一括設定ツール" @bind-IsOpen="open">
         <div class="mb-3">
+            <button class="btn btn-secondary" @onclick="AssignAutoForeground">文字色を自動に設定</button>
+        </div>
+        <div class="mb-3">
             <label class="form-label">明度: @lightness.ToString("0.00")</label>
             <input type="range" class="form-range" min="0" max="1" step="0.01" @bind="lightness" @bind:event="oninput" />
         </div>
@@ -20,8 +23,21 @@
             }
         </div>
         <div class="mb-3 d-flex">
-            <button class="btn btn-primary" @onclick="AssignEven">均等に適用</button>
-            <button class="btn btn-primary ms-2" @onclick="AssignRandom">ランダムに適用</button>
+            <button class="btn btn-primary" @onclick="AssignForegroundEven">文字色に均等適用</button>
+            <button class="btn btn-primary ms-2" @onclick="AssignForegroundRandom">文字色にランダム適用</button>
+        </div>
+        <div class="mb-3 d-flex">
+            <button class="btn btn-primary" @onclick="AssignEven">背景に均等適用</button>
+            <button class="btn btn-primary ms-2" @onclick="AssignRandom">背景にランダム適用</button>
+        </div>
+        <hr />
+        <div class="mb-3">
+            <label class="form-label">一括適用色</label>
+            <input type="color" class="form-control form-control-color" @bind="solidColor" />
+        </div>
+        <div class="mb-3 d-flex">
+            <button class="btn btn-primary" @onclick="AssignForegroundSolid">文字色に適用</button>
+            <button class="btn btn-primary ms-2" @onclick="AssignBackgroundSolid">背景に適用</button>
         </div>
     </ToggleSection>
 </div>
@@ -57,6 +73,7 @@
     private readonly Random rand = new();
     private readonly string[] previewColors = new string[3];
     private bool initialized;
+    private string solidColor = "#000000";
 
     protected override void OnParametersSet()
     {
@@ -98,6 +115,68 @@
         for (int i = 0; i < Items.Count; i++)
         {
             Items[i].BackgroundColor = ColorUtil.OklchToHex(lightness, chroma, hues[i]);
+        }
+        OnChanged.InvokeAsync();
+    }
+
+    private void AssignForegroundEven()
+    {
+        if (Items.Count == 0) return;
+        foreach (var item in Items) item.AutoForegroundColor = false;
+        for (int i = 0; i < Items.Count; i++)
+        {
+            var hue = 360.0 * i / Items.Count;
+            Items[i].ForegroundColor = ColorUtil.OklchToHex(lightness, chroma, hue);
+        }
+        OnChanged.InvokeAsync();
+    }
+
+    private void AssignForegroundRandom()
+    {
+        if (Items.Count == 0) return;
+
+        var hues = Enumerable.Range(0, Items.Count)
+            .Select(i => 360.0 * i / Items.Count)
+            .ToList();
+
+        for (int i = hues.Count - 1; i > 0; i--)
+        {
+            int j = rand.Next(i + 1);
+            (hues[i], hues[j]) = (hues[j], hues[i]);
+        }
+
+        for (int i = 0; i < Items.Count; i++)
+        {
+            Items[i].AutoForegroundColor = false;
+            Items[i].ForegroundColor = ColorUtil.OklchToHex(lightness, chroma, hues[i]);
+        }
+        OnChanged.InvokeAsync();
+    }
+
+    private void AssignAutoForeground()
+    {
+        foreach (var item in Items)
+        {
+            item.AutoForegroundColor = true;
+        }
+        OnChanged.InvokeAsync();
+    }
+
+    private void AssignForegroundSolid()
+    {
+        foreach (var item in Items)
+        {
+            item.AutoForegroundColor = false;
+            item.ForegroundColor = solidColor;
+        }
+        OnChanged.InvokeAsync();
+    }
+
+    private void AssignBackgroundSolid()
+    {
+        foreach (var item in Items)
+        {
+            item.BackgroundColor = solidColor;
         }
         OnChanged.InvokeAsync();
     }
