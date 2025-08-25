@@ -1,7 +1,7 @@
 
 .item-row {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
     gap: 0;
     align-items: start;
@@ -19,24 +19,19 @@
         min-width: 0;
     }
 
-    .item-row .move-buttons {
-        grid-column: 3;
-        grid-row: 1;
-        display: flex;
-    }
-
-        .item-row .move-buttons.invisible {
-            visibility: hidden;
-        }
-
     .item-row .detail-container {
-        grid-column: 1 / span 3;
+        grid-column: 1 / span 2;
         grid-row: 2;
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
         align-items: flex-start;
     }
+
+        .item-row .move-buttons {
+            display: flex;
+            margin-bottom: 0.25rem;
+        }
 
         .item-row .detail-row {
             display: flex;
