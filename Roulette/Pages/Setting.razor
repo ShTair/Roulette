@@ -47,7 +47,10 @@
                     <label class="form-label me-2 mb-0">文字色</label>
                     <div class="form-check form-switch me-3">
                         <input class="form-check-input" type="checkbox" id="@($"fgAuto{index}")" @bind="items[index].AutoForegroundColor" @bind:after="MarkDirty" />
-                        <label class="form-check-label" for="@($"fgAuto{index}")">自動</label>
+                        @if (items[index].AutoForegroundColor)
+                        {
+                            <label class="form-check-label" for="@($"fgAuto{index}")">自動</label>
+                        }
                     </div>
                     @if (!items[index].AutoForegroundColor)
                     {
