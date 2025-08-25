@@ -44,17 +44,18 @@
                     </div>
                 </div>
                 <div class="detail-row">
+                    <label class="form-label me-2 mb-0">文字色</label>
+                    <input class="form-check-input me-1" type="checkbox" id="@($"fgManual{index}")" checked="@(!items[index].AutoForegroundColor)" @onchange="(e) => { items[index].AutoForegroundColor = !(bool)e.Value!; MarkDirty(); }" />
+                    @if (items[index].AutoForegroundColor)
+                    {
+                        <span class="form-label me-3 mb-0">自動</span>
+                    }
+                    else
+                    {
+                        <input type="color" class="form-control color-input me-3" @bind="items[index].ForegroundColor" @bind:after="MarkDirty" />
+                    }
                     <label class="form-label me-2 mb-0">背景色</label>
                     <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
-                </div>
-                <div class="detail-row">
-                    <label class="form-label me-2 mb-0">文字色</label>
-                    <input class="form-check-input me-1" type="checkbox" id="@($"fgAuto{index}")" @bind="items[index].AutoForegroundColor" @bind:after="MarkDirty" />
-                    <label class="form-check-label me-2" for="@($"fgAuto{index}")">自動</label>
-                    @if (!items[index].AutoForegroundColor)
-                    {
-                        <input type="color" class="form-control color-input" @bind="items[index].ForegroundColor" @bind:after="MarkDirty" />
-                    }
                 </div>
                 <div class="detail-row">
                     <label class="form-label me-2 mb-0">当たり回数</label>
