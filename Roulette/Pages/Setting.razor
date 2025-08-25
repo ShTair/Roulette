@@ -15,7 +15,7 @@
     <input class="form-control" @bind="configName" @bind:after="MarkDirty" />
 </div>
 
-<div class="form-check mb-3">
+<div class="mb-3 form-check form-switch">
     <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" @bind:after="MarkDirty" />
     <label class="form-check-label" for="autoSize">大きさ自動調整</label>
 </div>
@@ -45,12 +45,11 @@
                 </div>
                 <div class="detail-row">
                     <label class="form-label me-2 mb-0">文字色</label>
-                    <input class="form-check-input me-1" type="checkbox" id="@($"fgManual{index}")" checked="@(!items[index].AutoForegroundColor)" @onchange="(e) => { items[index].AutoForegroundColor = !(bool)e.Value!; MarkDirty(); }" />
-                    @if (items[index].AutoForegroundColor)
-                    {
-                        <span class="form-label me-3 mb-0">自動</span>
-                    }
-                    else
+                    <div class="form-check form-switch me-3">
+                        <input class="form-check-input" type="checkbox" id="@($"fgAuto{index}")" @bind="items[index].AutoForegroundColor" @bind:after="MarkDirty" />
+                        <label class="form-check-label" for="@($"fgAuto{index}")">自動</label>
+                    </div>
+                    @if (!items[index].AutoForegroundColor)
                     {
                         <input type="color" class="form-control color-input me-3" @bind="items[index].ForegroundColor" @bind:after="MarkDirty" />
                     }
