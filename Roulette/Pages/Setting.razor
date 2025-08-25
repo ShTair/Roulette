@@ -50,14 +50,12 @@
                 <div class="detail-row">
                     <label class="form-label me-2 mb-0">当たり回数</label>
                     <input type="number" class="form-control count-input" @bind="items[index].Count" @bind:after="MarkDirty" />
-                </div>
-                @if (!autoAdjustSize)
-                {
-                    <div class="detail-row">
-                        <label class="form-label me-2 mb-0">表示大きさ</label>
+                    @if (!autoAdjustSize)
+                    {
+                        <label class="form-label ms-3 me-2 mb-0">大きさ</label>
                         <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
-                    </div>
-                }
+                    }
+                </div>
             </div>
         }
     </div>
