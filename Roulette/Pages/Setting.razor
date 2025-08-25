@@ -153,12 +153,20 @@
 
     private void Add()
     {
-        string? baseColor = items.Count > 0 ? items[items.Count - 1].BackgroundColor : null;
-        var item = RouletteItem.Create("", baseColor);
+        string? baseBgColor = items.Count > 0 ? items[items.Count - 1].BackgroundColor : null;
+        string? baseFgColor = items.Count > 0 ? items[items.Count - 1].ForegroundColor : null;
+        bool autoFg = items.Count > 0 ? items[items.Count - 1].AutoForegroundColor : true;
+        var item = RouletteItem.Create("", baseBgColor);
 
         if (items.Count > 0)
         {
             item.State = items[items.Count - 1].State;
+        }
+
+        item.AutoForegroundColor = autoFg;
+        if (!autoFg)
+        {
+            item.ForegroundColor = RouletteItem.RandomColor(baseFgColor);
         }
 
         items.Add(item);
