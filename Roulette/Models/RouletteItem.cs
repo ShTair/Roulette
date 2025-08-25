@@ -36,7 +36,7 @@ public class RouletteItem
         }
     }
 
-    public string ForegroundColor { get; set; } = "black";
+    public string ForegroundColor { get; set; } = "#000000";
 
     public bool AutoForegroundColor
     {
