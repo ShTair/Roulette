@@ -1,18 +1,16 @@
+
+
 .item-row {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
     gap: 0;
-    align-items: center;
+    align-items: start;
 }
 
-    .item-row .color-input {
-        grid-row: span 2;
-        width: 2.5rem;
-        height: 100%;
-        padding: 0;
-        cursor: pointer;
-        align-self: stretch;
+    .item-row .state-button {
+        grid-column: 1;
+        grid-row: 1;
     }
 
     .item-row .text-input {
@@ -22,21 +20,39 @@
         min-width: 0;
     }
 
-    .item-row .move-up-button {
-        grid-column: 3;
-        grid-row: 1;
-    }
-
-    .item-row .move-down-button {
-        grid-column: 3;
-        grid-row: 2;
-    }
-
-    .item-row .control-row {
-        grid-column: 2;
+    .item-row .detail-container {
+        grid-column: 1 / span 2;
         grid-row: 2;
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: flex-start;
+        padding: 0.5rem;
+        margin-top: 0.25rem;
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+
+        .item-row .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.25rem;
+            width: 100%;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-row .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    .color-input {
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        cursor: pointer;
     }
 
 .count-input {

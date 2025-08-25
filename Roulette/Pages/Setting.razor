@@ -29,22 +29,35 @@
 {
     var index = i;
     <div class="mb-2 item-row">
-        <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
+        <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
 
-        <input class="form-control text-input" style="background-color:@items[index].BackgroundColor;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" />
+        <input class="form-control text-input" style="background-color:@items[index].BackgroundColor;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" @onfocus="() => activeIndex = index" />
 
-        <div class="control-row">
-            <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
-            <input type="number" class="form-control count-input" @bind="items[index].Count" @bind:after="MarkDirty" />
-            @if (!autoAdjustSize)
-            {
-                <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
-            }
-            <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
-        </div>
-
-        <button class="btn btn-outline-secondary move-up-button" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
-        <button class="btn btn-outline-secondary move-down-button" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
+        @if (activeIndex == index)
+        {
+            <div class="detail-container">
+                <div class="action-buttons">
+                    <button class="btn btn-outline-danger" @onclick="() => Remove(index)">削除</button>
+                    <div class="move-buttons btn-group">
+                        <button class="btn btn-outline-secondary" @onclick="() => MoveUp(index)" disabled="@(index == 0)">↑</button>
+                        <button class="btn btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == items.Count - 1)">↓</button>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <label class="form-label me-2 mb-0">背景色</label>
+                    <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
+                </div>
+                <div class="detail-row">
+                    <label class="form-label me-2 mb-0">当たり回数</label>
+                    <input type="number" class="form-control count-input" @bind="items[index].Count" @bind:after="MarkDirty" />
+                    @if (!autoAdjustSize)
+                    {
+                        <label class="form-label ms-3 me-2 mb-0">大きさ</label>
+                        <input type="number" step="1" class="form-control size-input" @bind="items[index].Size" @bind:after="MarkDirty" />
+                    }
+                </div>
+            </div>
+        }
     </div>
 }
 
@@ -78,6 +91,7 @@
     private bool autoAdjustSize = true;
     private int itemMultiplier = 1;
     private bool isDirty = true;
+    private int? activeIndex = null;
     private void MarkDirty() => isDirty = true;
 
     private void ToggleState(int index)
@@ -155,6 +169,14 @@
         var newIndex = index + offset;
         if (newIndex < 0 || newIndex >= items.Count) return;
         (items[newIndex], items[index]) = (items[index], items[newIndex]);
+        if (activeIndex == index)
+        {
+            activeIndex = newIndex;
+        }
+        else if (activeIndex == newIndex)
+        {
+            activeIndex = index;
+        }
         MarkDirty();
     }
 
