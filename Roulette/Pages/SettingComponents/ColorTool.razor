@@ -8,6 +8,10 @@
             <button class="btn btn-secondary" @onclick="AssignAutoForeground">文字色を自動に設定</button>
         </div>
         <div class="mb-3">
+            <label class="form-label">開始色相: @startHue.ToString("0")</label>
+            <input type="range" class="form-range" min="0" max="360" step="1" @bind="startHue" @bind:event="oninput" />
+        </div>
+        <div class="mb-3">
             <label class="form-label">明度: @lightness.ToString("0.00")</label>
             <input type="range" class="form-range" min="0" max="1" step="0.01" @bind="lightness" @bind:event="oninput" />
         </div>
@@ -70,6 +74,17 @@
         }
     }
 
+    private double _startHue = 0;
+    private double startHue
+    {
+        get => _startHue;
+        set
+        {
+            _startHue = value;
+            UpdatePreview();
+        }
+    }
+
     private readonly Random rand = new();
     private readonly string[] previewColors = new string[3];
     private bool initialized;
@@ -92,7 +107,7 @@
         if (Items.Count == 0) return;
         for (int i = 0; i < Items.Count; i++)
         {
-            var hue = 360.0 * i / Items.Count;
+            var hue = (startHue + 360.0 * i / Items.Count) % 360.0;
             Items[i].BackgroundColor = ColorUtil.OklchToHex(lightness, chroma, hue);
         }
         OnChanged.InvokeAsync();
@@ -103,7 +118,7 @@
         if (Items.Count == 0) return;
 
         var hues = Enumerable.Range(0, Items.Count)
-            .Select(i => 360.0 * i / Items.Count)
+            .Select(i => (startHue + 360.0 * i / Items.Count) % 360.0)
             .ToList();
 
         for (int i = hues.Count - 1; i > 0; i--)
@@ -125,7 +140,7 @@
         foreach (var item in Items) item.AutoForegroundColor = false;
         for (int i = 0; i < Items.Count; i++)
         {
-            var hue = 360.0 * i / Items.Count;
+            var hue = (startHue + 360.0 * i / Items.Count) % 360.0;
             Items[i].ForegroundColor = ColorUtil.OklchToHex(lightness, chroma, hue);
         }
         OnChanged.InvokeAsync();
@@ -136,7 +151,7 @@
         if (Items.Count == 0) return;
 
         var hues = Enumerable.Range(0, Items.Count)
-            .Select(i => 360.0 * i / Items.Count)
+            .Select(i => (startHue + 360.0 * i / Items.Count) % 360.0)
             .ToList();
 
         for (int i = hues.Count - 1; i > 0; i--)
@@ -185,7 +200,7 @@
     {
         for (int i = 0; i < previewColors.Length; i++)
         {
-            var hue = 360.0 * i / previewColors.Length;
+            var hue = (startHue + 360.0 * i / previewColors.Length) % 360.0;
             previewColors[i] = ColorUtil.OklchToHex(lightness, chroma, hue);
         }
     }
