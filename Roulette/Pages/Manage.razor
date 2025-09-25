@@ -13,140 +13,134 @@
 <h3>ルーレット設定一覧</h3>
 
 <div class="mb-3 d-flex">
-    <button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
-    <button class="btn btn-secondary ms-auto" @onclick="TriggerImport">設定ファイル取り込み</button>
-    <InputFile OnChange="ImportConfig" style="display:none" @ref="importInput" accept="application/json" />
+	<button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
+	<button class="btn btn-secondary ms-auto" @onclick="TriggerImport">設定ファイル取り込み</button>
+	<InputFile OnChange="ImportConfig" style="display:none" @ref="importInput" accept="application/json" />
 </div>
 
 @if (configs.Count == 0)
 {
-    <p>設定がありません。</p>
+	<p>設定がありません。</p>
 }
 else
 {
-    <ul class="list-group">
-        @foreach (var cfg in configs)
-        {
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center config-item pe-2" @onclick="() => SelectConfig(cfg.Id)">
-                <span>@cfg.Name</span>
-                <span class="btn-group btn-group-sm">
-                    <button class="btn btn-secondary" @onclick="() => ExportConfig(cfg)" @onclick:stopPropagation="true">書き出し</button>
-                    <button class="btn btn-danger" @onclick="() => DeleteConfig(cfg.Id)" @onclick:stopPropagation="true">削除</button>
-                </span>
-            </li>
-        }
-    </ul>
+	<ul class="list-group">
+		@foreach (var cfg in configs)
+		{
+			<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center config-item pe-2" @onclick="() => SelectConfig(cfg.Id)">
+				<span>@cfg.Name</span>
+				<span class="btn-group btn-group-sm">
+					<button class="btn btn-secondary" @onclick="() => ExportConfig(cfg)" @onclick:stopPropagation="true">書き出し</button>
+					<button class="btn btn-danger" @onclick="() => DeleteConfig(cfg.Id)" @onclick:stopPropagation="true">削除</button>
+				</span>
+			</li>
+		}
+	</ul>
 }
 
 <div class="my-3 d-flex">
-    <button class="btn btn-secondary" @onclick="OpenEnv">環境設定</button>
-    <button class="btn btn-secondary ms-2" @onclick="OpenUsage">使い方</button>
-</div>
-
-<div class="alert alert-success" role="alert">
-    <strong>いま、新しいドメインを開いています。</strong><br />
-    <a href="https://shtair.github.io/Roulette/">古いドメインはこちら</a><br />
-    古いドメインはそのうち消します。
+	<button class="btn btn-secondary" @onclick="OpenEnv">環境設定</button>
+	<button class="btn btn-secondary ms-2" @onclick="OpenUsage">使い方</button>
 </div>
 
 <div class="alert alert-info" role="alert">
-    <strong>データはブラウザごとに保存されます。</strong><br />
-    保存したルーレットが見つからないときは、いつも使ってるブラウザかどうか確認してください。
+	<strong>データはブラウザごとに保存されます。</strong><br />
+	保存したルーレットが見つからないときは、いつも使ってるブラウザかどうか確認してください。
 </div>
 
 <div class="release-date">
-    release: <code>@Program.ReleaseDate.ToString("yyyy/MM/dd HH:mm")</code>
+	release: <code>@Program.ReleaseDate.ToString("yyyy/MM/dd HH:mm")</code>
 </div>
 
 @code {
-    [SupplyParameterFromQuery(Name = "url")]
-    private string? Url { get; set; }
+	[SupplyParameterFromQuery(Name = "url")]
+	private string? Url { get; set; }
 
-    private List<RouletteConfig> configs = new();
-    private InputFile? importInput;
+	private List<RouletteConfig> configs = new();
+	private InputFile? importInput;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (Url is { })
-        {
-            if (string.IsNullOrEmpty(new Uri(Url).Host)) Nav.NavigateTo(Url, false, true);
-            else Nav.NavigateTo(Nav.BaseUri, false, true);
-            return;
-        }
+	protected override async Task OnInitializedAsync()
+	{
+		if (Url is { })
+		{
+			if (string.IsNullOrEmpty(new Uri(Url).Host)) Nav.NavigateTo(Url, false, true);
+			else Nav.NavigateTo(Nav.BaseUri, false, true);
+			return;
+		}
 
-        configs = await RouletteConfig.LoadAsync(JS);
-    }
+		configs = await RouletteConfig.LoadAsync(JS);
+	}
 
-    private void NewConfig()
-    {
-        Nav.NavigateTo("setting");
-    }
+	private void NewConfig()
+	{
+		Nav.NavigateTo("setting");
+	}
 
-    private void SelectConfig(string id)
-    {
-        Nav.NavigateTo($"{id}");
-    }
+	private void SelectConfig(string id)
+	{
+		Nav.NavigateTo($"{id}");
+	}
 
-    private async Task ExportConfig(RouletteConfig cfg)
-    {
-        var exportObj = new
-        {
-            cfg.Name,
-            cfg.Items,
-            cfg.AutoAdjustSize,
-            cfg.ItemMultiplier,
-            cfg.ShowCountList
-        };
-        var json = JsonSerializer.Serialize(exportObj, JsonUtil.WebOptions);
-        var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-        var baseName = string.IsNullOrWhiteSpace(cfg.Name) ? "config" : cfg.Name;
-        var fileName = $"{baseName}_{timestamp}.json";
-        await JS.InvokeVoidAsync("downloadFile", fileName, json);
-    }
+	private async Task ExportConfig(RouletteConfig cfg)
+	{
+		var exportObj = new
+		{
+			cfg.Name,
+			cfg.Items,
+			cfg.AutoAdjustSize,
+			cfg.ItemMultiplier,
+			cfg.ShowCountList
+		};
+		var json = JsonSerializer.Serialize(exportObj, JsonUtil.WebOptions);
+		var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+		var baseName = string.IsNullOrWhiteSpace(cfg.Name) ? "config" : cfg.Name;
+		var fileName = $"{baseName}_{timestamp}.json";
+		await JS.InvokeVoidAsync("downloadFile", fileName, json);
+	}
 
-    private async Task DeleteConfig(string id)
-    {
-        var cfg = configs.FirstOrDefault(c => c.Id == id);
-        if (cfg is null) return;
+	private async Task DeleteConfig(string id)
+	{
+		var cfg = configs.FirstOrDefault(c => c.Id == id);
+		if (cfg is null) return;
 
-        var name = string.IsNullOrWhiteSpace(cfg.Name) ? "この設定" : $"『{cfg.Name}』";
-        var confirm = await JS.InvokeAsync<bool>("confirm", $"{name}を削除します。よろしいですか？");
-        if (!confirm) return;
+		var name = string.IsNullOrWhiteSpace(cfg.Name) ? "この設定" : $"『{cfg.Name}』";
+		var confirm = await JS.InvokeAsync<bool>("confirm", $"{name}を削除します。よろしいですか？");
+		if (!confirm) return;
 
-        if (configs.Remove(cfg))
-        {
-            await RouletteConfig.SaveAsync(JS, configs);
-            StateHasChanged();
-        }
-    }
+		if (configs.Remove(cfg))
+		{
+			await RouletteConfig.SaveAsync(JS, configs);
+			StateHasChanged();
+		}
+	}
 
-    private async Task TriggerImport()
-    {
-        if (importInput is not null)
-        {
-            await JS.InvokeVoidAsync("triggerInputFile", importInput.Element);
-        }
-    }
+	private async Task TriggerImport()
+	{
+		if (importInput is not null)
+		{
+			await JS.InvokeVoidAsync("triggerInputFile", importInput.Element);
+		}
+	}
 
-    private async Task ImportConfig(InputFileChangeEventArgs e)
-    {
-        if (e.FileCount == 0) return;
-        var file = e.File;
-        using var stream = file.OpenReadStream(file.Size);
-        var cfg = await JsonSerializer.DeserializeAsync<RouletteConfig>(stream, JsonUtil.WebOptions);
-        if (cfg is null) return;
-        if (string.IsNullOrWhiteSpace(cfg.Id)) cfg.Id = Guid.NewGuid().ToString("N");
-        configs.Add(cfg);
-        await RouletteConfig.SaveAsync(JS, configs);
-        StateHasChanged();
-    }
-    private void OpenUsage()
-    {
-        Nav.NavigateTo("usage");
-    }
+	private async Task ImportConfig(InputFileChangeEventArgs e)
+	{
+		if (e.FileCount == 0) return;
+		var file = e.File;
+		using var stream = file.OpenReadStream(file.Size);
+		var cfg = await JsonSerializer.DeserializeAsync<RouletteConfig>(stream, JsonUtil.WebOptions);
+		if (cfg is null) return;
+		if (string.IsNullOrWhiteSpace(cfg.Id)) cfg.Id = Guid.NewGuid().ToString("N");
+		configs.Add(cfg);
+		await RouletteConfig.SaveAsync(JS, configs);
+		StateHasChanged();
+	}
+	private void OpenUsage()
+	{
+		Nav.NavigateTo("usage");
+	}
 
-    private void OpenEnv()
-    {
-        Nav.NavigateTo("env");
-    }
+	private void OpenEnv()
+	{
+		Nav.NavigateTo("env");
+	}
 }
