@@ -12,22 +12,6 @@
 
 <h3>ルーレット設定一覧</h3>
 
-@{
-	var rest = (new DateTime(2025, 10, 31) - DateTime.Now).TotalDays;
-	var text = $"<strong>10月末（あと{(int)rest}日）</strong>でアクセスできなくなります。";
-	if (rest < 0)
-	{
-		text = "<strong>数日以内にアクセスできなくなります。</strong>";
-	}
-}
-
-<div class="alert alert-danger" role="alert">
-	<strong>新しいドメインを取得したので、引っ越します。</strong><br />
-	<a href="https://roulette.vsh.jp/">https://roulette.vsh.jp/</a><br />
-	データは引き継がれないので、書き出して、新しいほうで取り込んでください。<br />
-	この古いほうは、@(new MarkupString(text))
-</div>
-
 <div class="mb-3 d-flex">
 	<button class="btn btn-primary" @onclick="NewConfig">新規作成</button>
 	<button class="btn btn-secondary ms-auto" @onclick="TriggerImport">設定ファイル取り込み</button>
@@ -61,7 +45,8 @@ else
 
 <div class="alert alert-info" role="alert">
 	<strong>データはブラウザごとに保存されます。</strong><br />
-	保存したルーレットが見つからないときは、いつも使ってるブラウザかどうか確認してください。
+	保存したルーレットが見つからないときは、いつも使ってるブラウザかどうか確認してください。<br />
+	頑張って作ったルーレットのデータは、『書き出し』して保存しておくのがおすすめです。
 </div>
 
 <div class="release-date">

@@ -2,7 +2,7 @@ name: Deploy Brazor WebAssembly to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "newhost"]
 
   workflow_dispatch:
 
