@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using System.Collections.Generic
 @using System.Linq
+@using System.Numerics
 @using Roulette.Models
 
 <PageTitle>設定『@configName』 - ルーレット</PageTitle>
@@ -16,7 +17,7 @@
 </div>
 
 <div class="mb-3 form-check form-switch">
-    <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" @bind:after="MarkDirty" />
+    <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" @bind:after="OnAutoAdjustSizeChanged" />
     <label class="form-check-label" for="autoSize">大きさ自動調整</label>
 </div>
 
@@ -101,6 +102,7 @@
     private List<RouletteConfig> configs = new();
     private RouletteConfig? currentConfig;
     private bool autoAdjustSize = true;
+    private bool previousAutoAdjustSize = true;
     private int itemMultiplier = 1;
     private bool isDirty = true;
     private int? activeIndex = null;
@@ -146,11 +148,144 @@
                 configName = currentConfig.Name;
                 items = currentConfig.Items.ToList();
                 autoAdjustSize = currentConfig.AutoAdjustSize;
+                previousAutoAdjustSize = autoAdjustSize;
                 itemMultiplier = currentConfig.ItemMultiplier;
             }
         }
+        else
+        {
+            previousAutoAdjustSize = autoAdjustSize;
+        }
         isDirty = string.IsNullOrEmpty(Id);
         // When creating a new configuration, keep the default A/B/C items
+    }
+
+    private Task OnAutoAdjustSizeChanged()
+    {
+        if (!autoAdjustSize && previousAutoAdjustSize)
+        {
+            NormalizeSizesForManualInput();
+        }
+
+        previousAutoAdjustSize = autoAdjustSize;
+        MarkDirty();
+        return Task.CompletedTask;
+    }
+
+    private void NormalizeSizesForManualInput()
+    {
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        var minCount = items.Min(i => i.Count);
+        var maxCount = items.Max(i => i.Count);
+        var baseDenominator = maxCount - minCount + 1;
+
+        if (baseDenominator <= 0)
+        {
+            baseDenominator = 1;
+        }
+
+        var numerators = new List<int>(items.Count);
+        var denominators = new List<int>(items.Count);
+
+        foreach (var item in items)
+        {
+            var denominator = item.Count - minCount + 1;
+            if (denominator <= 0)
+            {
+                denominator = 1;
+            }
+
+            var numerator = baseDenominator;
+            var gcd = GreatestCommonDivisor(numerator, denominator);
+            numerators.Add(numerator / gcd);
+            denominators.Add(denominator / gcd);
+        }
+
+        var lcm = denominators
+            .Where(d => d > 0)
+            .Select(d => new BigInteger(d))
+            .DefaultIfEmpty(BigInteger.One)
+            .Aggregate(Lcm);
+
+        if (lcm.IsZero)
+        {
+            return;
+        }
+
+        var weights = new List<BigInteger>(items.Count);
+        for (int i = 0; i < items.Count; i++)
+        {
+            var denominator = denominators[i];
+            if (denominator <= 0)
+            {
+                weights.Add(BigInteger.Zero);
+                continue;
+            }
+
+            var numerator = new BigInteger(numerators[i]);
+            var weight = numerator * (lcm / denominator);
+            weights.Add(weight);
+        }
+
+        var positiveWeights = weights.Where(w => w > BigInteger.Zero).ToList();
+        if (positiveWeights.Count == 0)
+        {
+            return;
+        }
+
+        var gcdWeight = positiveWeights.Aggregate(BigInteger.GreatestCommonDivisor);
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            var weight = weights[i];
+            if (weight <= BigInteger.Zero)
+            {
+                items[i].Size = 0;
+                continue;
+            }
+
+            if (gcdWeight > BigInteger.One)
+            {
+                weight /= gcdWeight;
+            }
+
+            var value = (double)weight;
+            if (double.IsInfinity(value))
+            {
+                value = double.MaxValue;
+            }
+
+            items[i].Size = value;
+        }
+    }
+
+    private static int GreatestCommonDivisor(int a, int b)
+    {
+        a = Math.Abs(a);
+        b = Math.Abs(b);
+
+        while (b != 0)
+        {
+            var tmp = a % b;
+            a = b;
+            b = tmp;
+        }
+
+        return a == 0 ? 1 : a;
+    }
+
+    private static BigInteger Lcm(BigInteger a, BigInteger b)
+    {
+        if (a.IsZero || b.IsZero)
+        {
+            return BigInteger.Zero;
+        }
+
+        return BigInteger.Abs(a / BigInteger.GreatestCommonDivisor(a, b) * b);
     }
 
     private void Add()
