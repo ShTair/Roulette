@@ -22,10 +22,10 @@
 
 <div class="mb-3">
     <div class="setting-input-group">
-        <label class="form-label mb-0">大きさ補正指数</label>
+        <label class="form-label mb-0">大きさ調整指数</label>
         <input type="number" class="form-control numeric-input" min="0" step="0.1" @bind="autoAdjustExponent" @bind:after="OnAutoAdjustExponentChanged" />
     </div>
-    <div class="form-text">1で従来通り、0に近づけると大きさの差が緩やかになります。</div>
+    <div class="form-text">通常は1です。当たり回数により項目の大きさが変わりますが、この数値を0に近づけると大きさの差が緩やかになります。1より大きくすることもできます。</div>
 </div>
 
 <div class="mb-3">
