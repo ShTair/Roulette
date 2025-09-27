@@ -4,7 +4,6 @@
 @using System.Text.Json
 @using System.Collections.Generic
 @using System.Linq
-@using System.Numerics
 @using Roulette.Models
 
 <PageTitle>設定『@configName』 - ルーレット</PageTitle>
@@ -19,6 +18,12 @@
 <div class="mb-3 form-check form-switch">
     <input class="form-check-input" type="checkbox" id="autoSize" @bind="autoAdjustSize" @bind:after="OnAutoAdjustSizeChanged" />
     <label class="form-check-label" for="autoSize">大きさ自動調整</label>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">大きさ補正指数</label>
+    <input type="number" class="form-control" min="0" step="0.1" @bind="autoAdjustExponent" @bind:after="OnAutoAdjustExponentChanged" />
+    <div class="form-text">1で従来通り、0に近づけると大きさの差が緩やかになります。</div>
 </div>
 
 <div class="mb-3 d-flex align-items-center">
@@ -103,6 +108,7 @@
     private RouletteConfig? currentConfig;
     private bool autoAdjustSize = true;
     private bool previousAutoAdjustSize = true;
+    private double autoAdjustExponent = 1.0;
     private int itemMultiplier = 1;
     private bool isDirty = true;
     private int? activeIndex = null;
@@ -149,6 +155,7 @@
                 items = currentConfig.Items.ToList();
                 autoAdjustSize = currentConfig.AutoAdjustSize;
                 previousAutoAdjustSize = autoAdjustSize;
+                autoAdjustExponent = currentConfig.AutoAdjustExponent;
                 itemMultiplier = currentConfig.ItemMultiplier;
             }
         }
@@ -172,6 +179,16 @@
         return Task.CompletedTask;
     }
 
+    private Task OnAutoAdjustExponentChanged()
+    {
+        if (autoAdjustExponent < 0)
+        {
+            autoAdjustExponent = 0;
+        }
+        MarkDirty();
+        return Task.CompletedTask;
+    }
+
     private void NormalizeSizesForManualInput()
     {
         if (items.Count == 0)
@@ -180,112 +197,65 @@
         }
 
         var minCount = items.Min(i => i.Count);
-        var maxCount = items.Max(i => i.Count);
-        var baseDenominator = maxCount - minCount + 1;
-
-        if (baseDenominator <= 0)
-        {
-            baseDenominator = 1;
-        }
-
-        var numerators = new List<int>(items.Count);
-        var denominators = new List<int>(items.Count);
-
+        var weights = new List<double>(items.Count);
         foreach (var item in items)
         {
-            var denominator = item.Count - minCount + 1;
-            if (denominator <= 0)
+            var baseValue = item.Count - minCount + 1;
+            if (baseValue <= 0)
             {
-                denominator = 1;
+                baseValue = 1;
             }
 
-            var numerator = baseDenominator;
-            var gcd = GreatestCommonDivisor(numerator, denominator);
-            numerators.Add(numerator / gcd);
-            denominators.Add(denominator / gcd);
-        }
-
-        var lcm = denominators
-            .Where(d => d > 0)
-            .Select(d => new BigInteger(d))
-            .DefaultIfEmpty(BigInteger.One)
-            .Aggregate(Lcm);
-
-        if (lcm.IsZero)
-        {
-            return;
-        }
-
-        var weights = new List<BigInteger>(items.Count);
-        for (int i = 0; i < items.Count; i++)
-        {
-            var denominator = denominators[i];
-            if (denominator <= 0)
-            {
-                weights.Add(BigInteger.Zero);
-                continue;
-            }
-
-            var numerator = new BigInteger(numerators[i]);
-            var weight = numerator * (lcm / denominator);
+            var weight = Math.Pow(baseValue, -autoAdjustExponent);
             weights.Add(weight);
         }
 
-        var positiveWeights = weights.Where(w => w > BigInteger.Zero).ToList();
+        var positiveWeights = weights.Where(w => w > 0).ToList();
         if (positiveWeights.Count == 0)
         {
+            foreach (var item in items)
+            {
+                item.Size = 1;
+            }
             return;
         }
 
-        var gcdWeight = positiveWeights.Aggregate(BigInteger.GreatestCommonDivisor);
+        var minPositive = positiveWeights.Min();
+        if (minPositive <= 0)
+        {
+            minPositive = positiveWeights.Where(w => w > 0).DefaultIfEmpty(1).Min();
+        }
+
+        if (minPositive <= 0)
+        {
+            minPositive = 1;
+        }
+
+        var scale = 1.0 / minPositive;
 
         for (int i = 0; i < items.Count; i++)
         {
             var weight = weights[i];
-            if (weight <= BigInteger.Zero)
+            if (weight <= 0)
             {
                 items[i].Size = 0;
                 continue;
             }
 
-            if (gcdWeight > BigInteger.One)
+            var scaled = weight * scale;
+            if (double.IsInfinity(scaled) || double.IsNaN(scaled))
             {
-                weight /= gcdWeight;
+                scaled = double.MaxValue;
             }
 
-            var value = (double)weight;
-            if (double.IsInfinity(value))
+            var rounded = Math.Round(scaled, MidpointRounding.AwayFromZero);
+            if (rounded < 1)
             {
-                value = double.MaxValue;
+                rounded = 1;
             }
 
-            items[i].Size = value;
+            items[i].Size = rounded;
         }
-    }
-
-    private static int GreatestCommonDivisor(int a, int b)
-    {
-        a = Math.Abs(a);
-        b = Math.Abs(b);
-
-        while (b != 0)
-        {
-            var tmp = a % b;
-            a = b;
-            b = tmp;
-        }
-
-        return a == 0 ? 1 : a;
-    }
-
-    private static BigInteger Lcm(BigInteger a, BigInteger b)
-    {
-        if (a.IsZero || b.IsZero)
-        {
-            return BigInteger.Zero;
-        }
-
-        return BigInteger.Abs(a / BigInteger.GreatestCommonDivisor(a, b) * b);
     }
 
     private void Add()
@@ -373,6 +343,7 @@
         currentConfig.Name = configName;
         currentConfig.Items = arr;
         currentConfig.AutoAdjustSize = autoAdjustSize;
+        currentConfig.AutoAdjustExponent = autoAdjustExponent;
         currentConfig.ItemMultiplier = itemMultiplier;
 
         await RouletteConfig.SaveAsync(JS, configs);
