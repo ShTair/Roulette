@@ -15,6 +15,8 @@ public partial class RouletteConfig
 
     public bool AutoAdjustSize { get; set; } = true;
 
+    public double AutoAdjustExponent { get; set; } = 1.0;
+
     public int ItemMultiplier { get; set; } = 1;
 
     public bool ShowCountList { get; set; } = false;
@@ -56,6 +58,11 @@ public partial class RouletteConfig
                     {
                         cfg.AutoAdjustSize = true;
                     }
+                    if (!el.TryGetProperty("autoAdjustExponent", out _) &&
+                        !el.TryGetProperty(nameof(AutoAdjustExponent), out _))
+                    {
+                        cfg.AutoAdjustExponent = 1.0;
+                    }
                     if (!el.TryGetProperty("itemMultiplier", out _) &&
                         !el.TryGetProperty(nameof(ItemMultiplier), out _))
                     {
@@ -85,6 +92,7 @@ public partial class RouletteConfig
                     Name = kvp.Key,
                     Items = [.. kvp.Value],
                     AutoAdjustSize = true,
+                    AutoAdjustExponent = 1.0,
                     ItemMultiplier = 1
                 })];
                 EnsureItemColors(list);

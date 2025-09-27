@@ -101,6 +101,7 @@
     private DotNetObjectReference<Main>? objRef;
     private string selectedConfig = string.Empty;
     private bool autoAdjustSize = true;
+    private double autoAdjustExponent = 1.0;
     private bool autoStop = true;
     private int DisabledItemCount => allItems.Count(i => i.State == RouletteItemState.Disabled);
 
@@ -128,6 +129,7 @@
             itemMultiplier = cfg.ItemMultiplier;
             selectedConfig = cfg.Name;
             autoAdjustSize = cfg.AutoAdjustSize;
+            autoAdjustExponent = Math.Max(0, cfg.AutoAdjustExponent);
             showCounts = cfg.ShowCountList;
 
             RebuildItems();
@@ -259,7 +261,12 @@
             foreach (var item in items)
             {
                 var count = item.Count;
-                item.Size = 1.0 / (count - min + 1);
+                var baseValue = count - min + 1;
+                if (baseValue <= 0)
+                {
+                    baseValue = 1;
+                }
+                item.Size = Math.Pow(baseValue, -autoAdjustExponent);
                 item.Weight = item.Size;
             }
         }
@@ -267,7 +274,19 @@
         {
             foreach (var item in items)
             {
-                item.Weight = item.Size > 0 ? item.Size : 1;
+                if (item.Size <= 0)
+                {
+                    item.Weight = 0;
+                    continue;
+                }
+
+                var weight = Math.Pow(item.Size, autoAdjustExponent);
+                if (double.IsNaN(weight) || double.IsInfinity(weight))
+                {
+                    weight = double.MaxValue;
+                }
+
+                item.Weight = weight;
             }
         }
     }
