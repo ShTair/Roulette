@@ -21,14 +21,18 @@
 </div>
 
 <div class="mb-3">
-    <label class="form-label">大きさ補正指数</label>
-    <input type="number" class="form-control" min="0" step="0.1" @bind="autoAdjustExponent" @bind:after="OnAutoAdjustExponentChanged" />
-    <div class="form-text">1で従来通り、0に近づけると大きさの差が緩やかになります。</div>
+    <div class="setting-input-group">
+        <label class="form-label mb-0">大きさ調整指数</label>
+        <input type="number" class="form-control numeric-input" min="0" step="0.1" @bind="autoAdjustExponent" @bind:after="OnAutoAdjustExponentChanged" />
+    </div>
+    <div class="form-text">通常は1です。当たり回数により項目の大きさが変わりますが、この数値を0に近づけると大きさの差が緩やかになります。1より大きくすることもできます。</div>
 </div>
 
-<div class="mb-3 d-flex align-items-center">
-    <label class="form-label me-2 mb-0">表示倍数</label>
-    <input type="number" class="form-control multiplier-input" @bind="itemMultiplier" min="1" @bind:after="MarkDirty" />
+<div class="mb-3">
+    <div class="setting-input-group">
+        <label class="form-label mb-0">表示倍数</label>
+        <input type="number" class="form-control numeric-input" @bind="itemMultiplier" min="1" @bind:after="MarkDirty" />
+    </div>
 </div>
 
 @for (int i = 0; i < items.Count; i++)

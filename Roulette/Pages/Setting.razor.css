@@ -65,7 +65,22 @@
     width: 6rem;
 }
 
-.multiplier-input {
+
+.numeric-input {
     text-align: right;
     width: 6rem;
+}
+
+.setting-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.setting-input-group .form-label {
+    min-width: 8rem;
+}
+
+.setting-input-group .form-control {
+    max-width: 12rem;
 }
