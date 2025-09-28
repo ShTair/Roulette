@@ -68,19 +68,57 @@
 
 .numeric-input {
     text-align: right;
-    width: 6rem;
 }
 
 .setting-input-group {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    width: 100%;
 }
 
-.setting-input-group .form-label {
-    min-width: 8rem;
+.setting-input-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 10rem;
+    gap: 0.5rem;
+}
+
+.setting-input-label .form-label {
+    margin-bottom: 0;
+    white-space: nowrap;
 }
 
 .setting-input-group .form-control {
-    max-width: 12rem;
+    flex: 1 1 auto;
+    max-width: none;
+}
+
+.help-icon-button {
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%2711%27%20fill%3D%27%230d6efd%27%2F%3E%3Cpath%20d%3D%27M12%206.5c-1.93%200-3.5%201.4-3.5%203.13h1.75c0-.78.78-1.38%201.75-1.38%201.04%200%201.75.6%201.75%201.4%200%20.55-.32.94-.92%201.33l-.8.51c-.96.61-1.28%201.12-1.28%202.12v.39h1.75v-.39c0-.46.11-.67.73-1.07l.8-.51c1.02-.65%201.42-1.36%201.42-2.32C15.95%208.04%2014.19%206.5%2012%206.5zm-.88%209.13a1.13%201.13%200%20102.26%200%201.13%201.13%200%2000-2.26%200z%27%20fill%3D%27%23ffffff%27%2F%3E%3C%2Fsvg%3E");
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.help-icon-button:hover {
+    transform: scale(1.05);
+}
+
+.help-icon-button:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
 }
