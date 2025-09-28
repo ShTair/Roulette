@@ -68,13 +68,13 @@
 
 .numeric-input {
     text-align: right;
-    width: 6rem;
 }
 
 .setting-input-group {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    width: 100%;
 }
 
 .setting-input-label {
@@ -88,10 +88,12 @@
 
 .setting-input-label .form-label {
     margin-bottom: 0;
+    white-space: nowrap;
 }
 
 .setting-input-group .form-control {
-    max-width: 12rem;
+    flex: 1 1 auto;
+    max-width: none;
 }
 
 .help-icon-button {
