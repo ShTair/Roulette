@@ -24,11 +24,10 @@
     <div class="setting-input-group">
         <label class="form-label mb-0 d-inline-flex align-items-center">大きさ調整指数
             <button type="button"
-                    class="btn btn-sm btn-link p-0 ms-2"
+                    class="help-icon-button ms-2"
                     @onclick="ToggleAutoAdjustExponentInfo"
                     aria-expanded="@showAutoAdjustExponentInfo"
                     aria-controls="autoAdjustExponentHelp">
-                <span aria-hidden="true">❓</span>
                 <span class="visually-hidden">大きさ調整指数の説明を@(showAutoAdjustExponentInfo ? "隠す" : "表示")</span>
             </button>
         </label>
@@ -44,11 +43,10 @@
     <div class="setting-input-group">
         <label class="form-label mb-0 d-inline-flex align-items-center">表示倍数
             <button type="button"
-                    class="btn btn-sm btn-link p-0 ms-2"
+                    class="help-icon-button ms-2"
                     @onclick="ToggleItemMultiplierInfo"
                     aria-expanded="@showItemMultiplierInfo"
                     aria-controls="itemMultiplierHelp">
-                <span aria-hidden="true">❓</span>
                 <span class="visually-hidden">表示倍数の説明を@(showItemMultiplierInfo ? "隠す" : "表示")</span>
             </button>
         </label>
