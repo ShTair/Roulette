@@ -321,7 +321,12 @@
         {
             item.Count = 0;
         }
+        RebuildItems();
         await SaveCountsAsync();
+        var appSettings = await AppSettings.LoadAsync(JS);
+        await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef, appSettings.IdleSpin);
+        await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
+        await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
         StateHasChanged();
     }
 
