@@ -75,7 +75,7 @@
     <div class="mb-2 item-row">
         <button class="btn btn-outline-secondary state-button" @onclick="() => ToggleState(index)" title="@GetStateTitle(items[index].State)">@GetStateIcon(items[index].State)</button>
 
-        <input class="form-control text-input" style="background-color:@items[index].BackgroundColor;color:@items[index].ForegroundColor" @bind="items[index].Text" @bind:after="MarkDirty" @onfocus="() => activeIndex = index" />
+        <input class="form-control text-input" style="background-color:@items[index].BackgroundColorCss;color:@items[index].ForegroundColorCss" @bind="items[index].Text" @bind:after="MarkDirty" @onfocus="() => activeIndex = index" />
 
         @if (activeIndex == index)
         {
@@ -99,10 +99,10 @@
                     </div>
                     @if (!items[index].AutoForegroundColor)
                     {
-                        <input type="color" class="form-control color-input" @bind="items[index].ForegroundColor" @bind:after="MarkDirty" />
+                        <input type="color" class="form-control color-input" @bind="items[index].ForegroundColorHex" @bind:after="MarkDirty" />
                     }
                     <label class="form-label me-2 mb-0 ms-3">背景色</label>
-                    <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
+                    <input type="color" class="form-control color-input" @bind="items[index].BackgroundColorHex" @bind:after="MarkDirty" />
                 </div>
                 <div class="detail-row">
                     <label class="form-label me-2 mb-0">当たり回数</label>
@@ -308,8 +308,8 @@
 
     private void Add()
     {
-        string? baseBgColor = items.Count > 0 ? items[items.Count - 1].BackgroundColor : null;
-        string? baseFgColor = items.Count > 0 ? items[items.Count - 1].ForegroundColor : null;
+        OklchColor? baseBgColor = items.Count > 0 ? items[items.Count - 1].BackgroundOklch : null;
+        OklchColor? baseFgColor = items.Count > 0 ? items[items.Count - 1].ForegroundOklch : null;
         bool autoFg = items.Count > 0 ? items[items.Count - 1].AutoForegroundColor : true;
         var item = RouletteItem.Create("", baseBgColor);
 
@@ -321,7 +321,7 @@
         item.AutoForegroundColor = autoFg;
         if (!autoFg)
         {
-            item.ForegroundColor = RouletteItem.RandomColor(baseFgColor);
+            item.ForegroundOklch = RouletteItem.RandomOklchColor(baseFgColor);
         }
 
         items.Add(item);

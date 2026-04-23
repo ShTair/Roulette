@@ -51,8 +51,8 @@
         {
             using var row = writer.NewRow();
             row["項目名"].Set(item.Text);
-            row["背景色"].Set(item.BackgroundColor);
-            row["文字色"].Set(item.ForegroundColor);
+            row["背景色"].Set(item.BackgroundColorCss);
+            row["文字色"].Set(item.ForegroundColorCss);
             row["文字色自動"].Set(item.AutoForegroundColor ? "true" : "false");
             row["当たり数"].Format(item.Count);
             row["サイズ"].Format(item.Size);
@@ -110,14 +110,14 @@
             if (item is null)
             {
                 var last = Items.Count > 0 ? Items[^1] : null;
-                item = RouletteItem.Create(name, last?.BackgroundColor);
+                item = RouletteItem.Create(name, last?.BackgroundOklch);
                 if (last is not null)
                 {
                     item.State = last.State;
                     item.AutoForegroundColor = last.AutoForegroundColor;
                     if (!item.AutoForegroundColor)
                     {
-                        item.ForegroundColor = RouletteItem.RandomColor(last.ForegroundColor);
+                        item.ForegroundOklch = RouletteItem.RandomOklchColor(last.ForegroundOklch);
                     }
                 }
                 Items.Add(item);

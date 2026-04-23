@@ -5,38 +5,98 @@ namespace Roulette.Models;
 public class RouletteItem
 {
     public string Text { get; set; } = "";
-    private string _backgroundColor = "";
-    private string _legacyColor = "";
+    private OklchColor? _backgroundOklch;
+    private OklchColor? _foregroundOklch;
     private bool _autoForegroundColor = true;
 
-    public string Color
+    // Serialized as { "l": ..., "c": ..., "h": ... } in JSON
+    public OklchColor? BackgroundOklch
     {
-        get => _legacyColor;
+        get => _backgroundOklch;
         set
         {
-            _legacyColor = value;
-            if (string.IsNullOrWhiteSpace(_backgroundColor) && _autoForegroundColor)
-            {
-                ForegroundColor = ColorUtil.GetContrastColor(value);
-            }
+            _backgroundOklch = value;
+            if (_autoForegroundColor && value.HasValue)
+                _foregroundOklch = ColorUtil.GetContrastOklch(value.Value);
         }
     }
 
-    public string BackgroundColor
+    public OklchColor? ForegroundOklch
     {
-        get => string.IsNullOrWhiteSpace(_backgroundColor) ? _legacyColor : _backgroundColor;
+        get => _foregroundOklch;
+        set => _foregroundOklch = value;
+    }
+
+    // Backward compatibility: reads old hex/oklch-string BackgroundColor from JSON, never written
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? BackgroundColor
+    {
+        get => null;
         set
         {
-            _backgroundColor = value;
-            _legacyColor = value;
-            if (_autoForegroundColor)
-            {
-                ForegroundColor = ColorUtil.GetContrastColor(value);
-            }
+            if (string.IsNullOrWhiteSpace(value)) return;
+            var (l, c, h) = ColorUtil.ParseOklchCss(value);
+            BackgroundOklch = new OklchColor(l, c, h);
         }
     }
 
-    public string ForegroundColor { get; set; } = "#000000";
+    // Even older legacy compatibility (very old JSON had "color" instead of "backgroundColor")
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Color
+    {
+        get => null;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value) || _backgroundOklch.HasValue) return;
+            var (l, c, h) = ColorUtil.ParseOklchCss(value);
+            BackgroundOklch = new OklchColor(l, c, h);
+        }
+    }
+
+    // Backward compatibility: reads old ForegroundColor string from JSON, never written
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ForegroundColor
+    {
+        get => null;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value)) return;
+            var (l, c, h) = ColorUtil.ParseOklchCss(value);
+            _foregroundOklch = new OklchColor(l, c, h);
+        }
+    }
+
+    // UI: CSS oklch string for inline styles (not serialized)
+    [JsonIgnore]
+    public string BackgroundColorCss =>
+        _backgroundOklch.HasValue ? _backgroundOklch.Value.ToCss() : ColorUtil.OklchToCss(0.95f, 0.05f, 0f);
+
+    [JsonIgnore]
+    public string ForegroundColorCss =>
+        (_foregroundOklch ?? OklchColor.Black).ToCss();
+
+    // UI: hex string for <input type="color"> (not serialized)
+    [JsonIgnore]
+    public string BackgroundColorHex
+    {
+        get => _backgroundOklch.HasValue ? _backgroundOklch.Value.ToHex() : "#F2EFE5";
+        set
+        {
+            var (l, c, h) = ColorUtil.HexToOklch(value);
+            BackgroundOklch = new OklchColor(l, c, h);
+        }
+    }
+
+    [JsonIgnore]
+    public string ForegroundColorHex
+    {
+        get => (_foregroundOklch ?? OklchColor.Black).ToHex();
+        set
+        {
+            var (l, c, h) = ColorUtil.HexToOklch(value);
+            _foregroundOklch = new OklchColor(l, c, h);
+        }
+    }
 
     public bool AutoForegroundColor
     {
@@ -44,10 +104,8 @@ public class RouletteItem
         set
         {
             _autoForegroundColor = value;
-            if (_autoForegroundColor)
-            {
-                ForegroundColor = ColorUtil.GetContrastColor(BackgroundColor);
-            }
+            if (_autoForegroundColor && _backgroundOklch.HasValue)
+                _foregroundOklch = ColorUtil.GetContrastOklch(_backgroundOklch.Value);
         }
     }
 
@@ -62,29 +120,39 @@ public class RouletteItem
 
     private static readonly Random s_rand = new();
 
-    public static RouletteItem Create(string text = "", string? baseColor = null)
+    public static RouletteItem Create(string text = "", OklchColor? baseColor = null)
     {
         return new RouletteItem
         {
             Text = text,
-            BackgroundColor = RandomColor(baseColor),
+            BackgroundOklch = RandomOklchColor(baseColor),
             Size = 1,
             State = RouletteItemState.Locked
         };
     }
 
+    public static OklchColor RandomOklchColor(OklchColor? baseColor = null)
+    {
+        float l = 0.95f;
+        float c = 0.05f;
+        if (baseColor.HasValue)
+        {
+            l = baseColor.Value.L;
+            c = baseColor.Value.C;
+        }
+        return new OklchColor(l, c, (float)(s_rand.NextDouble() * 360));
+    }
+
+    // Kept for backward compatibility with string-based callers
     public static string RandomColor(string? baseColor = null)
     {
-        double l = 0.95;
-        double c = 0.05;
+        OklchColor? base2 = null;
         if (!string.IsNullOrWhiteSpace(baseColor))
         {
-            var (l0, c0, _) = ColorUtil.HexToOklch(baseColor);
-            l = l0;
-            c = c0;
+            var (l, c, _) = ColorUtil.ParseOklchCss(baseColor);
+            base2 = new OklchColor(l, c, 0f);
         }
-        var h = s_rand.NextDouble() * 360;
-        return ColorUtil.OklchToHex(l, c, h);
+        return RandomOklchColor(base2).ToCss();
     }
 }
 
@@ -94,3 +162,4 @@ public enum RouletteItemState
     Locked,
     Disabled
 }
+

@@ -1,10 +1,56 @@
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Roulette.Models;
 
 public static class ColorUtil
 {
+    public const string OklchBlack = "oklch(0% 0 0)";
+    public const string OklchWhite = "oklch(100% 0 0)";
+
+    private static readonly Regex OklchCssRegex = new(
+        @"^oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)\s*\)$",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    public static string OklchToCss(float l, float c, float h)
+        => new OklchColor(l, c, h).ToCss();
+
+    public static (float l, float c, float h) ParseOklchCss(string? css)
+    {
+        if (string.IsNullOrWhiteSpace(css)) return (0.8f, 0.1f, 0f);
+        if (css.StartsWith('#')) return HexToOklch(css);
+        var m = OklchCssRegex.Match(css);
+        if (m.Success &&
+            double.TryParse(m.Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var lPct) &&
+            double.TryParse(m.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var c2) &&
+            double.TryParse(m.Groups[3].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var h2))
+        {
+            return ((float)(lPct / 100.0), (float)c2, (float)h2);
+        }
+        return (0.8f, 0.1f, 0f);
+    }
+
+    public static string NormalizeToOklchCss(string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color)) return "";
+        if (color.StartsWith('#'))
+        {
+            var (l, c, h) = HexToOklch(color);
+            return OklchToCss(l, c, h);
+        }
+        if (color.StartsWith("oklch(", StringComparison.OrdinalIgnoreCase)) return color;
+        return "";
+    }
+
+    public static string ToHex(string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color)) return "#000000";
+        if (color.StartsWith('#')) return color;
+        var (l, c, h) = ParseOklchCss(color);
+        return OklchToHex(l, c, h);
+    }
+
     public static string OklchToHex(double l, double c, double h)
     {
         var hr = Math.PI * h / 180.0;
@@ -34,11 +80,11 @@ public static class ColorUtil
         return $"#{clamp(rr):X2}{clamp(gg):X2}{clamp(bb):X2}";
     }
 
-    public static (double l, double c, double h) HexToOklch(string hex)
+    public static (float l, float c, float h) HexToOklch(string hex)
     {
-        if (string.IsNullOrWhiteSpace(hex)) return (0.8, 0.1, 0);
+        if (string.IsNullOrWhiteSpace(hex)) return (0.8f, 0.1f, 0f);
         if (hex.StartsWith('#')) hex = hex[1..];
-        if (hex.Length != 6) return (0.8, 0.1, 0);
+        if (hex.Length != 6) return (0.8f, 0.1f, 0f);
 
         var r = Convert.ToInt32(hex.Substring(0, 2), 16) / 255.0;
         var g = Convert.ToInt32(hex.Substring(2, 2), 16) / 255.0;
@@ -63,25 +109,47 @@ public static class ColorUtil
         var H = Math.Atan2(b2, a) * 180.0 / Math.PI;
         if (H < 0) H += 360.0;
 
-        return (L, C, H);
+        return ((float)L, (float)C, (float)H);
     }
 
-    public static string GetContrastColor(string hex)
+    public static string GetContrastColor(string? color)
     {
-        if (string.IsNullOrWhiteSpace(hex)) return "#000000";
-        hex = hex.TrimStart('#');
-        if (hex.Length == 3)
+        if (string.IsNullOrWhiteSpace(color)) return OklchBlack;
+        string hex;
+        if (color.StartsWith("oklch(", StringComparison.OrdinalIgnoreCase))
         {
-            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+            var (l, c, h) = ParseOklchCss(color);
+            hex = OklchToHex(l, c, h).TrimStart('#');
         }
-        if (hex.Length != 6) return "#000000";
+        else
+        {
+            hex = color.TrimStart('#');
+            if (hex.Length == 3)
+            {
+                hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+            }
+        }
+        if (hex.Length != 6) return OklchBlack;
 
         var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
         var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
         var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
 
         var brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness > 128 ? "#000000" : "#ffffff";
+        return brightness > 128 ? OklchBlack : OklchWhite;
+    }
+
+    public static OklchColor GetContrastOklch(OklchColor color)
+    {
+        var hex = OklchToHex(color.L, color.C, color.H).TrimStart('#');
+        if (hex.Length != 6) return OklchColor.Black;
+
+        var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+        var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+        var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+
+        var brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128 ? OklchColor.Black : OklchColor.White;
     }
 }
 
