@@ -119,9 +119,9 @@
 }
 
 <div class="mb-3 d-flex gap-2">
-    <button class="btn btn-secondary" @onclick="Add">追加</button>
     <button class="btn btn-outline-secondary" @onclick="SortItems">並び替え</button>
     <button class="btn btn-outline-secondary" @onclick="ShuffleItems">シャッフル</button>
+    <button class="btn btn-secondary ms-auto" @onclick="Add">追加</button>
 </div>
 
 <ColorTool Items="items" OnChanged="MarkDirty" />
