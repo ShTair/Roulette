@@ -14,7 +14,7 @@ public static class ColorUtil
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public static string OklchToCss(double l, double c, double h)
-        => $"oklch({l * 100:F2}% {c:F4} {h:F2})";
+        => new OklchColor(l, c, h).ToCss();
 
     public static (double l, double c, double h) ParseOklchCss(string? css)
     {
@@ -137,6 +137,19 @@ public static class ColorUtil
 
         var brightness = (r * 299 + g * 587 + b * 114) / 1000;
         return brightness > 128 ? OklchBlack : OklchWhite;
+    }
+
+    public static OklchColor GetContrastOklch(OklchColor color)
+    {
+        var hex = OklchToHex(color.L, color.C, color.H).TrimStart('#');
+        if (hex.Length != 6) return OklchColor.Black;
+
+        var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+        var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+        var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+
+        var brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness > 128 ? OklchColor.Black : OklchColor.White;
     }
 }
 
