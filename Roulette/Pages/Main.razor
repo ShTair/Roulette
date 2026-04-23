@@ -36,6 +36,12 @@
         <label class="form-check-label" for="autoStopToggle">自動ストップ</label>
     </div>
 </div>
+<div class="mt-1 text-center">
+    <div class="form-check form-switch d-inline-block">
+        <input class="form-check-input" type="checkbox" id="keepAwakeToggle" @bind="keepAwake" @bind:after="OnKeepAwakeChanged" />
+        <label class="form-check-label" for="keepAwakeToggle">スリープ状態にしない</label>
+    </div>
+</div>
 
 @if (DisabledItemCount > 0)
 {
@@ -103,6 +109,7 @@
     private bool autoAdjustSize = true;
     private double autoAdjustExponent = 1.0;
     private bool autoStop = true;
+    private bool keepAwake = false;
     private int DisabledItemCount => allItems.Count(i => i.State == RouletteItemState.Disabled);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -302,6 +309,18 @@
     private async Task OnAutoStopChanged()
     {
         await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
+    }
+
+    [JSInvokable]
+    public void OnWakeLockReleased()
+    {
+        keepAwake = false;
+        StateHasChanged();
+    }
+
+    private async Task OnKeepAwakeChanged()
+    {
+        await JS.InvokeVoidAsync("rouletteHelper.setWakeLockEnabled", keepAwake);
     }
 
     private async Task OnShowCountsChanged(bool value)

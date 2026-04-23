@@ -25,6 +25,28 @@
     let dotNetHelper = null;
     let dpr = 1;
     let startX = null, startY = null, startId = null, startTime = 0;
+    let wakeLock = null;
+    let wakeLockEnabled = false;
+
+    async function requestWakeLock() {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', function () {
+                wakeLock = null;
+                wakeLockEnabled = false;
+                if (dotNetHelper) {
+                    dotNetHelper.invokeMethodAsync('OnWakeLockReleased');
+                }
+            });
+        }
+        catch (e) { console.log("Failed to acquire wake lock:", e); }
+    }
+
+    function releaseWakeLock() {
+        if (wakeLock === null) return;
+        try { wakeLock.release(); } catch { }
+        wakeLock = null;
+    }
 
     function getWeight(item) {
         const w = Number(item?.weight);
@@ -300,6 +322,15 @@
         }
     };
 
+    window.rouletteHelper.setWakeLockEnabled = async function (value) {
+        wakeLockEnabled = !!value;
+        if (wakeLockEnabled) {
+            await requestWakeLock();
+        } else {
+            releaseWakeLock();
+        }
+    };
+
     window.rouletteHelper.dispose = function () {
         spinning = false;
         idle = false;
@@ -311,6 +342,8 @@
             clearTimeout(autoStopTimeout);
             autoStopTimeout = null;
         }
+        releaseWakeLock();
+        wakeLockEnabled = false;
         removeSwipeHandlers();
         canvas = null;
         ctx = null;
