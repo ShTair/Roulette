@@ -1,0 +1,76 @@
+@using System.Linq
+@using Roulette.Models
+
+<div class="mb-3">
+    <ToggleSection Title="色一括調整ツール" @bind-IsOpen="open">
+        <div class="mb-3">
+            <label class="form-label">明度</label>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" @onclick="() => AdjustLightness(AggregateMode.Max)">最大</button>
+                <button class="btn btn-primary" @onclick="() => AdjustLightness(AggregateMode.Avg)">平均</button>
+                <button class="btn btn-primary" @onclick="() => AdjustLightness(AggregateMode.Min)">最小</button>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">彩度</label>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" @onclick="() => AdjustChroma(AggregateMode.Max)">最大</button>
+                <button class="btn btn-primary" @onclick="() => AdjustChroma(AggregateMode.Avg)">平均</button>
+                <button class="btn btn-primary" @onclick="() => AdjustChroma(AggregateMode.Min)">最小</button>
+            </div>
+        </div>
+    </ToggleSection>
+</div>
+
+@code {
+    [Parameter] public List<RouletteItem> Items { get; set; } = new();
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private bool open;
+
+    private enum AggregateMode { Max, Avg, Min }
+
+    private void AdjustLightness(AggregateMode mode)
+    {
+        if (Items.Count == 0) return;
+
+        var oklchValues = Items.Select(item => ColorUtil.HexToOklch(item.BackgroundColor)).ToList();
+        var lightnesses = oklchValues.Select(v => v.l).ToList();
+        var target = mode switch
+        {
+            AggregateMode.Max => lightnesses.Max(),
+            AggregateMode.Avg => lightnesses.Average(),
+            AggregateMode.Min => lightnesses.Min(),
+            _ => lightnesses.Average()
+        };
+
+        for (int i = 0; i < Items.Count; i++)
+        {
+            var (_, c, h) = oklchValues[i];
+            Items[i].BackgroundColor = ColorUtil.OklchToHex(target, c, h);
+        }
+        OnChanged.InvokeAsync();
+    }
+
+    private void AdjustChroma(AggregateMode mode)
+    {
+        if (Items.Count == 0) return;
+
+        var oklchValues = Items.Select(item => ColorUtil.HexToOklch(item.BackgroundColor)).ToList();
+        var chromas = oklchValues.Select(v => v.c).ToList();
+        var target = mode switch
+        {
+            AggregateMode.Max => chromas.Max(),
+            AggregateMode.Avg => chromas.Average(),
+            AggregateMode.Min => chromas.Min(),
+            _ => chromas.Average()
+        };
+
+        for (int i = 0; i < Items.Count; i++)
+        {
+            var (l, _, h) = oklchValues[i];
+            Items[i].BackgroundColor = ColorUtil.OklchToHex(l, target, h);
+        }
+        OnChanged.InvokeAsync();
+    }
+}
