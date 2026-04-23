@@ -118,8 +118,10 @@
     </div>
 }
 
-<div class="mb-3 d-flex">
-    <button class="btn btn-secondary" @onclick="Add">追加</button>
+<div class="mb-3 d-flex gap-2">
+    <button class="btn btn-outline-secondary" @onclick="SortItems">ソート</button>
+    <button class="btn btn-outline-secondary" @onclick="ShuffleItems">シャッフル</button>
+    <button class="btn btn-secondary ms-auto" @onclick="Add">追加</button>
 </div>
 
 <ColorTool Items="items" OnChanged="MarkDirty" />
@@ -355,6 +357,24 @@
     private void MoveUp(int index) => MoveItem(index, -1);
 
     private void MoveDown(int index) => MoveItem(index, 1);
+
+    private void SortItems()
+    {
+        items = items.OrderBy(i => i.Text, StringComparer.CurrentCulture).ToList();
+        activeIndex = null;
+        MarkDirty();
+    }
+
+    private void ShuffleItems()
+    {
+        for (int i = items.Count - 1; i > 0; i--)
+        {
+            var j = Random.Shared.Next(i + 1);
+            (items[i], items[j]) = (items[j], items[i]);
+        }
+        activeIndex = null;
+        MarkDirty();
+    }
 
     private async Task Save()
     {
