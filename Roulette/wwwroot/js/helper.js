@@ -29,7 +29,16 @@
     let wakeLockEnabled = false;
 
     async function requestWakeLock() {
-        try { wakeLock = await navigator.wakeLock.request('screen'); }
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', function () {
+                wakeLock = null;
+                wakeLockEnabled = false;
+                if (dotNetHelper) {
+                    dotNetHelper.invokeMethodAsync('OnWakeLockReleased');
+                }
+            });
+        }
         catch (e) { console.log("Failed to acquire wake lock:", e); }
     }
 
@@ -38,14 +47,6 @@
         try { wakeLock.release(); } catch { }
         wakeLock = null;
     }
-
-    async function handleVisibilityChange() {
-        if (wakeLockEnabled && document.visibilityState === 'visible') {
-            await requestWakeLock();
-        }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     function getWeight(item) {
         const w = Number(item?.weight);

@@ -311,6 +311,13 @@
         await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
     }
 
+    [JSInvokable]
+    public void OnWakeLockReleased()
+    {
+        keepAwake = false;
+        StateHasChanged();
+    }
+
     private async Task OnKeepAwakeChanged()
     {
         await JS.InvokeVoidAsync("rouletteHelper.setWakeLockEnabled", keepAwake);
