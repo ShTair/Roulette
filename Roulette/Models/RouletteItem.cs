@@ -69,7 +69,7 @@ public class RouletteItem
     // UI: CSS oklch string for inline styles (not serialized)
     [JsonIgnore]
     public string BackgroundColorCss =>
-        _backgroundOklch.HasValue ? _backgroundOklch.Value.ToCss() : ColorUtil.OklchToCss(0.95, 0.05, 0);
+        _backgroundOklch.HasValue ? _backgroundOklch.Value.ToCss() : ColorUtil.OklchToCss(0.95f, 0.05f, 0f);
 
     [JsonIgnore]
     public string ForegroundColorCss =>
@@ -133,14 +133,14 @@ public class RouletteItem
 
     public static OklchColor RandomOklchColor(OklchColor? baseColor = null)
     {
-        double l = 0.95;
-        double c = 0.05;
+        float l = 0.95f;
+        float c = 0.05f;
         if (baseColor.HasValue)
         {
             l = baseColor.Value.L;
             c = baseColor.Value.C;
         }
-        return new OklchColor(l, c, s_rand.NextDouble() * 360);
+        return new OklchColor(l, c, (float)(s_rand.NextDouble() * 360));
     }
 
     // Kept for backward compatibility with string-based callers
@@ -150,7 +150,7 @@ public class RouletteItem
         if (!string.IsNullOrWhiteSpace(baseColor))
         {
             var (l, c, _) = ColorUtil.ParseOklchCss(baseColor);
-            base2 = new OklchColor(l, c, 0);
+            base2 = new OklchColor(l, c, 0f);
         }
         return RandomOklchColor(base2).ToCss();
     }

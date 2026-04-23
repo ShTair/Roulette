@@ -13,12 +13,12 @@ public static class ColorUtil
         @"^oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)\s*\)$",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-    public static string OklchToCss(double l, double c, double h)
+    public static string OklchToCss(float l, float c, float h)
         => new OklchColor(l, c, h).ToCss();
 
-    public static (double l, double c, double h) ParseOklchCss(string? css)
+    public static (float l, float c, float h) ParseOklchCss(string? css)
     {
-        if (string.IsNullOrWhiteSpace(css)) return (0.8, 0.1, 0);
+        if (string.IsNullOrWhiteSpace(css)) return (0.8f, 0.1f, 0f);
         if (css.StartsWith('#')) return HexToOklch(css);
         var m = OklchCssRegex.Match(css);
         if (m.Success &&
@@ -26,9 +26,9 @@ public static class ColorUtil
             double.TryParse(m.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var c2) &&
             double.TryParse(m.Groups[3].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var h2))
         {
-            return (lPct / 100.0, c2, h2);
+            return ((float)(lPct / 100.0), (float)c2, (float)h2);
         }
-        return (0.8, 0.1, 0);
+        return (0.8f, 0.1f, 0f);
     }
 
     public static string NormalizeToOklchCss(string? color)
@@ -80,11 +80,11 @@ public static class ColorUtil
         return $"#{clamp(rr):X2}{clamp(gg):X2}{clamp(bb):X2}";
     }
 
-    public static (double l, double c, double h) HexToOklch(string hex)
+    public static (float l, float c, float h) HexToOklch(string hex)
     {
-        if (string.IsNullOrWhiteSpace(hex)) return (0.8, 0.1, 0);
+        if (string.IsNullOrWhiteSpace(hex)) return (0.8f, 0.1f, 0f);
         if (hex.StartsWith('#')) hex = hex[1..];
-        if (hex.Length != 6) return (0.8, 0.1, 0);
+        if (hex.Length != 6) return (0.8f, 0.1f, 0f);
 
         var r = Convert.ToInt32(hex.Substring(0, 2), 16) / 255.0;
         var g = Convert.ToInt32(hex.Substring(2, 2), 16) / 255.0;
@@ -109,7 +109,7 @@ public static class ColorUtil
         var H = Math.Atan2(b2, a) * 180.0 / Math.PI;
         if (H < 0) H += 360.0;
 
-        return (L, C, H);
+        return ((float)L, (float)C, (float)H);
     }
 
     public static string GetContrastColor(string? color)

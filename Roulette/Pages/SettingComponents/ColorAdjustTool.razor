@@ -47,7 +47,7 @@
         for (int i = 0; i < Items.Count; i++)
         {
             var v = oklchValues[i];
-            Items[i].BackgroundOklch = new OklchColor(target, v.C, v.H);
+            Items[i].BackgroundOklch = new OklchColor((float)target, v.C, v.H);
         }
         OnChanged.InvokeAsync();
     }
@@ -69,7 +69,7 @@
         for (int i = 0; i < Items.Count; i++)
         {
             var v = oklchValues[i];
-            Items[i].BackgroundOklch = new OklchColor(v.L, target, v.H);
+            Items[i].BackgroundOklch = new OklchColor(v.L, (float)target, v.H);
         }
         OnChanged.InvokeAsync();
     }
