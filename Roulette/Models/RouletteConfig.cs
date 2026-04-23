@@ -21,7 +21,7 @@ public partial class RouletteConfig
 
     public bool ShowCountList { get; set; } = false;
 
-    [GeneratedRegex("^#[0-9A-Fa-f]{6}$")]
+    [GeneratedRegex(@"^oklch\([\d.]+%\s+[\d.]+\s+[\d.]+\)$", RegexOptions.IgnoreCase)]
     private static partial Regex ColorRegex();
 
     private static void EnsureItemColors(IEnumerable<RouletteConfig> configs)

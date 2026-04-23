@@ -34,7 +34,7 @@
     {
         if (Items.Count == 0) return;
 
-        var oklchValues = Items.Select(item => ColorUtil.HexToOklch(item.BackgroundColor)).ToList();
+        var oklchValues = Items.Select(item => ColorUtil.ParseOklchCss(item.BackgroundColor)).ToList();
         var lightnesses = oklchValues.Select(v => v.l).ToList();
         var target = mode switch
         {
@@ -47,7 +47,7 @@
         for (int i = 0; i < Items.Count; i++)
         {
             var (_, c, h) = oklchValues[i];
-            Items[i].BackgroundColor = ColorUtil.OklchToHex(target, c, h);
+            Items[i].BackgroundColor = ColorUtil.OklchToCss(target, c, h);
         }
         OnChanged.InvokeAsync();
     }
@@ -56,7 +56,7 @@
     {
         if (Items.Count == 0) return;
 
-        var oklchValues = Items.Select(item => ColorUtil.HexToOklch(item.BackgroundColor)).ToList();
+        var oklchValues = Items.Select(item => ColorUtil.ParseOklchCss(item.BackgroundColor)).ToList();
         var chromas = oklchValues.Select(v => v.c).ToList();
         var target = mode switch
         {
@@ -69,7 +69,7 @@
         for (int i = 0; i < Items.Count; i++)
         {
             var (l, _, h) = oklchValues[i];
-            Items[i].BackgroundColor = ColorUtil.OklchToHex(l, target, h);
+            Items[i].BackgroundColor = ColorUtil.OklchToCss(l, target, h);
         }
         OnChanged.InvokeAsync();
     }
