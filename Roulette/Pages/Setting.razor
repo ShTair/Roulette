@@ -99,10 +99,10 @@
                     </div>
                     @if (!items[index].AutoForegroundColor)
                     {
-                        <input type="color" class="form-control color-input" @bind="items[index].ForegroundColor" @bind:after="MarkDirty" />
+                        <input type="color" class="form-control color-input" @bind="items[index].ForegroundColorHex" @bind:after="MarkDirty" />
                     }
                     <label class="form-label me-2 mb-0 ms-3">背景色</label>
-                    <input type="color" class="form-control color-input" @bind="items[index].BackgroundColor" @bind:after="MarkDirty" />
+                    <input type="color" class="form-control color-input" @bind="items[index].BackgroundColorHex" @bind:after="MarkDirty" />
                 </div>
                 <div class="detail-row">
                     <label class="form-label me-2 mb-0">当たり回数</label>

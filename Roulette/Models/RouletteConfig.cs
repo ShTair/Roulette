@@ -1,10 +1,9 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Microsoft.JSInterop;
 
 namespace Roulette.Models;
 
-public partial class RouletteConfig
+public class RouletteConfig
 {
 
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
@@ -21,9 +20,6 @@ public partial class RouletteConfig
 
     public bool ShowCountList { get; set; } = false;
 
-    [GeneratedRegex("^#[0-9A-Fa-f]{6}$")]
-    private static partial Regex ColorRegex();
-
     private static void EnsureItemColors(IEnumerable<RouletteConfig> configs)
     {
         foreach (var cfg in configs)
@@ -31,7 +27,7 @@ public partial class RouletteConfig
             string? prevColor = null;
             foreach (var item in cfg.Items)
             {
-                if (string.IsNullOrWhiteSpace(item.BackgroundColor) || !ColorRegex().IsMatch(item.BackgroundColor))
+                if (!ColorUtil.IsOklchCssString(item.BackgroundColor))
                 {
                     item.BackgroundColor = RouletteItem.RandomColor(prevColor);
                 }

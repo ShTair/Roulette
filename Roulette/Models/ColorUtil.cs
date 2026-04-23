@@ -5,6 +5,12 @@ namespace Roulette.Models;
 
 public static class ColorUtil
 {
+    /// <summary>oklch(0% 0 0) — 黒。コントラスト色や初期値として使用します。</summary>
+    public const string OklchBlack = "oklch(0% 0 0)";
+
+    /// <summary>oklch(100% 0 0) — 白。コントラスト色として使用します。</summary>
+    public const string OklchWhite = "oklch(100% 0 0)";
+
     public static string OklchToHex(double l, double c, double h)
     {
         var hr = Math.PI * h / 180.0;
@@ -66,22 +72,94 @@ public static class ColorUtil
         return (L, C, H);
     }
 
-    public static string GetContrastColor(string hex)
+    /// <summary>oklch の各値を CSS の oklch() 文字列に変換します。
+    /// 明度は小数点以下2桁の百分率、彩度は小数点以下4桁、色相は小数点以下2桁で出力します。</summary>
+    public static string OklchToCssString(double l, double c, double h)
     {
-        if (string.IsNullOrWhiteSpace(hex)) return "#000000";
-        hex = hex.TrimStart('#');
-        if (hex.Length == 3)
+        return $"oklch({l * 100:F2}% {c:F4} {h:F2})";
+    }
+
+    /// <summary>文字列が CSS の oklch() 形式かどうかを返します。</summary>
+    public static bool IsOklchCssString(string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color)) return false;
+        return color.TrimStart().StartsWith("oklch(", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>CSS の oklch() 文字列を (l, c, h) に解析します。</summary>
+    public static (double l, double c, double h) ParseOklchCssString(string color)
+    {
+        var content = color.Trim();
+        if (!content.StartsWith("oklch(", StringComparison.OrdinalIgnoreCase) || !content.EndsWith(')'))
+            return (0.8, 0.1, 0);
+
+        var inner = content[6..^1].Trim();
+        var parts = inner.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 3) return (0.8, 0.1, 0);
+
+        var lStr = parts[0];
+        var isPercent = lStr.EndsWith('%');
+        if (isPercent) lStr = lStr[..^1];
+        if (!double.TryParse(lStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var l)) return (0.8, 0.1, 0);
+        if (isPercent) l /= 100.0;
+
+        if (!double.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var c)) return (0.8, 0.1, 0);
+        if (!double.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var h)) return (0.8, 0.1, 0);
+
+        return (l, c, h);
+    }
+
+    /// <summary>hex または oklch CSS 文字列を (l, c, h) に変換します。</summary>
+    public static (double l, double c, double h) ToOklchValues(string color)
+    {
+        if (IsOklchCssString(color)) return ParseOklchCssString(color);
+        return HexToOklch(color);
+    }
+
+    /// <summary>hex または oklch CSS 文字列を oklch() CSS 文字列に変換します。空文字は空文字を返します。</summary>
+    public static string ToOklchCssString(string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color)) return "";
+        if (IsOklchCssString(color)) return color;
+        var (l, c, h) = HexToOklch(color);
+        return OklchToCssString(l, c, h);
+    }
+
+    /// <summary>oklch CSS 文字列または hex 文字列を hex 文字列に変換します。</summary>
+    public static string ToHex(string color)
+    {
+        if (string.IsNullOrWhiteSpace(color)) return "#000000";
+        if (IsOklchCssString(color))
         {
-            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+            var (l, c, h) = ParseOklchCssString(color);
+            return OklchToHex(l, c, h);
         }
-        if (hex.Length != 6) return "#000000";
+        if (color.StartsWith('#')) return color;
+        return "#000000";
+    }
+
+    /// <summary>背景色に対するコントラストの高い文字色を oklch() CSS 文字列で返します。</summary>
+    public static string GetContrastColor(string color)
+    {
+        if (string.IsNullOrWhiteSpace(color)) return OklchBlack;
+
+        if (IsOklchCssString(color))
+        {
+            var (l, _, _) = ParseOklchCssString(color);
+            return l > 0.5 ? OklchBlack : OklchWhite;
+        }
+
+        var hex = color.TrimStart('#');
+        if (hex.Length == 3)
+            hex = string.Concat(hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+        if (hex.Length != 6) return OklchBlack;
 
         var r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
         var g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
         var b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
 
         var brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness > 128 ? "#000000" : "#ffffff";
+        return brightness > 128 ? OklchBlack : OklchWhite;
     }
 }
 

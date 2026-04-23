@@ -7,36 +7,61 @@ public class RouletteItem
     public string Text { get; set; } = "";
     private string _backgroundColor = "";
     private string _legacyColor = "";
+    private string _foregroundColor = ColorUtil.OklchBlack;
     private bool _autoForegroundColor = true;
 
+    /// <summary>後方互換用の旧プロパティ。hex または oklch を受け付け、内部では oklch で保存します。</summary>
     public string Color
     {
         get => _legacyColor;
         set
         {
-            _legacyColor = value;
+            _legacyColor = ColorUtil.ToOklchCssString(value);
             if (string.IsNullOrWhiteSpace(_backgroundColor) && _autoForegroundColor)
             {
-                ForegroundColor = ColorUtil.GetContrastColor(value);
+                _foregroundColor = ColorUtil.GetContrastColor(_legacyColor);
             }
         }
     }
 
+    /// <summary>背景色を oklch CSS 文字列で保持します。hex を渡すと自動的に oklch に変換されます。</summary>
     public string BackgroundColor
     {
         get => string.IsNullOrWhiteSpace(_backgroundColor) ? _legacyColor : _backgroundColor;
         set
         {
-            _backgroundColor = value;
-            _legacyColor = value;
+            var oklch = ColorUtil.ToOklchCssString(value);
+            _backgroundColor = oklch;
+            _legacyColor = oklch;
             if (_autoForegroundColor)
             {
-                ForegroundColor = ColorUtil.GetContrastColor(value);
+                _foregroundColor = ColorUtil.GetContrastColor(oklch);
             }
         }
     }
 
-    public string ForegroundColor { get; set; } = "#000000";
+    /// <summary>文字色を oklch CSS 文字列で保持します。hex を渡すと自動的に oklch に変換されます。</summary>
+    public string ForegroundColor
+    {
+        get => _foregroundColor;
+        set => _foregroundColor = string.IsNullOrWhiteSpace(value) ? ColorUtil.OklchBlack : ColorUtil.ToOklchCssString(value);
+    }
+
+    /// <summary>&lt;input type="color"&gt; 用の背景色 (hex)。取得時は oklch から hex に変換します。</summary>
+    [JsonIgnore]
+    public string BackgroundColorHex
+    {
+        get => ColorUtil.ToHex(BackgroundColor);
+        set => BackgroundColor = value;
+    }
+
+    /// <summary>&lt;input type="color"&gt; 用の文字色 (hex)。取得時は oklch から hex に変換します。</summary>
+    [JsonIgnore]
+    public string ForegroundColorHex
+    {
+        get => ColorUtil.ToHex(ForegroundColor);
+        set => ForegroundColor = value;
+    }
 
     public bool AutoForegroundColor
     {
@@ -46,7 +71,7 @@ public class RouletteItem
             _autoForegroundColor = value;
             if (_autoForegroundColor)
             {
-                ForegroundColor = ColorUtil.GetContrastColor(BackgroundColor);
+                _foregroundColor = ColorUtil.GetContrastColor(BackgroundColor);
             }
         }
     }
@@ -79,12 +104,12 @@ public class RouletteItem
         double c = 0.05;
         if (!string.IsNullOrWhiteSpace(baseColor))
         {
-            var (l0, c0, _) = ColorUtil.HexToOklch(baseColor);
+            var (l0, c0, _) = ColorUtil.ToOklchValues(baseColor);
             l = l0;
             c = c0;
         }
         var h = s_rand.NextDouble() * 360;
-        return ColorUtil.OklchToHex(l, c, h);
+        return ColorUtil.OklchToCssString(l, c, h);
     }
 }
 
