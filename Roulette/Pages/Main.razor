@@ -309,6 +309,13 @@
     private async Task OnAutoStopChanged()
     {
         await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
+        if (autoStop && isSpinning && !isStopping)
+        {
+            isStopping = true;
+            isSpinning = false;
+            StateHasChanged();
+            await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
+        }
     }
 
     [JSInvokable]
