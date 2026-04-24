@@ -94,8 +94,10 @@
     private RouletteItem[] items = Array.Empty<RouletteItem>(); // active items
     private RouletteItem[] allItems = Array.Empty<RouletteItem>();
     private int itemMultiplier = 1;
+    private const int StopCooldownMilliseconds = 500;
     private bool isSpinning;
     private bool isStopping;
+    private DateTime spinStartTime;
     private bool showOverlay;
     private bool showCounts;
     private double overlayLeft;
@@ -172,10 +174,18 @@
             {
                 return;
             }
+            if ((DateTime.UtcNow - spinStartTime).TotalMilliseconds < StopCooldownMilliseconds)
+            {
+                return;
+            }
             isStopping = true;
         }
 
         isSpinning = !isSpinning;
+        if (isSpinning)
+        {
+            spinStartTime = DateTime.UtcNow;
+        }
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
     }
 
