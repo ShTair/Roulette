@@ -28,7 +28,7 @@
     }
 </div>
 <div class="mt-3 text-center">
-    <button class="btn btn-primary start-stop-button" @onclick="ToggleSpin" disabled="@((isStopping) || (isSpinning && autoStop))">@(isSpinning ? "ストップ" : "スタート")</button>
+    <button class="btn btn-primary start-stop-button" @onclick="ToggleSpin" disabled="@((isStopping) || (isSpinning && autoStop) || isInCooldown)">@(isSpinning ? "ストップ" : "スタート")</button>
 </div>
 <div class="mt-3 text-center">
     <div class="form-check form-switch d-inline-block">
@@ -97,6 +97,8 @@
     private const int StopCooldownMilliseconds = 500;
     private bool isSpinning;
     private bool isStopping;
+    private bool isInCooldown;
+    private CancellationTokenSource _cooldownCts = new();
     private DateTime spinStartTime;
     private bool showOverlay;
     private bool showCounts;
@@ -185,6 +187,22 @@
         if (isSpinning)
         {
             spinStartTime = DateTime.UtcNow;
+            if (!autoStop)
+            {
+                isInCooldown = true;
+                _cooldownCts.Cancel();
+                _cooldownCts.Dispose();
+                _cooldownCts = new CancellationTokenSource();
+                var token = _cooldownCts.Token;
+                _ = Task.Delay(StopCooldownMilliseconds, token).ContinueWith(t =>
+                {
+                    if (!t.IsCanceled)
+                    {
+                        isInCooldown = false;
+                        _ = InvokeAsync(StateHasChanged);
+                    }
+                }, TaskScheduler.Default);
+            }
         }
         await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
     }
@@ -396,6 +414,8 @@
 
     public void Dispose()
     {
+        _cooldownCts.Cancel();
+        _cooldownCts.Dispose();
         _ = JS.InvokeVoidAsync("rouletteHelper.dispose");
         objRef?.Dispose();
     }
