@@ -142,6 +142,7 @@
             autoAdjustSize = cfg.AutoAdjustSize;
             autoAdjustExponent = Math.Max(0, cfg.AutoAdjustExponent);
             showCounts = cfg.ShowCountList;
+            autoStop = cfg.AutoStop;
 
             RebuildItems();
 
@@ -344,6 +345,7 @@
             StateHasChanged();
             await JS.InvokeVoidAsync("rouletteHelper.toggleSpin");
         }
+        await SaveCountsAsync();
     }
 
     [JSInvokable]
@@ -392,6 +394,7 @@
         {
             cfg.Items = allItems.ToList();
             cfg.ShowCountList = showCounts;
+            cfg.AutoStop = autoStop;
             await RouletteConfig.SaveAsync(JS, configs);
         }
     }

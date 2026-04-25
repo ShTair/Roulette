@@ -20,6 +20,8 @@ public class RouletteConfig
 
     public bool ShowCountList { get; set; } = false;
 
+    public bool AutoStop { get; set; } = true;
+
     private static void EnsureItemColors(IEnumerable<RouletteConfig> configs)
     {
         foreach (var cfg in configs)
@@ -69,6 +71,11 @@ public class RouletteConfig
                     {
                         cfg.ShowCountList = false;
                     }
+                    if (!el.TryGetProperty("autoStop", out _) &&
+                        !el.TryGetProperty(nameof(AutoStop), out _))
+                    {
+                        cfg.AutoStop = true;
+                    }
                     list.Add(cfg);
                 }
                 EnsureItemColors(list);
@@ -89,7 +96,8 @@ public class RouletteConfig
                     Items = [.. kvp.Value],
                     AutoAdjustSize = true,
                     AutoAdjustExponent = 1.0,
-                    ItemMultiplier = 1
+                    ItemMultiplier = 1,
+                    AutoStop = true
                 })];
                 EnsureItemColors(list);
             }
