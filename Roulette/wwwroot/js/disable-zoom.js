@@ -10,13 +10,11 @@
     const x = touch ? touch.clientX : null;
     const y = touch ? touch.clientY : null;
     const dt = now - lastValidTouchEnd;
-    let distance = 0; // assume same position if coordinates are unavailable
+    let farEnough = false; // assume same position if coordinates are unavailable
     if (x !== null && y !== null && lastValidX !== null && lastValidY !== null) {
-      const dx = x - lastValidX;
-      const dy = y - lastValidY;
-      distance = Math.hypot(dx, dy);
+      farEnough = Math.abs(x - lastValidX) >= DOUBLE_TAP_DISTANCE || Math.abs(y - lastValidY) >= DOUBLE_TAP_DISTANCE;
     }
-    if (dt <= DOUBLE_TAP_THRESHOLD && distance <= DOUBLE_TAP_DISTANCE) {
+    if (dt <= DOUBLE_TAP_THRESHOLD && !farEnough) {
       e.preventDefault();
     } else {
       lastValidTouchEnd = now;
