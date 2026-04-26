@@ -70,6 +70,7 @@
         const color = item?.color || (index % 2 === 0 ? '#f8a' : '#8af');
         ctx.fillStyle = color;
         ctx.fill();
+        ctx.closePath();
         ctx.stroke();
 
         ctx.save();
