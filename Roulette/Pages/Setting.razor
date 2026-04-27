@@ -11,6 +11,11 @@
 <h3>ルーレットの設定</h3>
 
 <div class="mb-3">
+    <label class="form-label">ID</label>
+    <input class="form-control" value="@Id" readonly />
+</div>
+
+<div class="mb-3">
     <label class="form-label">設定名</label>
     <input class="form-control" @bind="configName" @bind:after="MarkDirty" />
 </div>
