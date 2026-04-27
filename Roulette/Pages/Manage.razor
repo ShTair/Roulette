@@ -59,6 +59,7 @@ else
 
     private List<RouletteConfig> configs = new();
     private InputFile? importInput;
+    private AppSettings appSettings = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,6 +71,7 @@ else
         }
 
         configs = await RouletteConfig.LoadAsync(JS);
+        appSettings = await AppSettings.LoadAsync(JS);
     }
 
     private void NewConfig()
@@ -106,8 +108,11 @@ else
         if (cfg is null) return;
 
         var name = string.IsNullOrWhiteSpace(cfg.Name) ? "この設定" : $"『{cfg.Name}』";
-        var confirm = await JS.InvokeAsync<bool>("confirm", $"{name}を削除します。よろしいですか？");
-        if (!confirm) return;
+        if (appSettings.ShowConfirmDialogs)
+        {
+            var confirm = await JS.InvokeAsync<bool>("confirm", $"{name}を削除します。よろしいですか？");
+            if (!confirm) return;
+        }
 
         if (configs.Remove(cfg))
         {
@@ -137,7 +142,11 @@ else
         if (sameNameConfigs.Count == 1)
         {
             var name = string.IsNullOrWhiteSpace(cfg.Name) ? "この設定" : $"『{cfg.Name}』";
-            var overwrite = await JS.InvokeAsync<bool>("confirm", $"{name}はすでに存在します。上書きしますか？");
+            bool overwrite;
+            if (appSettings.ShowConfirmDialogs)
+                overwrite = await JS.InvokeAsync<bool>("confirm", $"{name}はすでに存在します。上書きしますか？");
+            else
+                overwrite = true;
             if (overwrite)
             {
                 var existing = sameNameConfigs[0];

@@ -11,6 +11,7 @@ public class AppSettings
     public string BorderColor { get; set; } = "#808080";
     public bool IdleSpin { get; set; } = true;
     public bool AutoFontSize { get; set; } = true;
+    public bool ShowConfirmDialogs { get; set; } = true;
 
     private const string StorageKey = "rouletteSettings";
 

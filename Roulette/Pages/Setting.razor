@@ -148,6 +148,7 @@
     private string configName = "新しいルーレット";
     private List<RouletteConfig> configs = new();
     private RouletteConfig? currentConfig;
+    private AppSettings appSettings = new();
     private bool autoAdjustSize = true;
     private bool previousAutoAdjustSize = true;
     private double autoAdjustExponent = 1.0;
@@ -189,6 +190,7 @@
     protected override async Task OnInitializedAsync()
     {
         configs = await RouletteConfig.LoadAsync(JS);
+        appSettings = await AppSettings.LoadAsync(JS);
 
         if (!string.IsNullOrEmpty(Id))
         {
@@ -381,7 +383,8 @@
         configName = configName.Trim();
         if (string.IsNullOrWhiteSpace(configName))
         {
-            await JS.InvokeVoidAsync("alert", "設定名を入力してください。");
+            if (appSettings.ShowConfirmDialogs)
+                await JS.InvokeVoidAsync("alert", "設定名を入力してください。");
             return;
         }
 
@@ -396,7 +399,8 @@
 
         if (arr.Count == 0 || arr.Count != items.Count)
         {
-            await JS.InvokeVoidAsync("alert", "項目を1つ以上設定し、すべての項目名を入力してください。");
+            if (appSettings.ShowConfirmDialogs)
+                await JS.InvokeVoidAsync("alert", "項目を1つ以上設定し、すべての項目名を入力してください。");
             return;
         }
 
