@@ -132,6 +132,27 @@ else
         var cfg = await JsonSerializer.DeserializeAsync<RouletteConfig>(stream, JsonUtil.WebOptions);
         if (cfg is null) return;
         if (string.IsNullOrWhiteSpace(cfg.Id)) cfg.Id = Guid.NewGuid().ToString("N");
+
+        var sameNameConfigs = configs.Where(c => c.Name == cfg.Name).ToList();
+        if (sameNameConfigs.Count == 1)
+        {
+            var name = string.IsNullOrWhiteSpace(cfg.Name) ? "この設定" : $"『{cfg.Name}』";
+            var overwrite = await JS.InvokeAsync<bool>("confirm", $"{name}はすでに存在します。上書きしますか？");
+            if (overwrite)
+            {
+                var existing = sameNameConfigs[0];
+                existing.Items = cfg.Items;
+                existing.AutoAdjustSize = cfg.AutoAdjustSize;
+                existing.AutoAdjustExponent = cfg.AutoAdjustExponent;
+                existing.ItemMultiplier = cfg.ItemMultiplier;
+                existing.ShowCountList = cfg.ShowCountList;
+                existing.AutoStop = cfg.AutoStop;
+                await RouletteConfig.SaveAsync(JS, configs);
+                StateHasChanged();
+                return;
+            }
+        }
+
         configs.Add(cfg);
         await RouletteConfig.SaveAsync(JS, configs);
         StateHasChanged();
