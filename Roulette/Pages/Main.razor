@@ -368,10 +368,14 @@
 
     private async Task ResetAllCounts()
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", "当たり回数をリセットしますか？");
-        if (!ok)
+        var appSettings = await AppSettings.LoadAsync(JS);
+        if (appSettings.ShowConfirmDialogs)
         {
-            return;
+            var ok = await JS.InvokeAsync<bool>("confirm", "当たり回数をリセットしますか？");
+            if (!ok)
+            {
+                return;
+            }
         }
         foreach (var item in allItems)
         {
@@ -379,7 +383,6 @@
         }
         RebuildItems();
         await SaveCountsAsync();
-        var appSettings = await AppSettings.LoadAsync(JS);
         await JS.InvokeVoidAsync("rouletteHelper.initialize", "rouletteCanvas", ItemsForJs(), objRef, appSettings.IdleSpin);
         await JS.InvokeVoidAsync("rouletteHelper.applySettings", appSettings);
         await JS.InvokeVoidAsync("rouletteHelper.setAutoStopEnabled", autoStop);
