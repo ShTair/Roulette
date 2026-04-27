@@ -12,6 +12,7 @@ public class AppSettings
     public bool IdleSpin { get; set; } = true;
     public bool AutoFontSize { get; set; } = true;
     public bool ShowConfirmDialogs { get; set; } = true;
+    public bool ShowSettingId { get; set; } = false;
 
     private const string StorageKey = "rouletteSettings";
 
